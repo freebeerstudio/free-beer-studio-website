@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Send, Check, X, ExternalLink, ChevronDown, ChevronUp, Rss, Trash2, CheckCircle, XCircle } from 'lucide-react';
+import { Plus, Send, Check, X, ExternalLink, ChevronDown, ChevronUp, Rss, Trash2, CheckCircle, XCircle, FileText, Upload, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/components/ui/use-toast';
 import AdminLayout from '../../components/layout/AdminLayout';
 import { useBackend } from '../../hooks/useBackend';
+import FileUpload from '../../components/ui/file-upload';
 
 export default function AdminIdeasPage() {
   const [newIdeaInput, setNewIdeaInput] = useState('');
@@ -19,6 +20,12 @@ export default function AdminIdeasPage() {
   const [feedSourcesExpanded, setFeedSourcesExpanded] = useState(false);
   const [newFeedUrl, setNewFeedUrl] = useState('');
   const [newFeedName, setNewFeedName] = useState('');
+  const [styleGuidesExpanded, setStyleGuidesExpanded] = useState(false);
+  const [styleGuideData, setStyleGuideData] = useState<{[key: string]: {
+    guidelines: string;
+    prompt: string;
+    exampleFiles: string[];
+  }}>({});
   const backend = useBackend();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -406,6 +413,43 @@ export default function AdminIdeasPage() {
                 </CardContent>
               )}
             </Card>
+
+            {/* Style Guides Section */}
+            <Card className="bg-white border-gray-200">
+              <CardHeader className="cursor-pointer" onClick={() => setStyleGuidesExpanded(!styleGuidesExpanded)}>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-gray-900 flex items-center">
+                      <Settings className="mr-2 w-5 h-5" />
+                      Channel Style Guides
+                    </CardTitle>
+                    <CardDescription className="text-gray-600">
+                      Configure writing styles, examples, and AI prompts for each channel
+                    </CardDescription>
+                  </div>
+                  {styleGuidesExpanded ? (
+                    <ChevronUp className="w-5 h-5 text-gray-400" />
+                  ) : (
+                    <ChevronDown className="w-5 h-5 text-gray-400" />
+                  )}
+                </div>
+              </CardHeader>
+              
+              {styleGuidesExpanded && (
+                <CardContent className="space-y-6">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {platforms.map((platform) => (
+                      <StyleGuideCard
+                        key={platform.id}
+                        platform={platform}
+                        data={styleGuideData[platform.id] || { guidelines: '', prompt: '', exampleFiles: [] }}
+                        onUpdate={(data) => setStyleGuideData(prev => ({ ...prev, [platform.id]: data }))}
+                      />
+                    ))}
+                  </div>
+                </CardContent>
+              )}
+            </Card>
           </TabsContent>
 
           {/* Ideas Tab */}
@@ -753,6 +797,152 @@ function IdeaCard({ idea, onApprove, onReject, isApproving, isRejecting }: IdeaC
           </div>
         )}
       </CardContent>
+    </Card>
+  );
+}
+
+interface StyleGuideCardProps {
+  platform: {
+    id: string;
+    label: string;
+    color: string;
+  };
+  data: {
+    guidelines: string;
+    prompt: string;
+    exampleFiles: string[];
+  };
+  onUpdate: (data: { guidelines: string; prompt: string; exampleFiles: string[] }) => void;
+}
+
+function StyleGuideCard({ platform, data, onUpdate }: StyleGuideCardProps) {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [localData, setLocalData] = useState(data);
+
+  const handleFileUploaded = (url: string, fileId: string) => {
+    const newExampleFiles = [...localData.exampleFiles, url];
+    const newData = { ...localData, exampleFiles: newExampleFiles };
+    setLocalData(newData);
+    onUpdate(newData);
+  };
+
+  const handleFileRemoved = (index: number) => {
+    const newExampleFiles = localData.exampleFiles.filter((_, i) => i !== index);
+    const newData = { ...localData, exampleFiles: newExampleFiles };
+    setLocalData(newData);
+    onUpdate(newData);
+  };
+
+  const handleGuidelinesChange = (guidelines: string) => {
+    const newData = { ...localData, guidelines };
+    setLocalData(newData);
+    onUpdate(newData);
+  };
+
+  const handlePromptChange = (prompt: string) => {
+    const newData = { ...localData, prompt };
+    setLocalData(newData);
+    onUpdate(newData);
+  };
+
+  return (
+    <Card className="bg-white border-gray-200">
+      <CardHeader className="cursor-pointer" onClick={() => setIsExpanded(!isExpanded)}>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <Badge className={platform.color} variant="outline">
+              {platform.label}
+            </Badge>
+            <div className="flex items-center space-x-1 text-sm text-gray-500">
+              {localData.exampleFiles.length > 0 && (
+                <span className="flex items-center">
+                  <FileText className="w-4 h-4 mr-1" />
+                  {localData.exampleFiles.length} example{localData.exampleFiles.length !== 1 ? 's' : ''}
+                </span>
+              )}
+            </div>
+          </div>
+          {isExpanded ? (
+            <ChevronUp className="w-4 h-4 text-gray-400" />
+          ) : (
+            <ChevronDown className="w-4 h-4 text-gray-400" />
+          )}
+        </div>
+      </CardHeader>
+
+      {isExpanded && (
+        <CardContent className="space-y-4">
+          {/* Writing Guidelines */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-700">
+              Writing Guidelines
+            </label>
+            <Textarea
+              placeholder={`Enter writing guidelines for ${platform.label}...\nE.g., tone, style, length, formatting rules, etc.`}
+              value={localData.guidelines}
+              onChange={(e) => handleGuidelinesChange(e.target.value)}
+              className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 min-h-[100px]"
+            />
+          </div>
+
+          {/* AI Prompt */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-700">
+              AI Writing Prompt
+            </label>
+            <Textarea
+              placeholder={`Enter AI instructions for writing ${platform.label} content...\nE.g., "Write in a professional tone with bullet points. Keep under 500 words. Include a call-to-action."`}
+              value={localData.prompt}
+              onChange={(e) => handlePromptChange(e.target.value)}
+              className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 min-h-[80px]"
+            />
+          </div>
+
+          {/* Example Files */}
+          <div className="space-y-3">
+            <label className="text-sm font-medium text-gray-700">
+              Writing Examples
+            </label>
+            
+            {/* Existing files */}
+            {localData.exampleFiles.length > 0 && (
+              <div className="space-y-2">
+                {localData.exampleFiles.map((fileUrl, index) => (
+                  <div key={index} className="flex items-center justify-between p-2 border border-gray-200 rounded-lg bg-gray-50">
+                    <div className="flex items-center space-x-2">
+                      <FileText className="w-4 h-4 text-gray-600" />
+                      <a 
+                        href={fileUrl} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-sm text-blue-600 hover:text-blue-800 underline"
+                      >
+                        Example {index + 1}
+                      </a>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleFileRemoved(index)}
+                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* File upload */}
+            <FileUpload
+              onFileUploaded={handleFileUploaded}
+              category="styleguide"
+              accept="*/*"
+              className="border-dashed border-gray-300"
+            />
+          </div>
+        </CardContent>
+      )}
     </Card>
   );
 }

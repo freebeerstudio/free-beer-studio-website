@@ -8,7 +8,7 @@ interface FileUploadProps {
   onFileUploaded: (url: string, fileId: string) => void;
   onFileRemoved?: () => void;
   currentUrl?: string;
-  category: 'pricing' | 'project' | 'blog' | 'profile';
+  category: 'pricing' | 'project' | 'blog' | 'profile' | 'styleguide';
   accept?: string;
   multiple?: boolean;
   className?: string;

@@ -34,17 +34,7 @@ export default function AdminSettingsPage() {
             </CardContent>
           </Card>
 
-          <Card className="bg-white border-gray-200">
-            <CardHeader>
-              <CardTitle className="text-gray-900">Style Guides</CardTitle>
-              <CardDescription className="text-gray-600">
-                Configure platform-specific writing styles
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-gray-600 text-sm">Coming soon...</p>
-            </CardContent>
-          </Card>
+
 
 
         </div>

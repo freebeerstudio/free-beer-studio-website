@@ -8,7 +8,7 @@ const images = new Bucket("content-images", { public: true });
 interface GetUploadUrlRequest {
   filename: string;
   contentType: string;
-  category: "pricing" | "project" | "blog" | "profile";
+  category: "pricing" | "project" | "blog" | "profile" | "styleguide";
 }
 
 interface GetUploadUrlResponse {
