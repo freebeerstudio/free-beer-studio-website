@@ -1,8 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
-import { Calendar, User, ArrowRight, FileText } from 'lucide-react';
+import { Calendar, User, ArrowRight, FileText, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import Header from '../../components/layout/Header';
 import Footer from '../../components/layout/Footer';
 import backend from '~backend/client';
@@ -139,18 +140,26 @@ export default function BlogPage() {
           {/* Newsletter CTA */}
           <div className="mt-20 text-center">
             <div className="bg-gradient-to-r from-vapor-purple/10 to-smoky-lavender/10 rounded-2xl p-8 lg:p-12 border-2 border-black shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
-              <h2 className="text-3xl font-bold font-['Architects_Daughter'] mb-4 text-black">
-                Never Miss an Update
+              <Star className="w-12 h-12 text-launch-orange mx-auto mb-6" />
+              <h2 className="text-3xl sm:text-4xl font-bold font-['Architects_Daughter'] mb-4 text-black">
+                Stay Ahead of the AI Curve
               </h2>
               <p className="text-xl text-black mb-8 max-w-2xl mx-auto">
-                Subscribe to our newsletter for the latest AI automation insights, tips, and industry news.
+                Get weekly insights on AI automation, industry trends, and practical tips delivered to your inbox.
               </p>
-              <Button 
-                size="lg" 
-                className="bg-white border-2 border-black text-black hover:bg-black/10 shadow-[0_4px_14px_rgb(0,0,0,0.25)]"
-              >
-                Subscribe to Newsletter
-              </Button>
+              <form className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+                <Input
+                  type="email"
+                  placeholder="Enter your email"
+                  className="flex-1 bg-white border-2 border-black text-black placeholder:text-gray-500"
+                />
+                <Button type="submit" className="bg-white border-2 border-black text-black hover:bg-black/10 shadow-[0_4px_14px_rgb(0,0,0,0.25)]">
+                  Subscribe
+                </Button>
+              </form>
+              <p className="text-sm text-black mt-4">
+                No spam. Unsubscribe anytime.
+              </p>
             </div>
           </div>
         </div>
