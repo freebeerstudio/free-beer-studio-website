@@ -6,7 +6,7 @@ CREATE TABLE files (
   url TEXT NOT NULL,
   content_type TEXT NOT NULL,
   size BIGINT NOT NULL,
-  category TEXT NOT NULL CHECK (category IN ('pricing', 'project', 'blog', 'profile')),
+  category TEXT NOT NULL CHECK (category IN ('pricing', 'project', 'blog', 'profile', 'styleguide')),
   uploaded BOOLEAN DEFAULT false,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
