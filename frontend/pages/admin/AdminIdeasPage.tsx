@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Send, Check, X, ExternalLink, ChevronDown, ChevronUp, Rss, Trash2, CheckCircle, XCircle, FileText, Upload, Settings } from 'lucide-react';
+import { Plus, Send, Check, X, ExternalLink, ChevronDown, ChevronUp, Rss, Trash2, CheckCircle, XCircle, FileText, Upload, Settings, Calendar, Clock, Edit3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -58,6 +58,12 @@ export default function AdminIdeasPage() {
   const { data: styleGuidesData, isLoading: styleGuidesLoading } = useQuery({
     queryKey: ['admin-style-guides'],
     queryFn: () => backend.styleGuides.listStyleGuides(),
+  });
+
+  // Fetch scheduled posts
+  const { data: scheduledPostsData, isLoading: scheduledPostsLoading } = useQuery({
+    queryKey: ['admin-scheduled-posts'],
+    queryFn: () => backend.ideas.listScheduledPosts(),
   });
 
   // Create feed source mutation
@@ -255,6 +261,14 @@ export default function AdminIdeasPage() {
     });
   };
 
+  const handleUpdateScheduledPost = (id: number, data: { scheduledAt?: Date; draftContent?: string }) => {
+    updateScheduledPostMutation.mutate({ id, ...data });
+  };
+
+  const handleCancelScheduledPost = (id: number) => {
+    cancelScheduledPostMutation.mutate(id);
+  };
+
   return (
     <AdminLayout>
       <div className="space-y-6">
@@ -265,15 +279,18 @@ export default function AdminIdeasPage() {
         </div>
 
         <Tabs defaultValue="ingest" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3 bg-rocket-gray/10">
-            <TabsTrigger value="ingest" className="data-[state=active]:bg-vapor-purple/20">
+          <TabsList className="grid w-full grid-cols-4 bg-rocket-gray/10">
+            <TabsTrigger value="ingest" className="data-[state=active]:bg-vapor-purple/20 text-gray-900 data-[state=active]:text-gray-900">
               Ingest Ideas
             </TabsTrigger>
-            <TabsTrigger value="ideas" className="data-[state=active]:bg-vapor-purple/20">
+            <TabsTrigger value="ideas" className="data-[state=active]:bg-vapor-purple/20 text-gray-900 data-[state=active]:text-gray-900">
               Manage Ideas
             </TabsTrigger>
-            <TabsTrigger value="drafts" className="data-[state=active]:bg-vapor-purple/20">
+            <TabsTrigger value="drafts" className="data-[state=active]:bg-vapor-purple/20 text-gray-900 data-[state=active]:text-gray-900">
               Review Drafts
+            </TabsTrigger>
+            <TabsTrigger value="schedule" className="data-[state=active]:bg-vapor-purple/20 text-gray-900 data-[state=active]:text-gray-900">
+              Schedule
             </TabsTrigger>
           </TabsList>
 
@@ -600,6 +617,40 @@ export default function AdminIdeasPage() {
               </div>
             )}
           </TabsContent>
+
+          {/* Schedule Tab */}
+          <TabsContent value="schedule" className="space-y-6">
+            {scheduledPostsLoading ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {platforms.map((platform) => (
+                  <Card key={platform.id} className="bg-white border-gray-200 animate-pulse">
+                    <CardHeader className="h-20"></CardHeader>
+                    <CardContent className="h-48"></CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {platforms.map((platform) => {
+                  const platformPosts = scheduledPostsData?.scheduledPosts.filter(
+                    post => post.platform === platform.id
+                  ) || [];
+                  
+                  return (
+                    <SchedulePlatformWidget
+                      key={platform.id}
+                      platform={platform}
+                      posts={platformPosts}
+                      onUpdatePost={handleUpdateScheduledPost}
+                      onCancelPost={handleCancelScheduledPost}
+                      isUpdating={updateScheduledPostMutation.isPending}
+                      isCancelling={cancelScheduledPostMutation.isPending}
+                    />
+                  );
+                })}
+              </div>
+            )}
+          </TabsContent>
         </Tabs>
       </div>
     </AdminLayout>
@@ -857,6 +908,253 @@ function IdeaCard({ idea, platforms, onApprove, onReject, isApproving, isRejecti
         )}
       </CardContent>
     </Card>
+  );
+}
+
+interface SchedulePlatformWidgetProps {
+  platform: {
+    id: string;
+    label: string;
+    color: string;
+  };
+  posts: Array<{
+    id: number;
+    ideaId: number;
+    platform: string;
+    ideaTitle: string;
+    ideaSummary: string;
+    draftContent: string;
+    scheduledAt: Date;
+    imageUrl?: string;
+    imageMode: string;
+    createdAt: Date;
+  }>;
+  onUpdatePost: (id: number, data: { scheduledAt?: Date; draftContent?: string }) => void;
+  onCancelPost: (id: number) => void;
+  isUpdating: boolean;
+  isCancelling: boolean;
+}
+
+function SchedulePlatformWidget({ 
+  platform, 
+  posts, 
+  onUpdatePost, 
+  onCancelPost, 
+  isUpdating, 
+  isCancelling 
+}: SchedulePlatformWidgetProps) {
+  const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
+
+  return (
+    <Card className="bg-white border-gray-200">
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <Badge className={platform.color} variant="outline">
+              {platform.label}
+            </Badge>
+            <div className="flex items-center space-x-1 text-sm text-gray-500">
+              <Calendar className="w-4 h-4" />
+              <span>{posts.length} scheduled</span>
+            </div>
+          </div>
+        </div>
+      </CardHeader>
+
+      <CardContent className="space-y-3">
+        {posts.length === 0 ? (
+          <div className="text-center py-8 text-gray-500">
+            <Calendar className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+            <p>No scheduled posts</p>
+            <p className="text-sm">Posts will appear here when scheduled for {platform.label}</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {posts.map((post) => (
+              <ScheduledPostCard
+                key={post.id}
+                post={post}
+                isSelected={selectedPostId === post.id}
+                onSelect={() => setSelectedPostId(selectedPostId === post.id ? null : post.id)}
+                onUpdate={(data) => onUpdatePost(post.id, data)}
+                onCancel={() => onCancelPost(post.id)}
+                isUpdating={isUpdating}
+                isCancelling={isCancelling}
+              />
+            ))}
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+interface ScheduledPostCardProps {
+  post: {
+    id: number;
+    ideaId: number;
+    platform: string;
+    ideaTitle: string;
+    ideaSummary: string;
+    draftContent: string;
+    scheduledAt: Date;
+    imageUrl?: string;
+    imageMode: string;
+    createdAt: Date;
+  };
+  isSelected: boolean;
+  onSelect: () => void;
+  onUpdate: (data: { scheduledAt?: Date; draftContent?: string }) => void;
+  onCancel: () => void;
+  isUpdating: boolean;
+  isCancelling: boolean;
+}
+
+function ScheduledPostCard({ 
+  post, 
+  isSelected, 
+  onSelect, 
+  onUpdate, 
+  onCancel, 
+  isUpdating, 
+  isCancelling 
+}: ScheduledPostCardProps) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedContent, setEditedContent] = useState(post.draftContent);
+  const [editedScheduledAt, setEditedScheduledAt] = useState(
+    new Date(post.scheduledAt).toISOString().slice(0, 16)
+  );
+
+  const handleSave = () => {
+    const updates: { scheduledAt?: Date; draftContent?: string } = {};
+    
+    if (editedContent !== post.draftContent) {
+      updates.draftContent = editedContent;
+    }
+    
+    const newScheduledAt = new Date(editedScheduledAt);
+    if (newScheduledAt.getTime() !== new Date(post.scheduledAt).getTime()) {
+      updates.scheduledAt = newScheduledAt;
+    }
+    
+    if (Object.keys(updates).length > 0) {
+      onUpdate(updates);
+    }
+    setIsEditing(false);
+  };
+
+  const handleCancel = () => {
+    setEditedContent(post.draftContent);
+    setEditedScheduledAt(new Date(post.scheduledAt).toISOString().slice(0, 16));
+    setIsEditing(false);
+  };
+
+  const formatScheduleTime = (date: Date) => {
+    return new Intl.DateTimeFormat('en-US', {
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    }).format(new Date(date));
+  };
+
+  return (
+    <div className={`border rounded-lg p-3 transition-colors cursor-pointer ${
+      isSelected ? 'border-blue-300 bg-blue-50' : 'border-gray-200 hover:border-gray-300'
+    }`}>
+      <div onClick={onSelect} className="space-y-2">
+        <div className="flex items-center justify-between">
+          <h4 className="text-sm font-medium text-gray-900 truncate flex-1">
+            {post.ideaTitle}
+          </h4>
+          <div className="flex items-center space-x-1 text-xs text-gray-500 ml-2">
+            <Clock className="w-3 h-3" />
+            <span>{formatScheduleTime(post.scheduledAt)}</span>
+          </div>
+        </div>
+        
+        {post.ideaSummary && (
+          <p className="text-xs text-gray-600 line-clamp-2">
+            {post.ideaSummary}
+          </p>
+        )}
+      </div>
+
+      {isSelected && (
+        <div className="mt-3 pt-3 border-t border-gray-200 space-y-3">
+          {isEditing ? (
+            <>
+              <div className="space-y-2">
+                <label className="text-xs font-medium text-gray-700">Scheduled Time</label>
+                <Input
+                  type="datetime-local"
+                  value={editedScheduledAt}
+                  onChange={(e) => setEditedScheduledAt(e.target.value)}
+                  className="text-xs"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <label className="text-xs font-medium text-gray-700">Content</label>
+                <Textarea
+                  value={editedContent}
+                  onChange={(e) => setEditedContent(e.target.value)}
+                  className="text-xs min-h-[80px]"
+                  placeholder="Draft content..."
+                />
+              </div>
+              
+              <div className="flex gap-2">
+                <Button
+                  onClick={handleSave}
+                  disabled={isUpdating}
+                  size="sm"
+                  className="bg-green-600 hover:bg-green-700 text-black text-xs"
+                >
+                  {isUpdating ? 'Saving...' : 'Save'}
+                </Button>
+                <Button
+                  onClick={handleCancel}
+                  variant="outline"
+                  size="sm"
+                  disabled={isUpdating}
+                  className="border-gray-300 text-xs"
+                >
+                  Cancel
+                </Button>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="text-xs text-gray-600 bg-gray-50 p-2 rounded max-h-32 overflow-y-auto">
+                {post.draftContent || 'No content yet...'}
+              </div>
+              
+              <div className="flex gap-2">
+                <Button
+                  onClick={() => setIsEditing(true)}
+                  variant="outline"
+                  size="sm"
+                  className="text-xs"
+                >
+                  <Edit3 className="w-3 h-3 mr-1" />
+                  Edit
+                </Button>
+                <Button
+                  onClick={onCancel}
+                  disabled={isCancelling}
+                  variant="outline"
+                  size="sm"
+                  className="border-red-300 text-red-600 hover:bg-red-50 text-xs"
+                >
+                  {isCancelling ? 'Cancelling...' : 'Cancel Post'}
+                </Button>
+              </div>
+            </>
+          )}
+        </div>
+      )}
+    </div>
   );
 }
 
