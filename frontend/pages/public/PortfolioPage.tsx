@@ -142,7 +142,7 @@ export default function PortfolioPage() {
 
           {/* CTA Section */}
           <div className="mt-20 text-center">
-            <div className="bg-gradient-to-r from-vapor-purple/10 to-smoky-lavender/10 rounded-2xl p-8 lg:p-12 border-2 border-vapor-purple/40 shadow-lg">
+            <div className="bg-gradient-to-r from-vapor-purple/10 to-smoky-lavender/10 rounded-2xl p-8 lg:p-12 border-2 border-black shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
               <h2 className="text-3xl font-bold font-['Architects_Daughter'] mb-4 text-black">
                 Ready to Build Something Amazing?
               </h2>
@@ -151,7 +151,7 @@ export default function PortfolioPage() {
               </p>
               <Button 
                 size="lg" 
-                className="bg-launch-orange hover:bg-launch-orange/80"
+                className="bg-white border-2 border-black text-black hover:bg-black/10 shadow-[0_4px_14px_rgb(0,0,0,0.25)]"
                 asChild
               >
                 <a href="/contact">Start Your Project</a>
