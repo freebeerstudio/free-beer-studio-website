@@ -34,7 +34,6 @@ const BROWSER = typeof globalThis === "object" && ("window" in globalThis);
  */
 export class Client {
     public readonly admin: admin.ServiceClient
-    public readonly auth: auth.ServiceClient
     public readonly crm: crm.ServiceClient
     public readonly ideas: ideas.ServiceClient
     public readonly lms: lms.ServiceClient
@@ -56,7 +55,6 @@ export class Client {
         this.options = options ?? {}
         const base = new BaseClient(this.target, this.options)
         this.admin = new admin.ServiceClient(base)
-        this.auth = new auth.ServiceClient(base)
         this.crm = new crm.ServiceClient(base)
         this.ideas = new ideas.ServiceClient(base)
         this.lms = new lms.ServiceClient(base)
@@ -79,6 +77,11 @@ export class Client {
 }
 
 /**
+ * Import the auth handler to be able to derive the auth type
+ */
+import type { auth as auth_auth } from "~backend/auth/auth";
+
+/**
  * ClientOptions allows you to override any default behaviour within the generated Encore client.
  */
 export interface ClientOptions {
@@ -91,6 +94,13 @@ export interface ClientOptions {
 
     /** Default RequestInit to be used for the client */
     requestInit?: Omit<RequestInit, "headers"> & { headers?: Record<string, string> }
+
+    /**
+     * Allows you to set the authentication data to be used for each
+     * request either by passing in a static object or by passing in
+     * a function which returns a new object for each request.
+     */
+    auth?: RequestType<typeof auth_auth> | AuthDataGenerator
 }
 
 /**
@@ -328,41 +338,8 @@ export namespace admin {
     }
 }
 
-/**
- * Import the endpoint handlers to derive the types for the client.
- */
-import { login as api_auth_login_login } from "~backend/auth/login";
-import { register as api_auth_register_register } from "~backend/auth/register";
 
 export namespace auth {
-
-    export class ServiceClient {
-        private baseClient: BaseClient
-
-        constructor(baseClient: BaseClient) {
-            this.baseClient = baseClient
-            this.login = this.login.bind(this)
-            this.register = this.register.bind(this)
-        }
-
-        /**
-         * Authenticates a user and returns a session token.
-         */
-        public async login(params: RequestType<typeof api_auth_login_login>): Promise<ResponseType<typeof api_auth_login_login>> {
-            // Now make the actual call to the API
-            const resp = await this.baseClient.callTypedAPI(`/auth/login`, {method: "POST", body: JSON.stringify(params)})
-            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_auth_login_login>
-        }
-
-        /**
-         * Registers a new user account.
-         */
-        public async register(params: RequestType<typeof api_auth_register_register>): Promise<ResponseType<typeof api_auth_register_register>> {
-            // Now make the actual call to the API
-            const resp = await this.baseClient.callTypedAPI(`/auth/register`, {method: "POST", body: JSON.stringify(params)})
-            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_auth_register_register>
-        }
-    }
 }
 
 /**
@@ -1439,6 +1416,11 @@ type CallParameters = Omit<RequestInit, "headers"> & {
     query?: Record<string, string | string[]>
 }
 
+// AuthDataGenerator is a function that returns a new instance of the authentication data required by this API
+export type AuthDataGenerator = () =>
+  | RequestType<typeof auth_auth>
+  | Promise<RequestType<typeof auth_auth> | undefined>
+  | undefined;
 
 // A fetcher is the prototype for the inbuilt Fetch function
 export type Fetcher = typeof fetch;
@@ -1450,6 +1432,7 @@ class BaseClient {
     readonly fetcher: Fetcher
     readonly headers: Record<string, string>
     readonly requestInit: Omit<RequestInit, "headers"> & { headers?: Record<string, string> }
+    readonly authGenerator?: AuthDataGenerator
 
     constructor(baseURL: string, options: ClientOptions) {
         this.baseURL = baseURL
@@ -1469,9 +1452,41 @@ class BaseClient {
         } else {
             this.fetcher = boundFetch
         }
+
+        // Setup an authentication data generator using the auth data token option
+        if (options.auth !== undefined) {
+            const auth = options.auth
+            if (typeof auth === "function") {
+                this.authGenerator = auth
+            } else {
+                this.authGenerator = () => auth
+            }
+        }
     }
 
     async getAuthData(): Promise<CallParameters | undefined> {
+        let authData: RequestType<typeof auth_auth> | undefined;
+
+        // If authorization data generator is present, call it and add the returned data to the request
+        if (this.authGenerator) {
+            const mayBePromise = this.authGenerator();
+            if (mayBePromise instanceof Promise) {
+                authData = await mayBePromise;
+            } else {
+                authData = mayBePromise;
+            }
+        }
+
+        if (authData) {
+            const data: CallParameters = {};
+
+            data.headers = makeRecord<string, string>({
+                authorization: authData.authorization,
+            });
+
+            return data;
+        }
+
         return undefined;
     }
 

@@ -6,6 +6,7 @@ import { AuthProvider } from './contexts/AuthContext';
 // Public pages
 import HomePage from './pages/public/HomePage';
 import LearnPage from './pages/public/LearnPage';
+import AutomatePage from './pages/public/AutomatePage';
 import PricingPage from './pages/public/PricingPage';
 import PortfolioPage from './pages/public/PortfolioPage';
 import ProjectDetailPage from './pages/public/ProjectDetailPage';
@@ -56,6 +57,7 @@ function AppInner() {
       {/* Public routes */}
       <Route path="/" element={<HomePage />} />
       <Route path="/learn" element={<LearnPage />} />
+      <Route path="/automate" element={<AutomatePage />} />
       <Route path="/pricing" element={<PricingPage />} />
       <Route path="/portfolio" element={<PortfolioPage />} />
       <Route path="/portfolio/:id" element={<ProjectDetailPage />} />
