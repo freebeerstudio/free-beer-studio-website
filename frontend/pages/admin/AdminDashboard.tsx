@@ -141,7 +141,7 @@ export default function AdminDashboard() {
                 className="flex-1 p-4 bg-vapor-purple/10 border border-vapor-purple/20 rounded-lg hover:bg-vapor-purple/20 transition-colors"
               >
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-vapor-purple mb-1">
+                  <div className="text-2xl font-bold text-gray-900 mb-1">
                     {ideaEngine.newIdeas || 0}
                   </div>
                   <div className="text-sm text-gray-900">New Ideas</div>
@@ -155,7 +155,7 @@ export default function AdminDashboard() {
                 className="flex-1 p-4 bg-launch-orange/10 border border-launch-orange/20 rounded-lg hover:bg-launch-orange/20 transition-colors"
               >
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-launch-orange mb-1">
+                  <div className="text-2xl font-bold text-gray-900 mb-1">
                     {ideaEngine.postsForApproval || 0}
                   </div>
                   <div className="text-sm text-gray-900">Posts for Approval</div>
@@ -169,7 +169,7 @@ export default function AdminDashboard() {
                 className="flex-1 p-4 bg-smoky-lavender/10 border border-smoky-lavender/20 rounded-lg hover:bg-smoky-lavender/20 transition-colors"
               >
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-smoky-lavender mb-1">
+                  <div className="text-2xl font-bold text-gray-900 mb-1">
                     {ideaEngine.scheduled || 0}
                   </div>
                   <div className="text-sm text-gray-900">Scheduled</div>

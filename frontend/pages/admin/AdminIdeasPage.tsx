@@ -739,7 +739,7 @@ function IdeaCard({ idea, platforms, onApprove, onReject, isApproving, isRejecti
                     onClick={handleApprove}
                     disabled={selectedPlatforms.length === 0 || isApproving}
                     size="sm"
-                    className="flex-1 bg-smoky-lavender hover:bg-smoky-lavender/80"
+                    className="flex-1 bg-smoky-lavender hover:bg-smoky-lavender/80 text-black"
                   >
                     <Check className="w-4 h-4 mr-1" />
                     Save Changes
@@ -759,7 +759,7 @@ function IdeaCard({ idea, platforms, onApprove, onReject, isApproving, isRejecti
                     onClick={handleApprove}
                     disabled={selectedPlatforms.length === 0 || isApproving}
                     size="sm"
-                    className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+                    className="flex-1 bg-green-600 hover:bg-green-700 text-black"
                   >
                     <Check className="w-4 h-4 mr-1" />
                     Approve
@@ -785,7 +785,7 @@ function IdeaCard({ idea, platforms, onApprove, onReject, isApproving, isRejecti
               onClick={handleEdit}
               variant="outline"
               size="sm"
-              className="w-full border-smoky-lavender text-smoky-lavender hover:bg-smoky-lavender/10"
+              className="w-full border-smoky-lavender text-black hover:bg-smoky-lavender/10"
             >
               Edit Platforms
             </Button>
