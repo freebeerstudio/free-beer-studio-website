@@ -31,11 +31,10 @@ export default function HomePage() {
               <Link to="/contact">
                 <Button size="lg" className="bg-white border-2 border-black text-black hover:bg-black/10 shadow-[0_4px_14px_rgb(0,0,0,0.25)]">
                   Get Your Quote
-                  <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
               </Link>
               <Link to="/portfolio">
-                <Button size="lg" variant="outline" className="border-2 border-black text-black hover:bg-black/10 shadow-[0_4px_14px_rgb(0,0,0,0.25)]">
+                <Button size="lg" className="bg-white border-2 border-black text-black hover:bg-black/10 shadow-[0_4px_14px_rgb(0,0,0,0.25)]">
                   View Our Work
                 </Button>
               </Link>
