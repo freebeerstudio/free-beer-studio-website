@@ -27,15 +27,15 @@ export default function HomePage() {
             <p className="text-xl sm:text-2xl text-rocket-gray max-w-3xl mx-auto mb-8">
               We help businesses automate with artificial intelligence, creating smarter workflows and better customer experiences.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link to="/contact">
-                <Button size="lg" className="bg-launch-orange hover:bg-launch-orange/80 text-white">
+                <Button size="lg" className="bg-launch-orange hover:bg-launch-orange/80 text-white shadow-[0_4px_14px_rgb(0,0,0,0.25)]">
                   Get Your Quote
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
               </Link>
               <Link to="/portfolio">
-                <Button size="lg" variant="outline" className="border-vapor-purple text-vapor-purple hover:bg-vapor-purple/10">
+                <Button size="lg" variant="outline" className="border-2 border-black text-black hover:bg-black/10 shadow-[0_4px_14px_rgb(0,0,0,0.25)]">
                   View Our Work
                 </Button>
               </Link>
