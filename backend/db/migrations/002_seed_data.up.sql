@@ -14,14 +14,14 @@ INSERT INTO pricing_items (title, description, price, features, is_featured, sor
 
 -- Seed portfolio projects
 INSERT INTO projects (title, description, cover_image_url, gallery, external_url, is_featured, sort_order) VALUES 
-('E-commerce AI Assistant', 'Built an intelligent shopping assistant that increased customer engagement by 40% and sales by 25% for a major online retailer.', '/images/portfolio/ecommerce-ai.jpg', '[]', 'https://example-client.com', true, 1),
-('Content Generation Pipeline', 'Automated content creation system that produces 100+ unique articles per week while maintaining brand voice and SEO optimization.', '/images/portfolio/content-pipeline.jpg', '[]', null, true, 2),
-('Customer Service Bot', 'Developed a multilingual support bot that handles 80% of customer inquiries automatically, reducing response time from hours to seconds.', '/images/portfolio/support-bot.jpg', '[]', null, false, 3),
-('Social Media Automation', 'Created an AI-powered social media management system that schedules, creates, and optimizes content across multiple platforms.', '/images/portfolio/social-automation.jpg', '[]', null, false, 4);
+('E-commerce AI Assistant', 'Built an intelligent shopping assistant that increased customer engagement by 40% and sales by 25% for a major online retailer.', 'https://images.unsplash.com/photo-1610563166150-b34df4f3bcd6?w=1080&q=80', '[]', 'https://example-client.com', true, 1),
+('Content Generation Pipeline', 'Automated content creation system that produces 100+ unique articles per week while maintaining brand voice and SEO optimization.', 'https://images.unsplash.com/photo-1634084462412-b54873c0a56d?w=1080&q=80', '[]', null, true, 2),
+('Customer Service Bot', 'Developed a multilingual support bot that handles 80% of customer inquiries automatically, reducing response time from hours to seconds.', 'https://images.unsplash.com/photo-1631624217902-d14c634ab17c?w=1080&q=80', '[]', null, false, 3),
+('Social Media Automation', 'Created an AI-powered social media management system that schedules, creates, and optimizes content across multiple platforms.', 'https://images.unsplash.com/photo-1631624215749-b10b3dd7bca7?w=1080&q=80', '[]', null, false, 4);
 
 -- Seed blog posts
 INSERT INTO blog_posts (title, subtitle, slug, cover_image_url, body, excerpt, status, published_at, author_id) VALUES 
-('The Future of AI in Business Automation', 'How artificial intelligence is transforming the way we work', 'future-ai-business-automation', '/images/blog/ai-future.jpg', 
+('The Future of AI in Business Automation', 'How artificial intelligence is transforming the way we work', 'future-ai-business-automation', 'https://images.unsplash.com/photo-1610563166150-b34df4f3bcd6?w=1080&q=80', 
 '# The Future of AI in Business Automation
 
 Artificial intelligence is no longer a futuristic concept—it''s here, and it''s revolutionizing how businesses operate. In this comprehensive guide, we''ll explore the current state of AI automation and what the future holds.
@@ -43,7 +43,7 @@ The future promises even more sophisticated AI capabilities, including advanced 
 'Discover how AI automation is reshaping business operations and what innovations are coming next in this comprehensive overview.',
 'published', NOW() - INTERVAL '7 days', 'admin-1'),
 
-('Building Your First AI Agent', 'A step-by-step guide to creating intelligent automation', 'building-first-ai-agent', '/images/blog/ai-agent.jpg',
+('Building Your First AI Agent', 'A step-by-step guide to creating intelligent automation', 'building-first-ai-agent', 'https://images.unsplash.com/photo-1631624220291-8f191fbdb543?w=1080&q=80',
 '# Building Your First AI Agent
 
 Creating your first AI agent might seem daunting, but with the right approach, it''s more accessible than you think. This guide will walk you through the essential steps.
@@ -80,7 +80,7 @@ The AI landscape offers numerous tools and platforms. Consider factors like:
 'Learn how to build your first AI agent with this practical, step-by-step guide covering planning, tools, and best practices.',
 'published', NOW() - INTERVAL '14 days', 'admin-1'),
 
-('AI Ethics in Automation', 'Navigating the responsible development of AI systems', 'ai-ethics-automation', '/images/blog/ai-ethics.jpg',
+('AI Ethics in Automation', 'Navigating the responsible development of AI systems', 'ai-ethics-automation', 'https://images.unsplash.com/photo-1583932692875-a42450d50acf?w=1080&q=80',
 '# AI Ethics in Automation
 
 As AI becomes more prevalent in business automation, it''s crucial to consider the ethical implications of these powerful technologies.
