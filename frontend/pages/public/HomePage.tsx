@@ -92,7 +92,7 @@ export default function HomePage() {
       {/* Newsletter Section */}
       <section className="py-20">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
-          <div className="bg-gradient-to-r from-vapor-purple/10 to-smoky-lavender/10 rounded-2xl p-8 lg:p-12 border-2 border-vapor-purple/40 shadow-lg">
+          <div className="bg-gradient-to-r from-vapor-purple/10 to-smoky-lavender/10 rounded-2xl p-8 lg:p-12 border-2 border-black shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
             <Star className="w-12 h-12 text-launch-orange mx-auto mb-6" />
             <h2 className="text-3xl sm:text-4xl font-bold font-['Architects_Daughter'] mb-4 text-black">
               Stay Ahead of the AI Curve
@@ -104,9 +104,9 @@ export default function HomePage() {
               <Input
                 type="email"
                 placeholder="Enter your email"
-                className="flex-1 bg-jet-black border-rocket-gray text-cloud-white"
+                className="flex-1 bg-white border-2 border-black text-black placeholder:text-gray-500"
               />
-              <Button type="submit" className="bg-launch-orange hover:bg-launch-orange/80">
+              <Button type="submit" className="bg-white border-2 border-black text-black hover:bg-black/10 shadow-[0_4px_14px_rgb(0,0,0,0.25)]">
                 Subscribe
               </Button>
             </form>
