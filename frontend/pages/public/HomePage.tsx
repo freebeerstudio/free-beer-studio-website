@@ -128,12 +128,12 @@ export default function HomePage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/contact">
-              <Button size="lg" className="bg-launch-orange hover:bg-launch-orange/80">
+              <Button size="lg" className="bg-white border-2 border-black text-black hover:bg-black/10 shadow-[0_4px_14px_rgb(0,0,0,0.25)]">
                 Start Your Project
               </Button>
             </Link>
             <Link to="/portfolio">
-              <Button size="lg" variant="outline" className="border-cloud-white text-cloud-white hover:bg-cloud-white/10">
+              <Button size="lg" className="bg-white border-2 border-black text-black hover:bg-black/10 shadow-[0_4px_14px_rgb(0,0,0,0.25)]">
                 View Case Studies
               </Button>
             </Link>
