@@ -16,6 +16,82 @@ export default function BlogPostPage() {
     enabled: !!slug,
   });
 
+  const renderBlogContent = (markdown: string) => {
+    const lines = markdown.split('\n');
+    const elements: JSX.Element[] = [];
+    let currentList: string[] = [];
+    let key = 0;
+
+    const flushList = () => {
+      if (currentList.length > 0) {
+        elements.push(
+          <ul key={`list-${key++}`} className="list-disc list-inside space-y-2 mb-6 ml-4">
+            {currentList.map((item, i) => (
+              <li key={i} className="text-rocket-gray leading-relaxed">{item}</li>
+            ))}
+          </ul>
+        );
+        currentList = [];
+      }
+    };
+
+    lines.forEach((line, index) => {
+      const trimmedLine = line.trim();
+      
+      if (trimmedLine.startsWith('# ')) {
+        flushList();
+        elements.push(
+          <h1 key={`h1-${key++}`} className="text-4xl font-bold text-cloud-white mb-6 mt-12 first:mt-0 font-['Architects_Daughter']">
+            {trimmedLine.substring(2)}
+          </h1>
+        );
+      } else if (trimmedLine.startsWith('## ')) {
+        flushList();
+        elements.push(
+          <h2 key={`h2-${key++}`} className="text-3xl font-bold text-cloud-white mb-4 mt-10 font-['Architects_Daughter']">
+            {trimmedLine.substring(3)}
+          </h2>
+        );
+      } else if (trimmedLine.startsWith('### ')) {
+        flushList();
+        elements.push(
+          <h3 key={`h3-${key++}`} className="text-2xl font-bold text-cloud-white mb-3 mt-8 font-['Architects_Daughter']">
+            {trimmedLine.substring(4)}
+          </h3>
+        );
+      } else if (trimmedLine.startsWith('- ') || trimmedLine.startsWith('* ')) {
+        currentList.push(trimmedLine.substring(2));
+      } else if (trimmedLine.startsWith('**') && trimmedLine.endsWith('**')) {
+        flushList();
+        elements.push(
+          <p key={`strong-${key++}`} className="text-cloud-white font-bold mb-4 leading-relaxed">
+            {trimmedLine.substring(2, trimmedLine.length - 2)}
+          </p>
+        );
+      } else if (trimmedLine === '') {
+        flushList();
+        // Skip empty lines
+      } else {
+        flushList();
+        // Process inline bold
+        const parts = trimmedLine.split(/(\*\*[^*]+\*\*)/g);
+        elements.push(
+          <p key={`p-${key++}`} className="text-rocket-gray mb-4 leading-relaxed">
+            {parts.map((part, i) => {
+              if (part.startsWith('**') && part.endsWith('**')) {
+                return <strong key={i} className="text-cloud-white font-semibold">{part.substring(2, part.length - 2)}</strong>;
+              }
+              return part;
+            })}
+          </p>
+        );
+      }
+    });
+
+    flushList();
+    return elements;
+  };
+
   const formatDate = (dateString: string | null) => {
     if (!dateString) return 'Draft';
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -155,12 +231,11 @@ export default function BlogPostPage() {
           )}
 
           {/* Article Content */}
-          <div className="prose prose-invert prose-lg max-w-none">
+          <div className="max-w-none">
             {post.body ? (
-              <div
-                className="text-rocket-gray leading-relaxed"
-                dangerouslySetInnerHTML={{ __html: post.body.replace(/\n/g, '<br>') }}
-              />
+              <div className="space-y-4">
+                {renderBlogContent(post.body)}
+              </div>
             ) : (
               <p className="text-rocket-gray">No content available.</p>
             )}
