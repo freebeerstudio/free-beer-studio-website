@@ -1349,13 +1349,14 @@ function StyleGuideCard({ platform, data, onSave, isSaving }: StyleGuideCardProp
               </div>
             )}
 
-            {/* File upload */}
-            <FileUpload
-              onFileUploaded={handleFileUploaded}
-              category="styleguide"
-              accept="*/*"
-              className="border-dashed border-gray-300"
-            />
+            {/* File upload - always visible */}
+            <div className="mt-3">
+              <FileUpload
+                onFileUploaded={handleFileUploaded}
+                category="styleguide"
+                accept="*/*"
+              />
+            </div>
           </div>
 
           {/* Save/Cancel buttons */}
