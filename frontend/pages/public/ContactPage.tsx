@@ -165,9 +165,9 @@ export default function ContactPage() {
 
             {/* Contact Info */}
             <div className="space-y-6">
-              <Card className="bg-rocket-gray/10 border-2 border-rocket-gray/40 shadow-lg">
+              <Card className="bg-white border-2 border-black shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
                 <CardHeader>
-                  <CardTitle className="text-xl text-cloud-white">
+                  <CardTitle className="text-xl text-black">
                     Get in Touch
                   </CardTitle>
                 </CardHeader>
@@ -177,8 +177,8 @@ export default function ContactPage() {
                       <Mail className="w-5 h-5 text-vapor-purple" />
                     </div>
                     <div>
-                      <p className="text-sm text-rocket-gray">Email</p>
-                      <p className="text-cloud-white font-medium">hello@freebeer.ai</p>
+                      <p className="text-sm text-black">Email</p>
+                      <p className="text-black font-medium">hello@freebeer.ai</p>
                     </div>
                   </div>
 
@@ -187,8 +187,8 @@ export default function ContactPage() {
                       <Phone className="w-5 h-5 text-launch-orange" />
                     </div>
                     <div>
-                      <p className="text-sm text-rocket-gray">Business Hours</p>
-                      <p className="text-cloud-white font-medium">Mon-Fri 9AM-6PM CST</p>
+                      <p className="text-sm text-black">Business Hours</p>
+                      <p className="text-black font-medium">Mon-Fri 9AM-6PM CST</p>
                     </div>
                   </div>
 
@@ -197,19 +197,19 @@ export default function ContactPage() {
                       <MapPin className="w-5 h-5 text-smoky-lavender" />
                     </div>
                     <div>
-                      <p className="text-sm text-rocket-gray">Timezone</p>
-                      <p className="text-cloud-white font-medium">US Central Time</p>
+                      <p className="text-sm text-black">Timezone</p>
+                      <p className="text-black font-medium">US Central Time</p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="bg-gradient-to-br from-vapor-purple/10 to-smoky-lavender/10 border-2 border-vapor-purple/40 shadow-lg">
+              <Card className="bg-gradient-to-br from-vapor-purple/10 to-smoky-lavender/10 border-2 border-black shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
                 <CardContent className="p-6">
-                  <h3 className="text-lg font-bold text-cloud-white mb-2">
+                  <h3 className="text-lg font-bold text-black mb-2">
                     Quick Response Guarantee
                   </h3>
-                  <p className="text-sm text-rocket-gray">
+                  <p className="text-sm text-black">
                     We respond to all inquiries within 24 hours during business days. For urgent matters, please mention it in your message.
                   </p>
                 </CardContent>
