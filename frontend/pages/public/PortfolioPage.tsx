@@ -31,8 +31,8 @@ export default function PortfolioPage() {
           {isLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {[...Array(6)].map((_, i) => (
-                <Card key={i} className="bg-rocket-gray/10 border-rocket-gray/20 animate-pulse">
-                  <div className="h-48 bg-rocket-gray/20 rounded-t-lg"></div>
+                <Card key={i} className="bg-gray-100 border-gray-300 animate-pulse">
+                  <div className="h-48 bg-gray-200 rounded-t-lg"></div>
                   <CardHeader className="h-32"></CardHeader>
                   <CardContent className="h-16"></CardContent>
                 </Card>

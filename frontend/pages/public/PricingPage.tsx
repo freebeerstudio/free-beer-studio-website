@@ -13,16 +13,16 @@ export default function PricingPage() {
   });
 
   return (
-    <div className="min-h-screen bg-jet-black text-cloud-white">
+    <div className="min-h-screen bg-white text-black">
       <Header />
       
       <div className="py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h1 className="text-4xl sm:text-5xl font-bold font-['Architects_Daughter'] mb-4">
+            <h1 className="text-4xl sm:text-5xl font-bold font-['Architects_Daughter'] mb-4 text-black">
               Choose Your <span className="text-launch-orange">Launch Package</span>
             </h1>
-            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+            <p className="text-xl text-black max-w-3xl mx-auto">
               From startup automation to enterprise AI transformation, we have the right solution for your business.
             </p>
           </div>
@@ -30,7 +30,7 @@ export default function PricingPage() {
           {isLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
               {[...Array(4)].map((_, i) => (
-                <Card key={i} className="bg-rocket-gray/10 border-rocket-gray/20 animate-pulse">
+                <Card key={i} className="bg-gray-100 border-gray-300 animate-pulse">
                   <CardHeader className="h-32"></CardHeader>
                   <CardContent className="h-64"></CardContent>
                 </Card>
@@ -41,7 +41,7 @@ export default function PricingPage() {
               {pricingData?.items.map((item) => (
                 <Card 
                   key={item.id} 
-                  className={`relative bg-rocket-gray/10 border-rocket-gray/20 hover:border-vapor-purple/40 transition-colors ${
+                  className={`relative bg-white border-gray-300 hover:border-vapor-purple/40 transition-colors ${
                     item.isFeatured ? 'ring-2 ring-launch-orange/50' : ''
                   }`}
                 >
@@ -55,10 +55,10 @@ export default function PricingPage() {
                   )}
                   
                   <CardHeader>
-                    <CardTitle className="text-xl font-bold text-cloud-white">
+                    <CardTitle className="text-xl font-bold text-black">
                       {item.title}
                     </CardTitle>
-                    <CardDescription className="text-gray-300">
+                    <CardDescription className="text-black">
                       {item.description}
                     </CardDescription>
                     <div className="mt-4">
@@ -79,7 +79,7 @@ export default function PricingPage() {
                       {item.features.map((feature, index) => (
                         <li key={index} className="flex items-start">
                           <Check className="w-5 h-5 text-vapor-purple mr-2 mt-0.5 flex-shrink-0" />
-                          <span className="text-sm text-gray-300">{feature}</span>
+                          <span className="text-sm text-black">{feature}</span>
                         </li>
                       ))}
                     </ul>
@@ -102,13 +102,13 @@ export default function PricingPage() {
 
           {/* FAQ Section */}
           <div className="mt-20 text-center">
-            <h2 className="text-2xl font-bold font-['Architects_Daughter'] mb-8">
+            <h2 className="text-2xl font-bold font-['Architects_Daughter'] mb-8 text-black">
               Questions? We're here to help.
             </h2>
             <Button 
               variant="outline" 
               size="lg"
-              className="border-vapor-purple text-vapor-purple hover:bg-vapor-purple/10"
+              className="border-vapor-purple text-black hover:bg-vapor-purple/10"
             >
               Contact Our Team
             </Button>
