@@ -108,7 +108,7 @@ export default function PricingPage() {
             <Button 
               variant="outline" 
               size="lg"
-              className="border-vapor-purple text-black hover:bg-vapor-purple/10"
+              className="bg-white border-2 border-black text-black hover:bg-black/10 shadow-[0_4px_14px_rgb(0,0,0,0.25)]"
             >
               Contact Our Team
             </Button>
