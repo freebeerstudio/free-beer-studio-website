@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Send, Check, X, ExternalLink, ChevronDown, ChevronUp, Rss, Trash2, CheckCircle, XCircle, FileText, Upload, Settings, Calendar, Clock, Edit3 } from 'lucide-react';
+import { Plus, Send, Check, X, ExternalLink, ChevronDown, ChevronUp, Rss, Trash2, CheckCircle, XCircle, FileText, Upload, Settings, Calendar, Clock, Edit3, Eye, Download, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -1316,36 +1316,91 @@ function StyleGuideCard({ platform, data, onSave, isSaving }: StyleGuideCardProp
 
           {/* Example Files */}
           <div className="space-y-3">
-            <label className="text-sm font-medium text-gray-700">
-              Writing Examples
-            </label>
+            <div className="flex items-center justify-between">
+              <label className="text-sm font-medium text-gray-700">
+                Writing Examples
+              </label>
+              {(localData.exampleFiles?.length || 0) > 0 && (
+                <span className="text-xs text-gray-500">
+                  {localData.exampleFiles?.length || 0} file{(localData.exampleFiles?.length || 0) !== 1 ? 's' : ''} uploaded
+                </span>
+              )}
+            </div>
             
             {/* Existing files */}
-            {(localData.exampleFiles?.length || 0) > 0 && (
+            {(localData.exampleFiles?.length || 0) > 0 ? (
               <div className="space-y-2">
-                {(localData.exampleFiles || []).map((fileUrl, index) => (
-                  <div key={index} className="flex items-center justify-between p-2 border border-gray-200 rounded-lg bg-gray-50">
-                    <div className="flex items-center space-x-2">
-                      <FileText className="w-4 h-4 text-gray-600" />
-                      <a 
-                        href={fileUrl} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="text-sm text-blue-600 hover:text-blue-800 underline"
-                      >
-                        Example {index + 1}
-                      </a>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleFileRemoved(index)}
-                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                {(localData.exampleFiles || []).map((fileUrl, index) => {
+                  const fileName = fileUrl.split('/').pop() || 'Unknown';
+                  const fileExtension = fileName.split('.').pop()?.toUpperCase() || 'FILE';
+                  
+                  return (
+                    <div 
+                      key={index} 
+                      className="flex items-center justify-between p-3 border border-gray-200 rounded-lg bg-white hover:bg-gray-50 transition-colors"
                     >
-                      <X className="w-4 h-4" />
-                    </Button>
-                  </div>
-                ))}
+                      <div className="flex items-center space-x-3 flex-1 min-w-0">
+                        <div className="flex-shrink-0">
+                          <div className="w-10 h-10 bg-blue-100 rounded flex items-center justify-center">
+                            <FileText className="w-5 h-5 text-blue-600" />
+                          </div>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center space-x-2">
+                            <p className="text-sm font-medium text-gray-900 truncate">
+                              Writing Example {index + 1}
+                            </p>
+                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                              {fileExtension}
+                            </span>
+                          </div>
+                          <p className="text-xs text-gray-500 truncate mt-0.5">
+                            {fileName}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-1 flex-shrink-0 ml-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          asChild
+                          className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                          title="View file"
+                        >
+                          <a href={fileUrl} target="_blank" rel="noopener noreferrer">
+                            <Eye className="w-4 h-4" />
+                          </a>
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          asChild
+                          className="text-green-600 hover:text-green-700 hover:bg-green-50"
+                          title="Download file"
+                        >
+                          <a href={fileUrl} download>
+                            <Download className="w-4 h-4" />
+                          </a>
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleFileRemoved(index)}
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                          title="Remove file"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="text-center py-4 bg-gray-50 border border-dashed border-gray-300 rounded-lg">
+                <FileText className="w-8 h-8 mx-auto text-gray-400 mb-2" />
+                <p className="text-sm text-gray-600">No writing examples uploaded yet</p>
+                <p className="text-xs text-gray-500 mt-1">Upload sample content to guide AI writing style</p>
               </div>
             )}
 
