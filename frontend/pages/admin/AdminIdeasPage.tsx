@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Plus, Send, Check, X, ExternalLink, ChevronDown, ChevronUp, Rss, Trash2, CheckCircle, XCircle, FileText, Upload, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -29,6 +29,17 @@ export default function AdminIdeasPage() {
   const backend = useBackend();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  // Define platforms at component level so both IdeaCard and StyleGuides can access it
+  const platforms = [
+    { id: 'blog', label: 'Blog', color: 'bg-blue-100 text-blue-800 border-blue-200' },
+    { id: 'substack_lead', label: 'Substack Lead', color: 'bg-orange-100 text-orange-800 border-orange-200' },
+    { id: 'substack_article', label: 'Substack Article', color: 'bg-amber-100 text-amber-800 border-amber-200' },
+    { id: 'substack_mention', label: 'Substack Mention', color: 'bg-yellow-100 text-yellow-800 border-yellow-200' },
+    { id: 'linkedin', label: 'LinkedIn', color: 'bg-indigo-100 text-indigo-800 border-indigo-200' },
+    { id: 'x', label: 'X', color: 'bg-gray-100 text-gray-800 border-gray-200' },
+    { id: 'shorts', label: 'Shorts', color: 'bg-red-100 text-red-800 border-red-200' },
+  ];
 
   // Fetch ideas
   const { data: ideasData, isLoading: ideasLoading } = useQuery({
@@ -494,6 +505,7 @@ export default function AdminIdeasPage() {
                       <IdeaCard
                         key={idea.id}
                         idea={idea}
+                        platforms={platforms}
                         onApprove={handleApproveIdea}
                         onReject={handleRejectIdea}
                         isApproving={approveMutation.isPending}
@@ -540,25 +552,16 @@ export default function AdminIdeasPage() {
 
 interface IdeaCardProps {
   idea: any;
+  platforms: Array<{ id: string; label: string; color: string; }>;
   onApprove: (ideaId: number, platforms: string[]) => void;
   onReject: (ideaId: number) => void;
   isApproving: boolean;
   isRejecting: boolean;
 }
 
-function IdeaCard({ idea, onApprove, onReject, isApproving, isRejecting }: IdeaCardProps) {
+function IdeaCard({ idea, platforms, onApprove, onReject, isApproving, isRejecting }: IdeaCardProps) {
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
   const [isEditing, setIsEditing] = useState(false);
-  
-  const platforms = [
-    { id: 'blog', label: 'Blog', color: 'bg-blue-100 text-blue-800 border-blue-200' },
-    { id: 'substack_lead', label: 'Substack Lead', color: 'bg-orange-100 text-orange-800 border-orange-200' },
-    { id: 'substack_article', label: 'Substack Article', color: 'bg-amber-100 text-amber-800 border-amber-200' },
-    { id: 'substack_mention', label: 'Substack Mention', color: 'bg-yellow-100 text-yellow-800 border-yellow-200' },
-    { id: 'linkedin', label: 'LinkedIn', color: 'bg-indigo-100 text-indigo-800 border-indigo-200' },
-    { id: 'x', label: 'X', color: 'bg-gray-100 text-gray-800 border-gray-200' },
-    { id: 'shorts', label: 'Shorts', color: 'bg-red-100 text-red-800 border-red-200' },
-  ];
 
   const handlePlatformToggle = (platformId: string) => {
     setSelectedPlatforms(prev => {
@@ -819,15 +822,20 @@ function StyleGuideCard({ platform, data, onUpdate }: StyleGuideCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [localData, setLocalData] = useState(data);
 
+  // Update local data when prop changes
+  useEffect(() => {
+    setLocalData(data);
+  }, [data]);
+
   const handleFileUploaded = (url: string, fileId: string) => {
-    const newExampleFiles = [...localData.exampleFiles, url];
+    const newExampleFiles = [...(localData.exampleFiles || []), url];
     const newData = { ...localData, exampleFiles: newExampleFiles };
     setLocalData(newData);
     onUpdate(newData);
   };
 
   const handleFileRemoved = (index: number) => {
-    const newExampleFiles = localData.exampleFiles.filter((_, i) => i !== index);
+    const newExampleFiles = (localData.exampleFiles || []).filter((_, i) => i !== index);
     const newData = { ...localData, exampleFiles: newExampleFiles };
     setLocalData(newData);
     onUpdate(newData);
@@ -854,10 +862,10 @@ function StyleGuideCard({ platform, data, onUpdate }: StyleGuideCardProps) {
               {platform.label}
             </Badge>
             <div className="flex items-center space-x-1 text-sm text-gray-500">
-              {localData.exampleFiles.length > 0 && (
+              {(localData.exampleFiles?.length || 0) > 0 && (
                 <span className="flex items-center">
                   <FileText className="w-4 h-4 mr-1" />
-                  {localData.exampleFiles.length} example{localData.exampleFiles.length !== 1 ? 's' : ''}
+                  {localData.exampleFiles?.length || 0} example{(localData.exampleFiles?.length || 0) !== 1 ? 's' : ''}
                 </span>
               )}
             </div>
@@ -905,9 +913,9 @@ function StyleGuideCard({ platform, data, onUpdate }: StyleGuideCardProps) {
             </label>
             
             {/* Existing files */}
-            {localData.exampleFiles.length > 0 && (
+            {(localData.exampleFiles?.length || 0) > 0 && (
               <div className="space-y-2">
-                {localData.exampleFiles.map((fileUrl, index) => (
+                {(localData.exampleFiles || []).map((fileUrl, index) => (
                   <div key={index} className="flex items-center justify-between p-2 border border-gray-200 rounded-lg bg-gray-50">
                     <div className="flex items-center space-x-2">
                       <FileText className="w-4 h-4 text-gray-600" />
