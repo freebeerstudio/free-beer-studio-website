@@ -57,32 +57,32 @@ export default function HomePage() {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center p-6 rounded-xl bg-vapor-purple/5 border border-vapor-purple/20">
+            <div className="text-center p-6 rounded-xl bg-vapor-purple/5 border-2 border-vapor-purple/40 shadow-lg">
               <div className="w-16 h-16 rounded-full bg-vapor-purple/20 flex items-center justify-center mx-auto mb-4">
                 <Zap className="w-8 h-8 text-vapor-purple" />
               </div>
-              <h3 className="text-xl font-bold mb-3">Lightning Fast</h3>
-              <p className="text-rocket-gray">
+              <h3 className="text-xl font-bold mb-3 text-black">Lightning Fast</h3>
+              <p className="text-black">
                 Rapid deployment of AI solutions that start delivering value from day one.
               </p>
             </div>
             
-            <div className="text-center p-6 rounded-xl bg-launch-orange/5 border border-launch-orange/20">
+            <div className="text-center p-6 rounded-xl bg-launch-orange/5 border-2 border-launch-orange/40 shadow-lg">
               <div className="w-16 h-16 rounded-full bg-launch-orange/20 flex items-center justify-center mx-auto mb-4">
                 <Target className="w-8 h-8 text-launch-orange" />
               </div>
-              <h3 className="text-xl font-bold mb-3">Precision Focused</h3>
-              <p className="text-rocket-gray">
+              <h3 className="text-xl font-bold mb-3 text-black">Precision Focused</h3>
+              <p className="text-black">
                 Tailored solutions that address your specific business challenges and goals.
               </p>
             </div>
             
-            <div className="text-center p-6 rounded-xl bg-smoky-lavender/5 border border-smoky-lavender/20">
+            <div className="text-center p-6 rounded-xl bg-smoky-lavender/5 border-2 border-smoky-lavender/40 shadow-lg">
               <div className="w-16 h-16 rounded-full bg-smoky-lavender/20 flex items-center justify-center mx-auto mb-4">
                 <Users className="w-8 h-8 text-smoky-lavender" />
               </div>
-              <h3 className="text-xl font-bold mb-3">Human-Centered</h3>
-              <p className="text-rocket-gray">
+              <h3 className="text-xl font-bold mb-3 text-black">Human-Centered</h3>
+              <p className="text-black">
                 AI that enhances human capabilities rather than replacing them.
               </p>
             </div>
@@ -93,12 +93,12 @@ export default function HomePage() {
       {/* Newsletter Section */}
       <section className="py-20">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
-          <div className="bg-gradient-to-r from-vapor-purple/10 to-smoky-lavender/10 rounded-2xl p-8 lg:p-12 border border-vapor-purple/20">
+          <div className="bg-gradient-to-r from-vapor-purple/10 to-smoky-lavender/10 rounded-2xl p-8 lg:p-12 border-2 border-vapor-purple/40 shadow-lg">
             <Star className="w-12 h-12 text-launch-orange mx-auto mb-6" />
-            <h2 className="text-3xl sm:text-4xl font-bold font-['Architects_Daughter'] mb-4">
+            <h2 className="text-3xl sm:text-4xl font-bold font-['Architects_Daughter'] mb-4 text-black">
               Stay Ahead of the AI Curve
             </h2>
-            <p className="text-xl text-rocket-gray mb-8 max-w-2xl mx-auto">
+            <p className="text-xl text-black mb-8 max-w-2xl mx-auto">
               Get weekly insights on AI automation, industry trends, and practical tips delivered to your inbox.
             </p>
             <form className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
@@ -111,7 +111,7 @@ export default function HomePage() {
                 Subscribe
               </Button>
             </form>
-            <p className="text-sm text-rocket-gray mt-4">
+            <p className="text-sm text-black mt-4">
               No spam. Unsubscribe anytime.
             </p>
           </div>

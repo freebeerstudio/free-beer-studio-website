@@ -81,7 +81,7 @@ export default function ContactPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
             {/* Contact Form */}
             <div className="lg:col-span-2">
-              <Card className="bg-white border-gray-200">
+              <Card className="bg-white border-2 border-gray-400 shadow-lg">
                 <CardHeader>
                   <CardTitle className="text-2xl text-gray-900 font-['Architects_Daughter']">
                     Send us a message
@@ -165,7 +165,7 @@ export default function ContactPage() {
 
             {/* Contact Info */}
             <div className="space-y-6">
-              <Card className="bg-rocket-gray/10 border-rocket-gray/20">
+              <Card className="bg-rocket-gray/10 border-2 border-rocket-gray/40 shadow-lg">
                 <CardHeader>
                   <CardTitle className="text-xl text-cloud-white">
                     Get in Touch
@@ -204,7 +204,7 @@ export default function ContactPage() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-gradient-to-br from-vapor-purple/10 to-smoky-lavender/10 border-vapor-purple/20">
+              <Card className="bg-gradient-to-br from-vapor-purple/10 to-smoky-lavender/10 border-2 border-vapor-purple/40 shadow-lg">
                 <CardContent className="p-6">
                   <h3 className="text-lg font-bold text-cloud-white mb-2">
                     Quick Response Guarantee

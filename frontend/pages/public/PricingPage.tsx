@@ -41,7 +41,7 @@ export default function PricingPage() {
               {pricingData?.items.map((item) => (
                 <Card 
                   key={item.id} 
-                  className={`relative bg-white border-gray-300 hover:border-vapor-purple/40 transition-colors ${
+                  className={`relative bg-white border-2 border-gray-400 hover:border-vapor-purple/60 transition-colors shadow-lg ${
                     item.isFeatured ? 'ring-2 ring-launch-orange/50' : ''
                   }`}
                 >

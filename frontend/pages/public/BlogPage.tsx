@@ -52,7 +52,7 @@ export default function BlogPage() {
               {blogData?.posts.map((post) => (
                 <Card 
                   key={post.id} 
-                  className="bg-white border-gray-300 hover:border-vapor-purple/40 transition-all duration-300 group overflow-hidden"
+                  className="bg-white border-2 border-gray-400 hover:border-vapor-purple/60 transition-all duration-300 group overflow-hidden shadow-lg"
                 >
                   {/* Post Image */}
                   <div className="relative h-48 bg-gradient-to-br from-vapor-purple/20 to-smoky-lavender/20 overflow-hidden">
@@ -138,7 +138,7 @@ export default function BlogPage() {
 
           {/* Newsletter CTA */}
           <div className="mt-20 text-center">
-            <div className="bg-gradient-to-r from-vapor-purple/10 to-smoky-lavender/10 rounded-2xl p-8 lg:p-12 border border-vapor-purple/20">
+            <div className="bg-gradient-to-r from-vapor-purple/10 to-smoky-lavender/10 rounded-2xl p-8 lg:p-12 border-2 border-vapor-purple/40 shadow-lg">
               <h2 className="text-3xl font-bold font-['Architects_Daughter'] mb-4 text-black">
                 Never Miss an Update
               </h2>
