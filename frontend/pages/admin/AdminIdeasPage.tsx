@@ -57,7 +57,7 @@ export default function AdminIdeasPage() {
   // Fetch style guides
   const { data: styleGuidesData, isLoading: styleGuidesLoading } = useQuery({
     queryKey: ['admin-style-guides'],
-    queryFn: () => backend.styleGuides.listStyleGuides(),
+    queryFn: () => backend.style_guides.listStyleGuides(),
   });
 
   // Fetch scheduled posts
@@ -197,7 +197,7 @@ export default function AdminIdeasPage() {
   // Save style guide mutation
   const saveStyleGuideMutation = useMutation({
     mutationFn: (data: { platform: string; guidelines: string; aiPrompt: string; exampleFiles: string[] }) =>
-      backend.styleGuides.saveStyleGuide(data),
+      backend.style_guides.saveStyleGuide(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-style-guides'] });
       toast({
@@ -210,6 +210,47 @@ export default function AdminIdeasPage() {
       toast({
         title: 'Error',
         description: 'Failed to save style guide',
+        variant: 'destructive',
+      });
+    },
+  });
+
+  // Update scheduled post mutation
+  const updateScheduledPostMutation = useMutation({
+    mutationFn: (data: { id: number; scheduledAt?: Date; draftContent?: string }) =>
+      backend.ideas.updateScheduledPost(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-scheduled-posts'] });
+      toast({
+        title: 'Success',
+        description: 'Scheduled post updated successfully',
+      });
+    },
+    onError: (error) => {
+      console.error('Update scheduled post error:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to update scheduled post',
+        variant: 'destructive',
+      });
+    },
+  });
+
+  // Cancel scheduled post mutation
+  const cancelScheduledPostMutation = useMutation({
+    mutationFn: (id: number) => backend.ideas.cancelScheduledPost({ id }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-scheduled-posts'] });
+      toast({
+        title: 'Success',
+        description: 'Scheduled post cancelled successfully',
+      });
+    },
+    onError: (error) => {
+      console.error('Cancel scheduled post error:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to cancel scheduled post',
         variant: 'destructive',
       });
     },
