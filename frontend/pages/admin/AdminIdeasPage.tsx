@@ -21,11 +21,6 @@ export default function AdminIdeasPage() {
   const [newFeedUrl, setNewFeedUrl] = useState('');
   const [newFeedName, setNewFeedName] = useState('');
   const [styleGuidesExpanded, setStyleGuidesExpanded] = useState(false);
-  const [styleGuideData, setStyleGuideData] = useState<{[key: string]: {
-    guidelines: string;
-    prompt: string;
-    exampleFiles: string[];
-  }}>({});
   const backend = useBackend();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -57,6 +52,12 @@ export default function AdminIdeasPage() {
   const { data: draftsData, isLoading: draftsLoading } = useQuery({
     queryKey: ['admin-drafts'],
     queryFn: () => backend.ideas.listDrafts({}),
+  });
+
+  // Fetch style guides
+  const { data: styleGuidesData, isLoading: styleGuidesLoading } = useQuery({
+    queryKey: ['admin-style-guides'],
+    queryFn: () => backend.styleGuides.listStyleGuides(),
   });
 
   // Create feed source mutation
@@ -187,6 +188,27 @@ export default function AdminIdeasPage() {
     },
   });
 
+  // Save style guide mutation
+  const saveStyleGuideMutation = useMutation({
+    mutationFn: (data: { platform: string; guidelines: string; aiPrompt: string; exampleFiles: string[] }) =>
+      backend.styleGuides.saveStyleGuide(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-style-guides'] });
+      toast({
+        title: 'Success',
+        description: 'Style guide saved successfully',
+      });
+    },
+    onError: (error) => {
+      console.error('Save style guide error:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to save style guide',
+        variant: 'destructive',
+      });
+    },
+  });
+
   const handleIngestIdea = () => {
     if (!newIdeaInput.trim()) return;
     
@@ -222,6 +244,15 @@ export default function AdminIdeasPage() {
 
   const handleScrapeFeed = (id: number) => {
     scrapeFeedMutation.mutate(id);
+  };
+
+  const handleSaveStyleGuide = (platform: string, data: { guidelines: string; prompt: string; exampleFiles: string[] }) => {
+    saveStyleGuideMutation.mutate({
+      platform,
+      guidelines: data.guidelines,
+      aiPrompt: data.prompt,
+      exampleFiles: data.exampleFiles,
+    });
   };
 
   return (
@@ -448,16 +479,41 @@ export default function AdminIdeasPage() {
               
               {styleGuidesExpanded && (
                 <CardContent className="space-y-6">
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    {platforms.map((platform) => (
-                      <StyleGuideCard
-                        key={platform.id}
-                        platform={platform}
-                        data={styleGuideData[platform.id] || { guidelines: '', prompt: '', exampleFiles: [] }}
-                        onUpdate={(data) => setStyleGuideData(prev => ({ ...prev, [platform.id]: data }))}
-                      />
-                    ))}
-                  </div>
+                  {styleGuidesLoading ? (
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                      {platforms.map((platform) => (
+                        <Card key={platform.id} className="bg-white border-gray-200 animate-pulse">
+                          <CardHeader className="h-16"></CardHeader>
+                          <CardContent className="h-32"></CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                      {platforms.map((platform) => {
+                        const existingStyleGuide = styleGuidesData?.styleGuides.find(sg => sg.platform === platform.id);
+                        const data = existingStyleGuide ? {
+                          guidelines: existingStyleGuide.guidelines,
+                          prompt: existingStyleGuide.aiPrompt,
+                          exampleFiles: existingStyleGuide.exampleFiles,
+                        } : {
+                          guidelines: '',
+                          prompt: '',
+                          exampleFiles: [],
+                        };
+                        
+                        return (
+                          <StyleGuideCard
+                            key={platform.id}
+                            platform={platform}
+                            data={data}
+                            onSave={(data) => handleSaveStyleGuide(platform.id, data)}
+                            isSaving={saveStyleGuideMutation.isPending}
+                          />
+                        );
+                      })}
+                    </div>
+                  )}
                 </CardContent>
               )}
             </Card>
@@ -815,42 +871,55 @@ interface StyleGuideCardProps {
     prompt: string;
     exampleFiles: string[];
   };
-  onUpdate: (data: { guidelines: string; prompt: string; exampleFiles: string[] }) => void;
+  onSave: (data: { guidelines: string; prompt: string; exampleFiles: string[] }) => void;
+  isSaving: boolean;
 }
 
-function StyleGuideCard({ platform, data, onUpdate }: StyleGuideCardProps) {
+function StyleGuideCard({ platform, data, onSave, isSaving }: StyleGuideCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [localData, setLocalData] = useState(data);
+  const [hasChanges, setHasChanges] = useState(false);
 
   // Update local data when prop changes
   useEffect(() => {
     setLocalData(data);
+    setHasChanges(false);
   }, [data]);
 
   const handleFileUploaded = (url: string, fileId: string) => {
     const newExampleFiles = [...(localData.exampleFiles || []), url];
     const newData = { ...localData, exampleFiles: newExampleFiles };
     setLocalData(newData);
-    onUpdate(newData);
+    setHasChanges(true);
   };
 
   const handleFileRemoved = (index: number) => {
     const newExampleFiles = (localData.exampleFiles || []).filter((_, i) => i !== index);
     const newData = { ...localData, exampleFiles: newExampleFiles };
     setLocalData(newData);
-    onUpdate(newData);
+    setHasChanges(true);
   };
 
   const handleGuidelinesChange = (guidelines: string) => {
     const newData = { ...localData, guidelines };
     setLocalData(newData);
-    onUpdate(newData);
+    setHasChanges(true);
   };
 
   const handlePromptChange = (prompt: string) => {
     const newData = { ...localData, prompt };
     setLocalData(newData);
-    onUpdate(newData);
+    setHasChanges(true);
+  };
+
+  const handleSave = () => {
+    onSave(localData);
+    setHasChanges(false);
+  };
+
+  const handleCancel = () => {
+    setLocalData(data);
+    setHasChanges(false);
   };
 
   return (
@@ -949,6 +1018,29 @@ function StyleGuideCard({ platform, data, onUpdate }: StyleGuideCardProps) {
               className="border-dashed border-gray-300"
             />
           </div>
+
+          {/* Save/Cancel buttons */}
+          {hasChanges && (
+            <div className="flex gap-2 pt-3 border-t border-gray-200">
+              <Button
+                onClick={handleSave}
+                disabled={isSaving}
+                size="sm"
+                className="bg-green-600 hover:bg-green-700 text-black"
+              >
+                {isSaving ? 'Saving...' : 'Save Changes'}
+              </Button>
+              <Button
+                onClick={handleCancel}
+                variant="outline"
+                size="sm"
+                disabled={isSaving}
+                className="border-gray-300"
+              >
+                Cancel
+              </Button>
+            </div>
+          )}
         </CardContent>
       )}
     </Card>
