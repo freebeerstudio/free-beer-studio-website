@@ -27,8 +27,9 @@ export const listProjects = api<void, ListProjectsResponse>(
       gallery: any;
       external_url: string | null;
       is_featured: boolean;
+      sort_order: number;
     }>`
-      SELECT id, title, description, cover_image_url, gallery, external_url, is_featured
+      SELECT id, title, description, cover_image_url, gallery, external_url, is_featured, sort_order
       FROM projects
       ORDER BY is_featured DESC, sort_order ASC, created_at DESC
     `;
