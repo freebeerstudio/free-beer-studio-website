@@ -152,14 +152,14 @@ export default function AdminPricingPage() {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Pricing Management</h1>
-            <p className="text-muted-foreground">
+            <h1 className="text-3xl font-bold tracking-tight text-black">Pricing Management</h1>
+            <p className="text-black">
               Manage pricing plans displayed on the public pricing page
             </p>
           </div>
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
             <DialogTrigger asChild>
-              <Button>
+              <Button className="bg-white border-2 border-black text-black hover:bg-black/10 shadow-[0_4px_14px_rgb(0,0,0,0.25)]">
                 <Plus className="mr-2 h-4 w-4" />
                 Add Pricing Plan
               </Button>
@@ -188,7 +188,7 @@ export default function AdminPricingPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {pricingData?.items.map((item) => (
-              <Card key={item.id} className="relative">
+              <Card key={item.id} className="relative bg-white border-2 border-gray-400 shadow-lg">
                 {item.isFeatured && (
                   <div className="absolute -top-2 -right-2">
                     <Badge className="bg-orange-500 text-white">
@@ -201,9 +201,9 @@ export default function AdminPricingPage() {
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <CardTitle className="text-xl">{item.title}</CardTitle>
+                      <CardTitle className="text-xl text-black">{item.title}</CardTitle>
                       {item.description && (
-                        <CardDescription className="mt-2 line-clamp-2">
+                        <CardDescription className="mt-2 line-clamp-2 text-black">
                           {item.description}
                         </CardDescription>
                       )}
@@ -225,15 +225,15 @@ export default function AdminPricingPage() {
                 <CardContent>
                   <div className="space-y-4">
                     <div>
-                      <p className="text-sm font-medium mb-2">Features ({item.features.length})</p>
+                      <p className="text-sm font-medium mb-2 text-black">Features ({item.features.length})</p>
                       <div className="space-y-1">
                         {item.features.slice(0, 3).map((feature, index) => (
-                          <p key={index} className="text-sm text-muted-foreground">
+                          <p key={index} className="text-sm text-black">
                             • {feature}
                           </p>
                         ))}
                         {item.features.length > 3 && (
-                          <p className="text-sm text-muted-foreground">
+                          <p className="text-sm text-black">
                             + {item.features.length - 3} more...
                           </p>
                         )}
@@ -241,7 +241,7 @@ export default function AdminPricingPage() {
                     </div>
 
                     <div className="flex items-center justify-between pt-4 border-t">
-                      <div className="text-sm text-muted-foreground">
+                      <div className="text-sm text-black">
                         Order: {item.sortOrder}
                       </div>
                       <div className="flex items-center space-x-2">
@@ -249,6 +249,7 @@ export default function AdminPricingPage() {
                           variant="outline"
                           size="sm"
                           onClick={() => setEditingItem(item)}
+                          className="bg-white border-2 border-black text-black hover:bg-black/10"
                         >
                           <Pencil className="w-4 h-4" />
                         </Button>
@@ -256,6 +257,7 @@ export default function AdminPricingPage() {
                           variant="outline"
                           size="sm"
                           onClick={() => setDeletingItem(item)}
+                          className="bg-white border-2 border-black text-black hover:bg-black/10"
                         >
                           <Trash2 className="w-4 h-4" />
                         </Button>
@@ -269,14 +271,14 @@ export default function AdminPricingPage() {
         )}
 
         {pricingData?.items.length === 0 && !isLoading && (
-          <Card>
+          <Card className="bg-white border-2 border-gray-400 shadow-lg">
             <CardContent className="flex flex-col items-center justify-center py-12">
-              <DollarSign className="w-12 h-12 text-muted-foreground mb-4" />
-              <h3 className="text-lg font-medium mb-2">No pricing plans</h3>
-              <p className="text-muted-foreground text-center mb-4">
+              <DollarSign className="w-12 h-12 text-black mb-4" />
+              <h3 className="text-lg font-medium mb-2 text-black">No pricing plans</h3>
+              <p className="text-black text-center mb-4">
                 Get started by creating your first pricing plan.
               </p>
-              <Button onClick={() => setIsCreateDialogOpen(true)}>
+              <Button onClick={() => setIsCreateDialogOpen(true)} className="bg-white border-2 border-black text-black hover:bg-black/10 shadow-[0_4px_14px_rgb(0,0,0,0.25)]">
                 <Plus className="mr-2 h-4 w-4" />
                 Add Pricing Plan
               </Button>
@@ -382,24 +384,24 @@ function PricingForm({
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
-          <label className="text-sm font-medium">Title *</label>
+          <label className="text-sm font-medium text-black">Title *</label>
           <input
             type="text"
             value={formData.title}
             onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            className="flex h-10 w-full rounded-md border-2 border-black bg-white px-3 py-2 text-sm text-black"
             required
           />
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium">Price</label>
+          <label className="text-sm font-medium text-black">Price</label>
           <input
             type="number"
             value={formData.price || ''}
             onChange={(e) => setFormData(prev => ({ ...prev, price: e.target.value ? parseFloat(e.target.value) : null }))}
             placeholder="Leave empty for 'Custom'"
-            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            className="flex h-10 w-full rounded-md border-2 border-black bg-white px-3 py-2 text-sm text-black"
           />
         </div>
       </div>
@@ -409,7 +411,7 @@ function PricingForm({
         <textarea
           value={formData.description}
           onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-          className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+          className="flex min-h-[80px] w-full rounded-md border-2 border-black bg-white px-3 py-2 text-sm text-black"
           rows={3}
         />
       </div>
@@ -427,8 +429,8 @@ function PricingForm({
 
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <label className="text-sm font-medium">Features</label>
-          <Button type="button" variant="outline" size="sm" onClick={addFeature}>
+          <label className="text-sm font-medium text-black">Features</label>
+          <Button type="button" variant="outline" size="sm" onClick={addFeature} className="bg-white border-2 border-black text-black hover:bg-black/10">
             <Plus className="w-4 h-4 mr-1" />
             Add Feature
           </Button>
@@ -441,7 +443,7 @@ function PricingForm({
                 value={feature}
                 onChange={(e) => updateFeature(index, e.target.value)}
                 placeholder="Enter feature description"
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                className="flex h-10 w-full rounded-md border-2 border-black bg-white px-3 py-2 text-sm text-black"
               />
               {formData.features.length > 1 && (
                 <Button
@@ -449,6 +451,7 @@ function PricingForm({
                   variant="outline"
                   size="sm"
                   onClick={() => removeFeature(index)}
+                  className="bg-white border-2 border-black text-black hover:bg-black/10"
                 >
                   <Trash2 className="w-4 h-4" />
                 </Button>
@@ -460,17 +463,17 @@ function PricingForm({
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
-          <label className="text-sm font-medium">Sort Order</label>
+          <label className="text-sm font-medium text-black">Sort Order</label>
           <input
             type="number"
             value={formData.sortOrder}
             onChange={(e) => setFormData(prev => ({ ...prev, sortOrder: parseInt(e.target.value) || 0 }))}
-            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            className="flex h-10 w-full rounded-md border-2 border-black bg-white px-3 py-2 text-sm text-black"
           />
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium">Featured</label>
+          <label className="text-sm font-medium text-black">Featured</label>
           <div className="flex items-center space-x-2">
             <input
               type="checkbox"
@@ -478,13 +481,13 @@ function PricingForm({
               onChange={(e) => setFormData(prev => ({ ...prev, isFeatured: e.target.checked }))}
               className="h-4 w-4"
             />
-            <span className="text-sm">Mark as featured plan</span>
+            <span className="text-sm text-black">Mark as featured plan</span>
           </div>
         </div>
       </div>
 
       <div className="flex justify-end space-x-2">
-        <Button type="submit" disabled={isLoading}>
+        <Button type="submit" disabled={isLoading} className="bg-white border-2 border-black text-black hover:bg-black/10 shadow-[0_4px_14px_rgb(0,0,0,0.25)]">
           {isLoading ? 'Saving...' : (initialData ? 'Update' : 'Create')}
         </Button>
       </div>
