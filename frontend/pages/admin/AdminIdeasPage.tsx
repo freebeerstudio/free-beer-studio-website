@@ -1218,6 +1218,7 @@ function StyleGuideCard({ platform, data, onSave, isSaving }: StyleGuideCardProp
   const [isExpanded, setIsExpanded] = useState(false);
   const [localData, setLocalData] = useState(data);
   const [hasChanges, setHasChanges] = useState(false);
+  const [newTextExample, setNewTextExample] = useState('');
 
   // Update local data when prop changes
   useEffect(() => {
@@ -1230,13 +1231,54 @@ function StyleGuideCard({ platform, data, onSave, isSaving }: StyleGuideCardProp
     const newData = { ...localData, exampleFiles: newExampleFiles };
     setLocalData(newData);
     setHasChanges(true);
+    
+    // Auto-save after file upload
+    onSave({ ...newData });
+  };
+
+  const handleTextExampleAdded = () => {
+    if (!newTextExample.trim()) return;
+    
+    // Store text examples with a special prefix
+    const textExample = `text:${Date.now()}:${newTextExample.trim()}`;
+    const newExampleFiles = [...(localData.exampleFiles || []), textExample];
+    const newData = { ...localData, exampleFiles: newExampleFiles };
+    setLocalData(newData);
+    setNewTextExample('');
+    
+    // Auto-save after adding text
+    onSave(newData);
+  };
+
+  const isTextExample = (example: string) => {
+    return example.startsWith('text:');
+  };
+
+  const getTextFromExample = (example: string) => {
+    if (isTextExample(example)) {
+      const parts = example.split(':');
+      return parts.slice(2).join(':'); // Everything after "text:timestamp:"
+    }
+    return '';
+  };
+
+  const getFileNameFromUrl = (url: string) => {
+    return url.split('/').pop() || 'Unknown';
+  };
+
+  const getFileExtension = (example: string) => {
+    if (isTextExample(example)) return 'TEXT';
+    const fileName = getFileNameFromUrl(example);
+    return fileName.split('.').pop()?.toUpperCase() || 'FILE';
   };
 
   const handleFileRemoved = (index: number) => {
     const newExampleFiles = (localData.exampleFiles || []).filter((_, i) => i !== index);
     const newData = { ...localData, exampleFiles: newExampleFiles };
     setLocalData(newData);
-    setHasChanges(true);
+    
+    // Auto-save after removing
+    onSave(newData);
   };
 
   const handleGuidelinesChange = (guidelines: string) => {
@@ -1330,64 +1372,78 @@ function StyleGuideCard({ platform, data, onSave, isSaving }: StyleGuideCardProp
             {/* Existing files */}
             {(localData.exampleFiles?.length || 0) > 0 ? (
               <div className="space-y-2">
-                {(localData.exampleFiles || []).map((fileUrl, index) => {
-                  const fileName = fileUrl.split('/').pop() || 'Unknown';
-                  const fileExtension = fileName.split('.').pop()?.toUpperCase() || 'FILE';
+                {(localData.exampleFiles || []).map((example, index) => {
+                  const isText = isTextExample(example);
+                  const textContent = isText ? getTextFromExample(example) : '';
+                  const fileName = isText ? `Text Example ${index + 1}` : getFileNameFromUrl(example);
+                  const fileExtension = getFileExtension(example);
                   
                   return (
                     <div 
                       key={index} 
-                      className="flex items-center justify-between p-3 border border-gray-200 rounded-lg bg-white hover:bg-gray-50 transition-colors"
+                      className="flex items-start justify-between p-3 border border-gray-200 rounded-lg bg-white hover:bg-gray-50 transition-colors"
                     >
-                      <div className="flex items-center space-x-3 flex-1 min-w-0">
-                        <div className="flex-shrink-0">
-                          <div className="w-10 h-10 bg-blue-100 rounded flex items-center justify-center">
-                            <FileText className="w-5 h-5 text-blue-600" />
+                      <div className="flex items-start space-x-3 flex-1 min-w-0">
+                        <div className="flex-shrink-0 mt-0.5">
+                          <div className={`w-10 h-10 ${isText ? 'bg-purple-100' : 'bg-blue-100'} rounded flex items-center justify-center`}>
+                            <FileText className={`w-5 h-5 ${isText ? 'text-purple-600' : 'text-blue-600'}`} />
                           </div>
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center space-x-2">
                             <p className="text-sm font-medium text-gray-900 truncate">
-                              Writing Example {index + 1}
+                              {isText ? `Text Example ${index + 1}` : `Writing Example ${index + 1}`}
                             </p>
-                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                            <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
+                              isText ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800'
+                            }`}>
                               {fileExtension}
                             </span>
                           </div>
-                          <p className="text-xs text-gray-500 truncate mt-0.5">
-                            {fileName}
-                          </p>
+                          {isText ? (
+                            <p className="text-xs text-gray-600 mt-1 line-clamp-2">
+                              {textContent}
+                            </p>
+                          ) : (
+                            <p className="text-xs text-gray-500 truncate mt-0.5">
+                              {fileName}
+                            </p>
+                          )}
                         </div>
                       </div>
                       <div className="flex items-center space-x-1 flex-shrink-0 ml-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          asChild
-                          className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
-                          title="View file"
-                        >
-                          <a href={fileUrl} target="_blank" rel="noopener noreferrer">
-                            <Eye className="w-4 h-4" />
-                          </a>
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          asChild
-                          className="text-green-600 hover:text-green-700 hover:bg-green-50"
-                          title="Download file"
-                        >
-                          <a href={fileUrl} download>
-                            <Download className="w-4 h-4" />
-                          </a>
-                        </Button>
+                        {!isText && (
+                          <>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              asChild
+                              className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                              title="View file"
+                            >
+                              <a href={example} target="_blank" rel="noopener noreferrer">
+                                <Eye className="w-4 h-4" />
+                              </a>
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              asChild
+                              className="text-green-600 hover:text-green-700 hover:bg-green-50"
+                              title="Download file"
+                            >
+                              <a href={example} download>
+                                <Download className="w-4 h-4" />
+                              </a>
+                            </Button>
+                          </>
+                        )}
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => handleFileRemoved(index)}
                           className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                          title="Remove file"
+                          title="Remove"
                         >
                           <Trash2 className="w-4 h-4" />
                         </Button>
@@ -1405,12 +1461,43 @@ function StyleGuideCard({ platform, data, onSave, isSaving }: StyleGuideCardProp
             )}
 
             {/* File upload - always visible */}
-            <div className="mt-3">
-              <FileUpload
-                onFileUploaded={handleFileUploaded}
-                category="styleguide"
-                accept="*/*"
-              />
+            <div className="mt-3 space-y-3">
+              <div className="space-y-2">
+                <label className="text-xs font-medium text-gray-700">Upload File</label>
+                <FileUpload
+                  onFileUploaded={handleFileUploaded}
+                  category="styleguide"
+                  accept="*/*"
+                />
+              </div>
+              
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t border-gray-300" />
+                </div>
+                <div className="relative flex justify-center text-xs">
+                  <span className="bg-white px-2 text-gray-500">or</span>
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <label className="text-xs font-medium text-gray-700">Paste Text Example</label>
+                <Textarea
+                  placeholder="Paste an example of writing for this channel here..."
+                  value={newTextExample}
+                  onChange={(e) => setNewTextExample(e.target.value)}
+                  className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 min-h-[100px]"
+                />
+                <Button
+                  onClick={handleTextExampleAdded}
+                  disabled={!newTextExample.trim() || isSaving}
+                  size="sm"
+                  className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+                >
+                  <Plus className="w-4 h-4 mr-1" />
+                  {isSaving ? 'Adding...' : 'Add Text Example'}
+                </Button>
+              </div>
             </div>
           </div>
 
