@@ -19,6 +19,7 @@ import AdminIdeasPage from './pages/admin/AdminIdeasPage';
 import AdminContentPage from './pages/admin/AdminContentPage';
 import AdminContactsPage from './pages/admin/AdminContactsPage';
 import AdminSettingsPage from './pages/admin/AdminSettingsPage';
+import AdminPricingPage from './pages/admin/AdminPricingPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -62,6 +63,7 @@ function AppInner() {
       <Route path="/admin/dashboard" element={<AdminDashboard />} />
       <Route path="/admin/ideas" element={<AdminIdeasPage />} />
       <Route path="/admin/content" element={<AdminContentPage />} />
+      <Route path="/admin/pricing" element={<AdminPricingPage />} />
       <Route path="/admin/contacts" element={<AdminContactsPage />} />
       <Route path="/admin/settings" element={<AdminSettingsPage />} />
 

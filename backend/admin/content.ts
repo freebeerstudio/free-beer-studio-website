@@ -190,3 +190,105 @@ export const createBlogPost = api<CreateBlogPostRequest, {id: number}>(
     return { id: result!.id };
   }
 );
+
+// List all pricing items for admin management.
+export const listPricingItems = api<void, {items: any[]}>(
+  { auth: true, expose: true, method: "GET", path: "/admin/pricing" },
+  async () => {
+    const auth = getAuthData()!;
+    if (auth.role !== 'admin') {
+      throw new Error("Admin access required");
+    }
+
+    const rows = await db.queryAll<{
+      id: number;
+      title: string;
+      description: string | null;
+      image_url: string | null;
+      price: number | null;
+      features: any;
+      is_featured: boolean;
+      sort_order: number;
+      created_at: Date;
+      updated_at: Date;
+    }>`
+      SELECT id, title, description, image_url, price, features, is_featured, sort_order, created_at, updated_at
+      FROM pricing_items
+      ORDER BY sort_order ASC, created_at ASC
+    `;
+
+    return {
+      items: rows.map(row => ({
+        id: row.id,
+        title: row.title,
+        description: row.description,
+        imageUrl: row.image_url,
+        price: row.price,
+        features: Array.isArray(row.features) ? row.features : [],
+        isFeatured: row.is_featured,
+        sortOrder: row.sort_order,
+        createdAt: row.created_at,
+        updatedAt: row.updated_at,
+      })),
+    };
+  }
+);
+
+// Get a single pricing item by ID.
+export const getPricingItem = api<{id: number}, any>(
+  { auth: true, expose: true, method: "GET", path: "/admin/pricing/:id" },
+  async (req) => {
+    const auth = getAuthData()!;
+    if (auth.role !== 'admin') {
+      throw new Error("Admin access required");
+    }
+
+    const row = await db.queryRow<{
+      id: number;
+      title: string;
+      description: string | null;
+      image_url: string | null;
+      price: number | null;
+      features: any;
+      is_featured: boolean;
+      sort_order: number;
+      created_at: Date;
+      updated_at: Date;
+    }>`
+      SELECT id, title, description, image_url, price, features, is_featured, sort_order, created_at, updated_at
+      FROM pricing_items
+      WHERE id = ${req.id}
+    `;
+
+    if (!row) {
+      throw new Error("Pricing item not found");
+    }
+
+    return {
+      id: row.id,
+      title: row.title,
+      description: row.description,
+      imageUrl: row.image_url,
+      price: row.price,
+      features: Array.isArray(row.features) ? row.features : [],
+      isFeatured: row.is_featured,
+      sortOrder: row.sort_order,
+      createdAt: row.created_at,
+      updatedAt: row.updated_at,
+    };
+  }
+);
+
+// Deletes a pricing item.
+export const deletePricingItem = api<{id: number}, {success: boolean}>(
+  { auth: true, expose: true, method: "DELETE", path: "/admin/pricing/:id" },
+  async (req) => {
+    const auth = getAuthData()!;
+    if (auth.role !== 'admin') {
+      throw new Error("Admin access required");
+    }
+
+    await db.rawExec(`DELETE FROM pricing_items WHERE id = $1`, req.id);
+    return { success: true };
+  }
+);
