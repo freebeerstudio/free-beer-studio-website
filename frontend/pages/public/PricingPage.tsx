@@ -37,15 +37,14 @@ export default function PricingPage() {
               ))}
             </div>
           ) : (
-            <div className="flex justify-center">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 max-w-7xl">
-                {pricingData?.items.map((item) => (
-                  <Card 
-                    key={item.id} 
-                    className={`relative bg-white border-2 border-gray-400 hover:border-vapor-purple/60 transition-colors shadow-lg ${
-                      item.isFeatured ? 'ring-2 ring-launch-orange/50' : ''
-                    }`}
-                  >
+            <div className="flex flex-wrap justify-center gap-8 mx-auto">
+              {pricingData?.items.map((item) => (
+                <Card 
+                  key={item.id} 
+                  className={`relative bg-white border-2 border-gray-400 hover:border-vapor-purple/60 transition-colors shadow-lg w-full sm:w-80 lg:w-72 ${
+                    item.isFeatured ? 'ring-2 ring-launch-orange/50' : ''
+                  }`}
+                >
                   {item.isFeatured && (
                     <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                       <div className="bg-launch-orange text-jet-black px-4 py-1 rounded-full text-sm font-bold flex items-center">
@@ -98,7 +97,6 @@ export default function PricingPage() {
                   </CardContent>
                 </Card>
                 ))}
-              </div>
             </div>
           )}
 
