@@ -53,7 +53,7 @@ export default function AdminContentPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Pricing Management Widget */}
-          <Card className="relative overflow-hidden">
+          <Card className="relative overflow-hidden bg-white border-2 border-gray-400 shadow-lg">
             <CardHeader>
               <div className="flex items-center space-x-2">
                 <DollarSign className="w-5 h-5 text-orange-500" />
@@ -80,13 +80,13 @@ export default function AdminContentPage() {
               </div>
 
               <div className="flex space-x-2">
-                <Button asChild className="flex-1">
+                <Button asChild className="flex-1 bg-white border-2 border-black text-black hover:bg-black/10 shadow-[0_4px_14px_rgb(0,0,0,0.25)]">
                   <Link to="/admin/pricing">
                     <ArrowRight className="w-4 h-4 mr-2" />
                     Manage Plans
                   </Link>
                 </Button>
-                <Button asChild variant="outline">
+                <Button asChild variant="outline" className="bg-white border-2 border-black text-black hover:bg-black/10 shadow-[0_4px_14px_rgb(0,0,0,0.25)]">
                   <Link to="/admin/pricing">
                     <Plus className="w-4 h-4" />
                   </Link>
@@ -96,7 +96,7 @@ export default function AdminContentPage() {
           </Card>
 
           {/* Projects Management Widget */}
-          <Card className="relative overflow-hidden">
+          <Card className="relative overflow-hidden bg-white border-2 border-gray-400 shadow-lg">
             <CardHeader>
               <div className="flex items-center space-x-2">
                 <Folder className="w-5 h-5 text-blue-500" />
@@ -123,13 +123,13 @@ export default function AdminContentPage() {
               </div>
 
               <div className="flex space-x-2">
-                <Button asChild className="flex-1">
+                <Button asChild className="flex-1 bg-white border-2 border-black text-black hover:bg-black/10 shadow-[0_4px_14px_rgb(0,0,0,0.25)]">
                   <Link to="/admin/projects">
                     <ArrowRight className="w-4 h-4 mr-2" />
                     Manage Projects
                   </Link>
                 </Button>
-                <Button asChild variant="outline">
+                <Button asChild variant="outline" className="bg-white border-2 border-black text-black hover:bg-black/10 shadow-[0_4px_14px_rgb(0,0,0,0.25)]">
                   <Link to="/admin/projects">
                     <Plus className="w-4 h-4" />
                   </Link>
@@ -139,7 +139,7 @@ export default function AdminContentPage() {
           </Card>
 
           {/* Blog Management Widget */}
-          <Card className="relative overflow-hidden">
+          <Card className="relative overflow-hidden bg-white border-2 border-gray-400 shadow-lg">
             <CardHeader>
               <div className="flex items-center space-x-2">
                 <PenTool className="w-5 h-5 text-green-500" />
@@ -176,13 +176,13 @@ export default function AdminContentPage() {
               </div>
 
               <div className="flex space-x-2">
-                <Button asChild className="flex-1">
+                <Button asChild className="flex-1 bg-white border-2 border-black text-black hover:bg-black/10 shadow-[0_4px_14px_rgb(0,0,0,0.25)]">
                   <Link to="/admin/blog">
                     <ArrowRight className="w-4 h-4 mr-2" />
                     Manage Posts
                   </Link>
                 </Button>
-                <Button asChild variant="outline">
+                <Button asChild variant="outline" className="bg-white border-2 border-black text-black hover:bg-black/10 shadow-[0_4px_14px_rgb(0,0,0,0.25)]">
                   <Link to="/admin/blog">
                     <Plus className="w-4 h-4" />
                   </Link>
@@ -193,7 +193,7 @@ export default function AdminContentPage() {
         </div>
 
         {/* Quick Actions */}
-        <Card>
+        <Card className="bg-white border-2 border-gray-400 shadow-lg">
           <CardHeader>
             <CardTitle>Quick Actions</CardTitle>
             <CardDescription>
@@ -202,7 +202,7 @@ export default function AdminContentPage() {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Button asChild variant="outline" className="h-auto p-4 flex flex-col items-center space-y-2">
+              <Button asChild variant="outline" className="h-auto p-4 flex flex-col items-center space-y-2 bg-white border-2 border-black shadow-[0_4px_14px_rgb(0,0,0,0.25)] hover:bg-black/10">
                 <Link to="/admin/pricing">
                   <DollarSign className="w-8 h-8 text-orange-500" />
                   <div className="text-center">
@@ -212,7 +212,7 @@ export default function AdminContentPage() {
                 </Link>
               </Button>
 
-              <Button asChild variant="outline" className="h-auto p-4 flex flex-col items-center space-y-2">
+              <Button asChild variant="outline" className="h-auto p-4 flex flex-col items-center space-y-2 bg-white border-2 border-black shadow-[0_4px_14px_rgb(0,0,0,0.25)] hover:bg-black/10">
                 <Link to="/admin/projects">
                   <Folder className="w-8 h-8 text-blue-500" />
                   <div className="text-center">
@@ -222,7 +222,7 @@ export default function AdminContentPage() {
                 </Link>
               </Button>
 
-              <Button asChild variant="outline" className="h-auto p-4 flex flex-col items-center space-y-2">
+              <Button asChild variant="outline" className="h-auto p-4 flex flex-col items-center space-y-2 bg-white border-2 border-black shadow-[0_4px_14px_rgb(0,0,0,0.25)] hover:bg-black/10">
                 <Link to="/admin/blog">
                   <PenTool className="w-8 h-8 text-green-500" />
                   <div className="text-center">
