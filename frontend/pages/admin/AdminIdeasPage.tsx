@@ -508,7 +508,9 @@ function IdeaCard({ idea, onApprove, onReject, isApproving, isRejecting }: IdeaC
   
   const platforms = [
     { id: 'blog', label: 'Blog', color: 'bg-blue-100 text-blue-800 border-blue-200' },
-    { id: 'substack', label: 'Substack', color: 'bg-orange-100 text-orange-800 border-orange-200' },
+    { id: 'substack_lead', label: 'Substack Lead', color: 'bg-orange-100 text-orange-800 border-orange-200' },
+    { id: 'substack_article', label: 'Substack Article', color: 'bg-amber-100 text-amber-800 border-amber-200' },
+    { id: 'substack_mention', label: 'Substack Mention', color: 'bg-yellow-100 text-yellow-800 border-yellow-200' },
     { id: 'linkedin', label: 'LinkedIn', color: 'bg-indigo-100 text-indigo-800 border-indigo-200' },
     { id: 'x', label: 'X', color: 'bg-gray-100 text-gray-800 border-gray-200' },
     { id: 'shorts', label: 'Shorts', color: 'bg-red-100 text-red-800 border-red-200' },
