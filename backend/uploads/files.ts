@@ -44,29 +44,40 @@ interface FileRecord {
 export const getUploadUrl = api<GetUploadUrlRequest, GetUploadUrlResponse>(
   { expose: true, method: "POST", path: "/uploads/url" },
   async (req) => {
-    // Generate unique filename
-    const timestamp = Date.now();
-    const randomString = Math.random().toString(36).substring(7);
-    const extension = req.filename.split('.').pop() || '';
-    const storageName = `${req.category}/${timestamp}-${randomString}.${extension}`;
+    try {
+      // Generate unique filename
+      const timestamp = Date.now();
+      const randomString = Math.random().toString(36).substring(7);
+      const extension = req.filename.split('.').pop() || '';
+      const storageName = `${req.category}/${timestamp}-${randomString}.${extension}`;
 
-    // Get signed upload URL
-    const { url: uploadUrl } = await images.signedUploadUrl(storageName, {
-      ttl: 3600, // 1 hour
-    });
+      console.log('Generating signed URL for:', storageName);
 
-    // Pre-create database record
-    const result = await db.queryRow<{id: string}>`
-      INSERT INTO files (original_name, storage_name, url, content_type, size, category, uploaded)
-      VALUES (${req.filename}, ${storageName}, ${images.publicUrl(storageName)}, ${req.contentType}, 0, ${req.category}, false)
-      RETURNING id
-    `;
+      // Get signed upload URL
+      const { url: uploadUrl } = await images.signedUploadUrl(storageName, {
+        ttl: 3600, // 1 hour
+      });
 
-    return {
-      uploadUrl,
-      fileId: result!.id,
-      storageName,
-    };
+      console.log('Signed URL generated successfully');
+
+      // Pre-create database record
+      const result = await db.queryRow<{id: string}>`
+        INSERT INTO files (original_name, storage_name, url, content_type, size, category, uploaded)
+        VALUES (${req.filename}, ${storageName}, ${images.publicUrl(storageName)}, ${req.contentType}, 0, ${req.category}, false)
+        RETURNING id
+      `;
+
+      console.log('Database record created:', result?.id);
+
+      return {
+        uploadUrl,
+        fileId: result!.id,
+        storageName,
+      };
+    } catch (error) {
+      console.error('Error generating upload URL:', error);
+      throw error;
+    }
   }
 );
 

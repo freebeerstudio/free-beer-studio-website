@@ -39,24 +39,27 @@ export default function FileUpload({
       // Step 1: Get signed upload URL
       const uploadResponse = await backend.uploads.getUploadUrl({
         filename: file.name,
-        contentType: file.type,
+        contentType: file.type || 'application/octet-stream',
         category,
       });
 
-      // Step 2: Upload file directly to object storage using fetch
-      const uploadFormData = new FormData();
-      uploadFormData.append('file', file);
+      console.log('Upload URL received:', uploadResponse);
 
+      // Step 2: Upload file directly to object storage using fetch
       const uploadResult = await fetch(uploadResponse.uploadUrl, {
         method: 'PUT',
         body: file,
         headers: {
-          'Content-Type': file.type,
+          'Content-Type': file.type || 'application/octet-stream',
         },
       });
 
+      console.log('Upload result status:', uploadResult.status);
+
       if (!uploadResult.ok) {
-        throw new Error('Failed to upload file to storage');
+        const errorText = await uploadResult.text();
+        console.error('Upload failed:', errorText);
+        throw new Error(`Failed to upload file to storage: ${uploadResult.status} ${uploadResult.statusText}`);
       }
 
       // Step 3: Confirm upload completion
@@ -64,6 +67,8 @@ export default function FileUpload({
         fileId: uploadResponse.fileId,
         size: file.size,
       });
+
+      console.log('Upload confirmed:', confirmResponse);
 
       onFileUploaded(confirmResponse.url, confirmResponse.id);
       
@@ -75,7 +80,7 @@ export default function FileUpload({
       console.error('Upload error:', error);
       toast({
         title: 'Error',
-        description: 'Failed to upload file',
+        description: error instanceof Error ? error.message : 'Failed to upload file',
         variant: 'destructive',
       });
     } finally {
