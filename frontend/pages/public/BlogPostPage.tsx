@@ -184,12 +184,12 @@ export default function BlogPostPage() {
           )}
 
           {/* Call to Action */}
-          <Card className="mt-16 bg-gradient-to-r from-vapor-purple/10 to-smoky-lavender/10 border-vapor-purple/20">
+          <Card className="mt-16 bg-gradient-to-r from-vapor-purple/10 to-smoky-lavender/10 border-vapor-purple/20 shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
             <CardContent className="p-8 text-center">
-              <h3 className="text-2xl font-bold text-cloud-white mb-4 font-['Architects_Daughter']">
+              <h3 className="text-2xl font-bold text-black mb-4 font-['Architects_Daughter']">
                 Ready to Launch Your AI Project?
               </h3>
-              <p className="text-rocket-gray mb-6 max-w-2xl mx-auto">
+              <p className="text-black mb-6 max-w-2xl mx-auto">
                 Inspired by what you've read? Let's discuss how we can help transform your business with AI automation.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
