@@ -45,8 +45,8 @@ export default function AdminContentPage() {
     <AdminLayout>
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Content Management</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-3xl font-bold tracking-tight text-black">Content Management</h1>
+          <p className="text-black">
             Manage all your website content including pricing, portfolio projects, and blog posts
           </p>
         </div>
@@ -57,9 +57,9 @@ export default function AdminContentPage() {
             <CardHeader>
               <div className="flex items-center space-x-2">
                 <DollarSign className="w-5 h-5 text-orange-500" />
-                <CardTitle>Pricing Plans</CardTitle>
+                <CardTitle className="text-black">Pricing Plans</CardTitle>
               </div>
-              <CardDescription>
+              <CardDescription className="text-black">
                 Manage pricing packages and features
               </CardDescription>
             </CardHeader>
@@ -67,9 +67,9 @@ export default function AdminContentPage() {
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
                   <div className="flex items-center space-x-2">
-                    <BarChart3 className="w-4 h-4 text-muted-foreground" />
-                    <span className="text-2xl font-bold">{pricingStats.total}</span>
-                    <span className="text-sm text-muted-foreground">total plans</span>
+                    <BarChart3 className="w-4 h-4 text-black" />
+                    <span className="text-2xl font-bold text-black">{pricingStats.total}</span>
+                    <span className="text-sm text-black">total plans</span>
                   </div>
                   {pricingStats.featured > 0 && (
                     <Badge variant="secondary" className="text-xs">
@@ -100,9 +100,9 @@ export default function AdminContentPage() {
             <CardHeader>
               <div className="flex items-center space-x-2">
                 <Folder className="w-5 h-5 text-blue-500" />
-                <CardTitle>Portfolio Projects</CardTitle>
+                <CardTitle className="text-black">Portfolio Projects</CardTitle>
               </div>
-              <CardDescription>
+              <CardDescription className="text-black">
                 Add and edit portfolio items
               </CardDescription>
             </CardHeader>
@@ -110,9 +110,9 @@ export default function AdminContentPage() {
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
                   <div className="flex items-center space-x-2">
-                    <BarChart3 className="w-4 h-4 text-muted-foreground" />
-                    <span className="text-2xl font-bold">{projectStats.total}</span>
-                    <span className="text-sm text-muted-foreground">projects</span>
+                    <BarChart3 className="w-4 h-4 text-black" />
+                    <span className="text-2xl font-bold text-black">{projectStats.total}</span>
+                    <span className="text-sm text-black">projects</span>
                   </div>
                   {projectStats.featured > 0 && (
                     <Badge variant="secondary" className="text-xs">
@@ -143,18 +143,18 @@ export default function AdminContentPage() {
             <CardHeader>
               <div className="flex items-center space-x-2">
                 <PenTool className="w-5 h-5 text-green-500" />
-                <CardTitle>Blog Posts</CardTitle>
+                <CardTitle className="text-black">Blog Posts</CardTitle>
               </div>
-              <CardDescription>
+              <CardDescription className="text-black">
                 Create and manage blog content
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <div className="flex items-center space-x-2">
-                  <BarChart3 className="w-4 h-4 text-muted-foreground" />
-                  <span className="text-2xl font-bold">{blogStats.total}</span>
-                  <span className="text-sm text-muted-foreground">total posts</span>
+                  <BarChart3 className="w-4 h-4 text-black" />
+                  <span className="text-2xl font-bold text-black">{blogStats.total}</span>
+                  <span className="text-sm text-black">total posts</span>
                 </div>
                 <div className="flex flex-wrap gap-1">
                   {blogStats.published > 0 && (
@@ -195,8 +195,8 @@ export default function AdminContentPage() {
         {/* Quick Actions */}
         <Card className="bg-white border-2 border-gray-400 shadow-lg">
           <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
-            <CardDescription>
+            <CardTitle className="text-black">Quick Actions</CardTitle>
+            <CardDescription className="text-black">
               Common content management tasks
             </CardDescription>
           </CardHeader>
@@ -206,8 +206,8 @@ export default function AdminContentPage() {
                 <Link to="/admin/pricing">
                   <DollarSign className="w-8 h-8 text-orange-500" />
                   <div className="text-center">
-                    <div className="font-medium">Create Pricing Plan</div>
-                    <div className="text-xs text-muted-foreground">Add a new pricing tier</div>
+                    <div className="font-medium text-black">Create Pricing Plan</div>
+                    <div className="text-xs text-black">Add a new pricing tier</div>
                   </div>
                 </Link>
               </Button>
@@ -216,8 +216,8 @@ export default function AdminContentPage() {
                 <Link to="/admin/projects">
                   <Folder className="w-8 h-8 text-blue-500" />
                   <div className="text-center">
-                    <div className="font-medium">Add Portfolio Project</div>
-                    <div className="text-xs text-muted-foreground">Showcase your work</div>
+                    <div className="font-medium text-black">Add Portfolio Project</div>
+                    <div className="text-xs text-black">Showcase your work</div>
                   </div>
                 </Link>
               </Button>
@@ -226,8 +226,8 @@ export default function AdminContentPage() {
                 <Link to="/admin/blog">
                   <PenTool className="w-8 h-8 text-green-500" />
                   <div className="text-center">
-                    <div className="font-medium">Write Blog Post</div>
-                    <div className="text-xs text-muted-foreground">Create new content</div>
+                    <div className="font-medium text-black">Write Blog Post</div>
+                    <div className="text-xs text-black">Create new content</div>
                   </div>
                 </Link>
               </Button>
