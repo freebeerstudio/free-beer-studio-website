@@ -63,11 +63,11 @@ export default function PricingPage() {
                     </CardDescription>
                     <div className="mt-4">
                       {item.price ? (
-                        <span className="text-3xl font-bold text-vapor-purple">
+                        <span className="text-3xl font-bold text-black">
                           ${item.price.toLocaleString()}
                         </span>
                       ) : (
-                        <span className="text-3xl font-bold text-vapor-purple">
+                        <span className="text-3xl font-bold text-black">
                           Custom
                         </span>
                       )}

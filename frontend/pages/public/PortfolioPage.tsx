@@ -86,11 +86,11 @@ export default function PortfolioPage() {
                   </div>
 
                   <CardHeader>
-                    <CardTitle className="text-xl text-cloud-white group-hover:text-vapor-purple transition-colors">
+                    <CardTitle className="text-xl text-black group-hover:text-vapor-purple transition-colors">
                       {project.title}
                     </CardTitle>
                     {project.description && (
-                      <CardDescription className="text-rocket-gray line-clamp-3">
+                      <CardDescription className="text-black line-clamp-3">
                         {project.description}
                       </CardDescription>
                     )}
@@ -100,7 +100,7 @@ export default function PortfolioPage() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-2">
                         {project.gallery.length > 0 && (
-                          <Badge variant="outline" className="text-xs border-rocket-gray text-rocket-gray">
+                          <Badge variant="outline" className="text-xs border-gray-500 text-black">
                             {project.gallery.length} image{project.gallery.length !== 1 ? 's' : ''}
                           </Badge>
                         )}
@@ -111,7 +111,7 @@ export default function PortfolioPage() {
                           variant="ghost"
                           size="sm"
                           asChild
-                          className="text-vapor-purple hover:text-smoky-lavender hover:bg-vapor-purple/10"
+                          className="text-black hover:text-vapor-purple hover:bg-vapor-purple/10"
                         >
                           <a href={project.externalUrl} target="_blank" rel="noopener noreferrer">
                             View Project
