@@ -1,5 +1,4 @@
 import { api } from "encore.dev/api";
-import { getAuthData } from "~encore/auth";
 import db from "../db";
 
 interface CreatePricingItemRequest {
@@ -71,12 +70,8 @@ interface UpdateBlogPostRequest {
 
 // Creates a new pricing item.
 export const createPricingItem = api<CreatePricingItemRequest, {id: number}>(
-  { auth: true, expose: true, method: "POST", path: "/admin/pricing" },
+  { expose: true, method: "POST", path: "/admin/pricing" },
   async (req) => {
-    const auth = getAuthData()!;
-    if (auth.role !== 'admin') {
-      throw new Error("Admin access required");
-    }
 
     const result = await db.queryRow<{id: number}>`
       INSERT INTO pricing_items (title, description, image_url, price, features, is_featured, sort_order)
@@ -91,12 +86,8 @@ export const createPricingItem = api<CreatePricingItemRequest, {id: number}>(
 
 // Updates an existing pricing item.
 export const updatePricingItem = api<UpdatePricingItemRequest, {success: boolean}>(
-  { auth: true, expose: true, method: "PUT", path: "/admin/pricing/:id" },
+  { expose: true, method: "PUT", path: "/admin/pricing/:id" },
   async (req) => {
-    const auth = getAuthData()!;
-    if (auth.role !== 'admin') {
-      throw new Error("Admin access required");
-    }
 
     const updates: string[] = [];
     const values: any[] = [];
@@ -148,12 +139,8 @@ export const updatePricingItem = api<UpdatePricingItemRequest, {success: boolean
 
 // Creates a new portfolio project.
 export const createProject = api<CreateProjectRequest, {id: number}>(
-  { auth: true, expose: true, method: "POST", path: "/admin/projects" },
+  { expose: true, method: "POST", path: "/admin/projects" },
   async (req) => {
-    const auth = getAuthData()!;
-    if (auth.role !== 'admin') {
-      throw new Error("Admin access required");
-    }
 
     const result = await db.queryRow<{id: number}>`
       INSERT INTO projects (title, description, cover_image_url, gallery, external_url, is_featured, sort_order)
@@ -169,12 +156,8 @@ export const createProject = api<CreateProjectRequest, {id: number}>(
 
 // Creates a new blog post.
 export const createBlogPost = api<CreateBlogPostRequest, {id: number}>(
-  { auth: true, expose: true, method: "POST", path: "/admin/blog" },
+  { expose: true, method: "POST", path: "/admin/blog" },
   async (req) => {
-    const auth = getAuthData()!;
-    if (auth.role !== 'admin') {
-      throw new Error("Admin access required");
-    }
 
     const publishedAt = req.status === 'published' ? new Date() : req.scheduledAt || null;
 
@@ -183,7 +166,7 @@ export const createBlogPost = api<CreateBlogPostRequest, {id: number}>(
                               status, scheduled_at, published_at, author_id)
       VALUES (${req.title}, ${req.subtitle || null}, ${req.slug}, ${req.coverImageUrl || null}, 
               ${JSON.stringify(req.gallery || [])}, ${req.body || null}, ${req.excerpt || null},
-              ${req.status || 'draft'}, ${req.scheduledAt || null}, ${publishedAt}, ${auth.userID})
+              ${req.status || 'draft'}, ${req.scheduledAt || null}, ${publishedAt}, ${'admin-1'})
       RETURNING id
     `;
 
@@ -193,12 +176,8 @@ export const createBlogPost = api<CreateBlogPostRequest, {id: number}>(
 
 // List all pricing items for admin management.
 export const listPricingItems = api<void, {items: any[]}>(
-  { auth: true, expose: true, method: "GET", path: "/admin/pricing" },
+  { expose: true, method: "GET", path: "/admin/pricing" },
   async () => {
-    const auth = getAuthData()!;
-    if (auth.role !== 'admin') {
-      throw new Error("Admin access required");
-    }
 
     const rows = await db.queryAll<{
       id: number;
@@ -236,12 +215,8 @@ export const listPricingItems = api<void, {items: any[]}>(
 
 // Get a single pricing item by ID.
 export const getPricingItem = api<{id: number}, any>(
-  { auth: true, expose: true, method: "GET", path: "/admin/pricing/:id" },
+  { expose: true, method: "GET", path: "/admin/pricing/:id" },
   async (req) => {
-    const auth = getAuthData()!;
-    if (auth.role !== 'admin') {
-      throw new Error("Admin access required");
-    }
 
     const row = await db.queryRow<{
       id: number;
@@ -281,12 +256,8 @@ export const getPricingItem = api<{id: number}, any>(
 
 // Deletes a pricing item.
 export const deletePricingItem = api<{id: number}, {success: boolean}>(
-  { auth: true, expose: true, method: "DELETE", path: "/admin/pricing/:id" },
+  { expose: true, method: "DELETE", path: "/admin/pricing/:id" },
   async (req) => {
-    const auth = getAuthData()!;
-    if (auth.role !== 'admin') {
-      throw new Error("Admin access required");
-    }
 
     await db.rawExec(`DELETE FROM pricing_items WHERE id = $1`, req.id);
     return { success: true };

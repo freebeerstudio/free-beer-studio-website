@@ -66,6 +66,10 @@ function AppInner() {
       <Route path="/admin/pricing" element={<AdminPricingPage />} />
       <Route path="/admin/contacts" element={<AdminContactsPage />} />
       <Route path="/admin/settings" element={<AdminSettingsPage />} />
+      
+      {/* Redirect login/register to admin for testing */}
+      <Route path="/login" element={<Navigate to="/admin/dashboard" replace />} />
+      <Route path="/register" element={<Navigate to="/admin/dashboard" replace />} />
 
       {/* Catch all */}
       <Route path="*" element={<Navigate to="/" replace />} />
