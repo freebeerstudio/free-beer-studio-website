@@ -36,6 +36,7 @@ export class Client {
     public readonly admin: admin.ServiceClient
     public readonly auth: auth.ServiceClient
     public readonly ideas: ideas.ServiceClient
+    public readonly uploads: uploads.ServiceClient
     public readonly website: website.ServiceClient
     private readonly options: ClientOptions
     private readonly target: string
@@ -54,6 +55,7 @@ export class Client {
         this.admin = new admin.ServiceClient(base)
         this.auth = new auth.ServiceClient(base)
         this.ideas = new ideas.ServiceClient(base)
+        this.uploads = new uploads.ServiceClient(base)
         this.website = new website.ServiceClient(base)
     }
 
@@ -92,7 +94,18 @@ import {
     createBlogPost as api_admin_content_createBlogPost,
     createPricingItem as api_admin_content_createPricingItem,
     createProject as api_admin_content_createProject,
-    updatePricingItem as api_admin_content_updatePricingItem
+    deleteBlogPost as api_admin_content_deleteBlogPost,
+    deletePricingItem as api_admin_content_deletePricingItem,
+    deleteProject as api_admin_content_deleteProject,
+    getBlogPost as api_admin_content_getBlogPost,
+    getPricingItem as api_admin_content_getPricingItem,
+    getProject as api_admin_content_getProject,
+    listBlogPosts as api_admin_content_listBlogPosts,
+    listPricingItems as api_admin_content_listPricingItems,
+    listProjects as api_admin_content_listProjects,
+    updateBlogPost as api_admin_content_updateBlogPost,
+    updatePricingItem as api_admin_content_updatePricingItem,
+    updateProject as api_admin_content_updateProject
 } from "~backend/admin/content";
 import { getDashboard as api_admin_dashboard_getDashboard } from "~backend/admin/dashboard";
 
@@ -106,8 +119,19 @@ export namespace admin {
             this.createBlogPost = this.createBlogPost.bind(this)
             this.createPricingItem = this.createPricingItem.bind(this)
             this.createProject = this.createProject.bind(this)
+            this.deleteBlogPost = this.deleteBlogPost.bind(this)
+            this.deletePricingItem = this.deletePricingItem.bind(this)
+            this.deleteProject = this.deleteProject.bind(this)
+            this.getBlogPost = this.getBlogPost.bind(this)
             this.getDashboard = this.getDashboard.bind(this)
+            this.getPricingItem = this.getPricingItem.bind(this)
+            this.getProject = this.getProject.bind(this)
+            this.listBlogPosts = this.listBlogPosts.bind(this)
+            this.listPricingItems = this.listPricingItems.bind(this)
+            this.listProjects = this.listProjects.bind(this)
+            this.updateBlogPost = this.updateBlogPost.bind(this)
             this.updatePricingItem = this.updatePricingItem.bind(this)
+            this.updateProject = this.updateProject.bind(this)
         }
 
         /**
@@ -138,12 +162,122 @@ export namespace admin {
         }
 
         /**
+         * Deletes a blog post.
+         */
+        public async deleteBlogPost(params: { id: number }): Promise<ResponseType<typeof api_admin_content_deleteBlogPost>> {
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/admin/blog/${encodeURIComponent(params.id)}`, {method: "DELETE", body: undefined})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_admin_content_deleteBlogPost>
+        }
+
+        /**
+         * Deletes a pricing item.
+         */
+        public async deletePricingItem(params: { id: number }): Promise<ResponseType<typeof api_admin_content_deletePricingItem>> {
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/admin/pricing/${encodeURIComponent(params.id)}`, {method: "DELETE", body: undefined})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_admin_content_deletePricingItem>
+        }
+
+        /**
+         * Deletes a project.
+         */
+        public async deleteProject(params: { id: number }): Promise<ResponseType<typeof api_admin_content_deleteProject>> {
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/admin/projects/${encodeURIComponent(params.id)}`, {method: "DELETE", body: undefined})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_admin_content_deleteProject>
+        }
+
+        /**
+         * Get a single blog post by ID.
+         */
+        public async getBlogPost(params: { id: number }): Promise<ResponseType<typeof api_admin_content_getBlogPost>> {
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/admin/blog/${encodeURIComponent(params.id)}`, {method: "GET", body: undefined})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_admin_content_getBlogPost>
+        }
+
+        /**
          * Retrieves dashboard overview data for admin users.
          */
         public async getDashboard(): Promise<ResponseType<typeof api_admin_dashboard_getDashboard>> {
             // Now make the actual call to the API
             const resp = await this.baseClient.callTypedAPI(`/admin/dashboard`, {method: "GET", body: undefined})
             return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_admin_dashboard_getDashboard>
+        }
+
+        /**
+         * Get a single pricing item by ID.
+         */
+        public async getPricingItem(params: { id: number }): Promise<ResponseType<typeof api_admin_content_getPricingItem>> {
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/admin/pricing/${encodeURIComponent(params.id)}`, {method: "GET", body: undefined})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_admin_content_getPricingItem>
+        }
+
+        /**
+         * Get a single project by ID.
+         */
+        public async getProject(params: { id: number }): Promise<ResponseType<typeof api_admin_content_getProject>> {
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/admin/projects/${encodeURIComponent(params.id)}`, {method: "GET", body: undefined})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_admin_content_getProject>
+        }
+
+        /**
+         * List all blog posts for admin management.
+         */
+        public async listBlogPosts(params: RequestType<typeof api_admin_content_listBlogPosts>): Promise<ResponseType<typeof api_admin_content_listBlogPosts>> {
+            // Convert our params into the objects we need for the request
+            const query = makeRecord<string, string | string[]>({
+                source: params.source,
+            })
+
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/admin/blog`, {query, method: "GET", body: undefined})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_admin_content_listBlogPosts>
+        }
+
+        /**
+         * List all pricing items for admin management.
+         */
+        public async listPricingItems(): Promise<ResponseType<typeof api_admin_content_listPricingItems>> {
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/admin/pricing`, {method: "GET", body: undefined})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_admin_content_listPricingItems>
+        }
+
+        /**
+         * List all projects for admin management.
+         */
+        public async listProjects(): Promise<ResponseType<typeof api_admin_content_listProjects>> {
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/admin/projects`, {method: "GET", body: undefined})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_admin_content_listProjects>
+        }
+
+        /**
+         * Updates an existing blog post.
+         */
+        public async updateBlogPost(params: RequestType<typeof api_admin_content_updateBlogPost>): Promise<ResponseType<typeof api_admin_content_updateBlogPost>> {
+            // Construct the body with only the fields which we want encoded within the body (excluding query string or header fields)
+            const body: Record<string, any> = {
+                body:          params.body,
+                coverImageUrl: params.coverImageUrl,
+                excerpt:       params.excerpt,
+                gallery:       params.gallery,
+                ideaId:        params.ideaId,
+                scheduledAt:   params.scheduledAt,
+                slug:          params.slug,
+                source:        params.source,
+                status:        params.status,
+                subtitle:      params.subtitle,
+                title:         params.title,
+            }
+
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/admin/blog/${encodeURIComponent(params.id)}`, {method: "PUT", body: JSON.stringify(body)})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_admin_content_updateBlogPost>
         }
 
         /**
@@ -164,6 +298,26 @@ export namespace admin {
             // Now make the actual call to the API
             const resp = await this.baseClient.callTypedAPI(`/admin/pricing/${encodeURIComponent(params.id)}`, {method: "PUT", body: JSON.stringify(body)})
             return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_admin_content_updatePricingItem>
+        }
+
+        /**
+         * Updates an existing project.
+         */
+        public async updateProject(params: RequestType<typeof api_admin_content_updateProject>): Promise<ResponseType<typeof api_admin_content_updateProject>> {
+            // Construct the body with only the fields which we want encoded within the body (excluding query string or header fields)
+            const body: Record<string, any> = {
+                coverImageUrl: params.coverImageUrl,
+                description:   params.description,
+                externalUrl:   params.externalUrl,
+                gallery:       params.gallery,
+                isFeatured:    params.isFeatured,
+                sortOrder:     params.sortOrder,
+                title:         params.title,
+            }
+
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/admin/projects/${encodeURIComponent(params.id)}`, {method: "PUT", body: JSON.stringify(body)})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_admin_content_updateProject>
         }
     }
 }
@@ -212,10 +366,19 @@ import {
     approveDraft as api_ideas_drafts_approveDraft,
     listDrafts as api_ideas_drafts_listDrafts
 } from "~backend/ideas/drafts";
+import {
+    createFeedSource as api_ideas_feeds_createFeedSource,
+    deleteFeedSource as api_ideas_feeds_deleteFeedSource,
+    listFeedSources as api_ideas_feeds_listFeedSources,
+    scrapeFeedSource as api_ideas_feeds_scrapeFeedSource,
+    updateFeedSource as api_ideas_feeds_updateFeedSource
+} from "~backend/ideas/feeds";
 import { ingestIdea as api_ideas_ingest_ingestIdea } from "~backend/ideas/ingest";
 import {
     approveIdea as api_ideas_manage_approveIdea,
-    listIdeas as api_ideas_manage_listIdeas
+    getIdeaPlatforms as api_ideas_manage_getIdeaPlatforms,
+    listIdeas as api_ideas_manage_listIdeas,
+    rejectIdea as api_ideas_manage_rejectIdea
 } from "~backend/ideas/manage";
 
 export namespace ideas {
@@ -227,9 +390,16 @@ export namespace ideas {
             this.baseClient = baseClient
             this.approveDraft = this.approveDraft.bind(this)
             this.approveIdea = this.approveIdea.bind(this)
+            this.createFeedSource = this.createFeedSource.bind(this)
+            this.deleteFeedSource = this.deleteFeedSource.bind(this)
+            this.getIdeaPlatforms = this.getIdeaPlatforms.bind(this)
             this.ingestIdea = this.ingestIdea.bind(this)
             this.listDrafts = this.listDrafts.bind(this)
+            this.listFeedSources = this.listFeedSources.bind(this)
             this.listIdeas = this.listIdeas.bind(this)
+            this.rejectIdea = this.rejectIdea.bind(this)
+            this.scrapeFeedSource = this.scrapeFeedSource.bind(this)
+            this.updateFeedSource = this.updateFeedSource.bind(this)
         }
 
         /**
@@ -262,6 +432,33 @@ export namespace ideas {
         }
 
         /**
+         * Creates a new feed source
+         */
+        public async createFeedSource(params: RequestType<typeof api_ideas_feeds_createFeedSource>): Promise<ResponseType<typeof api_ideas_feeds_createFeedSource>> {
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/ideas/feeds`, {method: "POST", body: JSON.stringify(params)})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_ideas_feeds_createFeedSource>
+        }
+
+        /**
+         * Deletes a feed source
+         */
+        public async deleteFeedSource(params: { id: number }): Promise<ResponseType<typeof api_ideas_feeds_deleteFeedSource>> {
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/ideas/feeds/${encodeURIComponent(params.id)}`, {method: "DELETE", body: undefined})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_ideas_feeds_deleteFeedSource>
+        }
+
+        /**
+         * Gets existing platform selections for an idea
+         */
+        public async getIdeaPlatforms(params: { id: number }): Promise<ResponseType<typeof api_ideas_manage_getIdeaPlatforms>> {
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/ideas/${encodeURIComponent(params.id)}/platforms`, {method: "GET", body: undefined})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_ideas_manage_getIdeaPlatforms>
+        }
+
+        /**
          * Ingests a new idea from URL or text and generates a summary.
          */
         public async ingestIdea(params: RequestType<typeof api_ideas_ingest_ingestIdea>): Promise<ResponseType<typeof api_ideas_ingest_ingestIdea>> {
@@ -288,6 +485,22 @@ export namespace ideas {
         }
 
         /**
+         * Lists all feed sources
+         */
+        public async listFeedSources(params: RequestType<typeof api_ideas_feeds_listFeedSources>): Promise<ResponseType<typeof api_ideas_feeds_listFeedSources>> {
+            // Convert our params into the objects we need for the request
+            const query = makeRecord<string, string | string[]>({
+                active: params.active === undefined ? undefined : String(params.active),
+                limit:  params.limit === undefined ? undefined : String(params.limit),
+                offset: params.offset === undefined ? undefined : String(params.offset),
+            })
+
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/ideas/feeds`, {query, method: "GET", body: undefined})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_ideas_feeds_listFeedSources>
+        }
+
+        /**
          * Retrieves ideas filtered by status.
          */
         public async listIdeas(params: RequestType<typeof api_ideas_manage_listIdeas>): Promise<ResponseType<typeof api_ideas_manage_listIdeas>> {
@@ -301,6 +514,117 @@ export namespace ideas {
             // Now make the actual call to the API
             const resp = await this.baseClient.callTypedAPI(`/ideas`, {query, method: "GET", body: undefined})
             return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_ideas_manage_listIdeas>
+        }
+
+        /**
+         * Rejects an idea
+         */
+        public async rejectIdea(params: { id: number }): Promise<ResponseType<typeof api_ideas_manage_rejectIdea>> {
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/ideas/${encodeURIComponent(params.id)}/reject`, {method: "POST", body: undefined})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_ideas_manage_rejectIdea>
+        }
+
+        /**
+         * Manually triggers scraping of a specific feed source
+         */
+        public async scrapeFeedSource(params: { id: number }): Promise<ResponseType<typeof api_ideas_feeds_scrapeFeedSource>> {
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/ideas/feeds/${encodeURIComponent(params.id)}/scrape`, {method: "POST", body: undefined})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_ideas_feeds_scrapeFeedSource>
+        }
+
+        /**
+         * Updates a feed source
+         */
+        public async updateFeedSource(params: RequestType<typeof api_ideas_feeds_updateFeedSource>): Promise<ResponseType<typeof api_ideas_feeds_updateFeedSource>> {
+            // Construct the body with only the fields which we want encoded within the body (excluding query string or header fields)
+            const body: Record<string, any> = {
+                isActive: params.isActive,
+                name:     params.name,
+                url:      params.url,
+            }
+
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/ideas/feeds/${encodeURIComponent(params.id)}`, {method: "PUT", body: JSON.stringify(body)})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_ideas_feeds_updateFeedSource>
+        }
+    }
+}
+
+/**
+ * Import the endpoint handlers to derive the types for the client.
+ */
+import {
+    confirmUpload as api_uploads_files_confirmUpload,
+    deleteFile as api_uploads_files_deleteFile,
+    getFile as api_uploads_files_getFile,
+    getUploadUrl as api_uploads_files_getUploadUrl,
+    listFiles as api_uploads_files_listFiles
+} from "~backend/uploads/files";
+
+export namespace uploads {
+
+    export class ServiceClient {
+        private baseClient: BaseClient
+
+        constructor(baseClient: BaseClient) {
+            this.baseClient = baseClient
+            this.confirmUpload = this.confirmUpload.bind(this)
+            this.deleteFile = this.deleteFile.bind(this)
+            this.getFile = this.getFile.bind(this)
+            this.getUploadUrl = this.getUploadUrl.bind(this)
+            this.listFiles = this.listFiles.bind(this)
+        }
+
+        /**
+         * Confirm upload completion and update file size
+         */
+        public async confirmUpload(params: RequestType<typeof api_uploads_files_confirmUpload>): Promise<ResponseType<typeof api_uploads_files_confirmUpload>> {
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/uploads/confirm`, {method: "POST", body: JSON.stringify(params)})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_uploads_files_confirmUpload>
+        }
+
+        /**
+         * Delete a file
+         */
+        public async deleteFile(params: { id: string }): Promise<ResponseType<typeof api_uploads_files_deleteFile>> {
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/uploads/${encodeURIComponent(params.id)}`, {method: "DELETE", body: undefined})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_uploads_files_deleteFile>
+        }
+
+        /**
+         * Get file metadata
+         */
+        public async getFile(params: { id: string }): Promise<ResponseType<typeof api_uploads_files_getFile>> {
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/uploads/${encodeURIComponent(params.id)}`, {method: "GET", body: undefined})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_uploads_files_getFile>
+        }
+
+        /**
+         * Get a signed upload URL for client-side uploads
+         */
+        public async getUploadUrl(params: RequestType<typeof api_uploads_files_getUploadUrl>): Promise<ResponseType<typeof api_uploads_files_getUploadUrl>> {
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/uploads/url`, {method: "POST", body: JSON.stringify(params)})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_uploads_files_getUploadUrl>
+        }
+
+        /**
+         * List files by category
+         */
+        public async listFiles(params: RequestType<typeof api_uploads_files_listFiles>): Promise<ResponseType<typeof api_uploads_files_listFiles>> {
+            // Convert our params into the objects we need for the request
+            const query = makeRecord<string, string | string[]>({
+                category: params.category,
+            })
+
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/uploads`, {query, method: "GET", body: undefined})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_uploads_files_listFiles>
         }
     }
 }

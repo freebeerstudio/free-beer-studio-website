@@ -32,7 +32,7 @@ export default function BlogPage() {
             <h1 className="text-4xl sm:text-5xl font-bold font-['Architects_Daughter'] mb-4">
               AI Insights & <span className="text-launch-orange">Innovation</span>
             </h1>
-            <p className="text-xl text-rocket-gray max-w-3xl mx-auto">
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
               Stay ahead of the curve with our latest thoughts on AI automation, industry trends, and practical guides.
             </p>
           </div>
@@ -72,7 +72,7 @@ export default function BlogPage() {
                   </div>
 
                   <CardHeader>
-                    <div className="flex items-center space-x-4 text-sm text-rocket-gray mb-3">
+                    <div className="flex items-center space-x-4 text-sm text-gray-400 mb-3">
                       <div className="flex items-center">
                         <Calendar className="w-4 h-4 mr-1" />
                         {formatDate(post.publishedAt ? post.publishedAt.toString() : null)}
@@ -92,7 +92,7 @@ export default function BlogPage() {
                     </CardTitle>
                     
                     {post.subtitle && (
-                      <CardDescription className="text-rocket-gray line-clamp-2">
+                      <CardDescription className="text-gray-300 line-clamp-2">
                         {post.subtitle}
                       </CardDescription>
                     )}
@@ -100,7 +100,7 @@ export default function BlogPage() {
 
                   <CardContent>
                     {post.excerpt && (
-                      <p className="text-rocket-gray text-sm line-clamp-3 mb-4">
+                      <p className="text-gray-300 text-sm line-clamp-3 mb-4">
                         {post.excerpt}
                       </p>
                     )}
@@ -124,13 +124,13 @@ export default function BlogPage() {
 
           {blogData?.posts.length === 0 && !isLoading && (
             <div className="text-center py-12">
-              <div className="w-24 h-24 rounded-full bg-rocket-gray/20 flex items-center justify-center mx-auto mb-6">
-                <FileText className="w-12 h-12 text-rocket-gray" />
+              <div className="w-24 h-24 rounded-full bg-gray-700/50 flex items-center justify-center mx-auto mb-6">
+                <FileText className="w-12 h-12 text-gray-400" />
               </div>
               <h3 className="text-xl font-bold text-cloud-white mb-2">
                 Blog Posts Coming Soon
               </h3>
-              <p className="text-rocket-gray max-w-md mx-auto">
+              <p className="text-gray-300 max-w-md mx-auto">
                 We're working on some great content about AI automation and industry insights. Check back soon!
               </p>
             </div>
@@ -142,7 +142,7 @@ export default function BlogPage() {
               <h2 className="text-3xl font-bold font-['Architects_Daughter'] mb-4">
                 Never Miss an Update
               </h2>
-              <p className="text-xl text-rocket-gray mb-8 max-w-2xl mx-auto">
+              <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
                 Subscribe to our newsletter for the latest AI automation insights, tips, and industry news.
               </p>
               <Button 

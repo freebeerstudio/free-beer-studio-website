@@ -128,13 +128,13 @@ export default function PortfolioPage() {
 
           {portfolioData?.projects.length === 0 && !isLoading && (
             <div className="text-center py-12">
-              <div className="w-24 h-24 rounded-full bg-rocket-gray/20 flex items-center justify-center mx-auto mb-6">
-                <Star className="w-12 h-12 text-rocket-gray" />
+              <div className="w-24 h-24 rounded-full bg-gray-700/50 flex items-center justify-center mx-auto mb-6">
+                <Star className="w-12 h-12 text-gray-400" />
               </div>
               <h3 className="text-xl font-bold text-cloud-white mb-2">
                 Portfolio Coming Soon
               </h3>
-              <p className="text-rocket-gray max-w-md mx-auto">
+              <p className="text-gray-300 max-w-md mx-auto">
                 We're working on showcasing our amazing AI automation projects. Check back soon!
               </p>
             </div>

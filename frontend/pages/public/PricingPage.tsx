@@ -22,7 +22,7 @@ export default function PricingPage() {
             <h1 className="text-4xl sm:text-5xl font-bold font-['Architects_Daughter'] mb-4">
               Choose Your <span className="text-launch-orange">Launch Package</span>
             </h1>
-            <p className="text-xl text-rocket-gray max-w-3xl mx-auto">
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
               From startup automation to enterprise AI transformation, we have the right solution for your business.
             </p>
           </div>
@@ -58,7 +58,7 @@ export default function PricingPage() {
                     <CardTitle className="text-xl font-bold text-cloud-white">
                       {item.title}
                     </CardTitle>
-                    <CardDescription className="text-rocket-gray">
+                    <CardDescription className="text-gray-300">
                       {item.description}
                     </CardDescription>
                     <div className="mt-4">
@@ -79,7 +79,7 @@ export default function PricingPage() {
                       {item.features.map((feature, index) => (
                         <li key={index} className="flex items-start">
                           <Check className="w-5 h-5 text-vapor-purple mr-2 mt-0.5 flex-shrink-0" />
-                          <span className="text-sm text-rocket-gray">{feature}</span>
+                          <span className="text-sm text-gray-300">{feature}</span>
                         </li>
                       ))}
                     </ul>
