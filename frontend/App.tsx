@@ -17,7 +17,7 @@ import RegisterPage from './pages/auth/RegisterPage';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminIdeasPage from './pages/admin/AdminIdeasPage';
 import AdminContentPage from './pages/admin/AdminContentPage';
-import AdminContactsPage from './pages/admin/AdminContactsPage';
+import AdminCRMPage from './pages/admin/AdminCRMPage';
 import AdminSettingsPage from './pages/admin/AdminSettingsPage';
 import AdminPricingPage from './pages/admin/AdminPricingPage';
 import AdminProjectsPage from './pages/admin/AdminProjectsPage';
@@ -68,7 +68,8 @@ function AppInner() {
       <Route path="/admin/pricing" element={<AdminPricingPage />} />
       <Route path="/admin/projects" element={<AdminProjectsPage />} />
       <Route path="/admin/blog" element={<AdminBlogPage />} />
-      <Route path="/admin/contacts" element={<AdminContactsPage />} />
+      <Route path="/admin/contacts" element={<AdminCRMPage />} />
+      <Route path="/admin/crm" element={<AdminCRMPage />} />
       <Route path="/admin/settings" element={<AdminSettingsPage />} />
       
       {/* Redirect login/register to admin for testing */}
