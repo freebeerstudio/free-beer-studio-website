@@ -294,6 +294,8 @@ export default function AdminIdeasPage() {
   };
 
   const handleSaveStyleGuide = (platform: string, data: { guidelines: string; prompt: string; exampleFiles: string[] }) => {
+    console.log('handleSaveStyleGuide called for platform:', platform);
+    console.log('Data to save:', data);
     saveStyleGuideMutation.mutate({
       platform,
       guidelines: data.guidelines,
@@ -1222,9 +1224,11 @@ function StyleGuideCard({ platform, data, onSave, isSaving }: StyleGuideCardProp
 
   // Update local data when prop changes
   useEffect(() => {
+    console.log('StyleGuideCard useEffect triggered for platform:', platform.id);
+    console.log('Incoming data:', data);
     setLocalData(data);
     setHasChanges(false);
-  }, [data]);
+  }, [data, platform.id]);
 
   const handleFileUploaded = (url: string, fileId: string) => {
     const newExampleFiles = [...(localData.exampleFiles || []), url];
@@ -1243,6 +1247,10 @@ function StyleGuideCard({ platform, data, onSave, isSaving }: StyleGuideCardProp
     const textExample = `text:${Date.now()}:${newTextExample.trim()}`;
     const newExampleFiles = [...(localData.exampleFiles || []), textExample];
     const newData = { ...localData, exampleFiles: newExampleFiles };
+    
+    console.log('Adding text example:', textExample);
+    console.log('New example files array:', newExampleFiles);
+    
     setLocalData(newData);
     setNewTextExample('');
     
