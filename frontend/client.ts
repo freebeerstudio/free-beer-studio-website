@@ -35,7 +35,9 @@ const BROWSER = typeof globalThis === "object" && ("window" in globalThis);
 export class Client {
     public readonly admin: admin.ServiceClient
     public readonly auth: auth.ServiceClient
+    public readonly crm: crm.ServiceClient
     public readonly ideas: ideas.ServiceClient
+    public readonly style_guides: style_guides.ServiceClient
     public readonly uploads: uploads.ServiceClient
     public readonly website: website.ServiceClient
     private readonly options: ClientOptions
@@ -54,7 +56,9 @@ export class Client {
         const base = new BaseClient(this.target, this.options)
         this.admin = new admin.ServiceClient(base)
         this.auth = new auth.ServiceClient(base)
+        this.crm = new crm.ServiceClient(base)
         this.ideas = new ideas.ServiceClient(base)
+        this.style_guides = new style_guides.ServiceClient(base)
         this.uploads = new uploads.ServiceClient(base)
         this.website = new website.ServiceClient(base)
     }
@@ -363,6 +367,155 @@ export namespace auth {
  * Import the endpoint handlers to derive the types for the client.
  */
 import {
+    createContact as api_crm_contacts_createContact,
+    deleteContact as api_crm_contacts_deleteContact,
+    getContact as api_crm_contacts_getContact,
+    listContacts as api_crm_contacts_listContacts,
+    updateContact as api_crm_contacts_updateContact
+} from "~backend/crm/contacts";
+import {
+    createContext as api_crm_contexts_createContext,
+    listContexts as api_crm_contexts_listContexts,
+    updateContext as api_crm_contexts_updateContext
+} from "~backend/crm/contexts";
+
+export namespace crm {
+
+    export class ServiceClient {
+        private baseClient: BaseClient
+
+        constructor(baseClient: BaseClient) {
+            this.baseClient = baseClient
+            this.createContact = this.createContact.bind(this)
+            this.createContext = this.createContext.bind(this)
+            this.deleteContact = this.deleteContact.bind(this)
+            this.getContact = this.getContact.bind(this)
+            this.listContacts = this.listContacts.bind(this)
+            this.listContexts = this.listContexts.bind(this)
+            this.updateContact = this.updateContact.bind(this)
+            this.updateContext = this.updateContext.bind(this)
+        }
+
+        /**
+         * Create a new contact
+         */
+        public async createContact(params: RequestType<typeof api_crm_contacts_createContact>): Promise<ResponseType<typeof api_crm_contacts_createContact>> {
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/crm/contacts`, {method: "POST", body: JSON.stringify(params)})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_crm_contacts_createContact>
+        }
+
+        /**
+         * Create a new context
+         */
+        public async createContext(params: RequestType<typeof api_crm_contexts_createContext>): Promise<ResponseType<typeof api_crm_contexts_createContext>> {
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/crm/contexts`, {method: "POST", body: JSON.stringify(params)})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_crm_contexts_createContext>
+        }
+
+        /**
+         * Delete a contact
+         */
+        public async deleteContact(params: { id: number }): Promise<ResponseType<typeof api_crm_contacts_deleteContact>> {
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/crm/contacts/${encodeURIComponent(params.id)}`, {method: "DELETE", body: undefined})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_crm_contacts_deleteContact>
+        }
+
+        /**
+         * Get a single contact by ID
+         */
+        public async getContact(params: { id: number }): Promise<ResponseType<typeof api_crm_contacts_getContact>> {
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/crm/contacts/${encodeURIComponent(params.id)}`, {method: "GET", body: undefined})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_crm_contacts_getContact>
+        }
+
+        /**
+         * List contacts with filtering
+         */
+        public async listContacts(params: RequestType<typeof api_crm_contacts_listContacts>): Promise<ResponseType<typeof api_crm_contacts_listContacts>> {
+            // Convert our params into the objects we need for the request
+            const query = makeRecord<string, string | string[]>({
+                companyId: params.companyId === undefined ? undefined : String(params.companyId),
+                contextId: params.contextId === undefined ? undefined : String(params.contextId),
+                limit:     params.limit === undefined ? undefined : String(params.limit),
+                offset:    params.offset === undefined ? undefined : String(params.offset),
+                search:    params.search,
+                status:    params.status,
+            })
+
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/crm/contacts`, {query, method: "GET", body: undefined})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_crm_contacts_listContacts>
+        }
+
+        /**
+         * List all contexts
+         */
+        public async listContexts(): Promise<ResponseType<typeof api_crm_contexts_listContexts>> {
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/crm/contexts`, {method: "GET", body: undefined})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_crm_contexts_listContexts>
+        }
+
+        /**
+         * Update a contact
+         */
+        public async updateContact(params: RequestType<typeof api_crm_contacts_updateContact>): Promise<ResponseType<typeof api_crm_contacts_updateContact>> {
+            // Construct the body with only the fields which we want encoded within the body (excluding query string or header fields)
+            const body: Record<string, any> = {
+                address:     params.address,
+                birthday:    params.birthday,
+                city:        params.city,
+                companyId:   params.companyId,
+                contextId:   params.contextId,
+                country:     params.country,
+                email:       params.email,
+                firstName:   params.firstName,
+                lastName:    params.lastName,
+                linkedinUrl: params.linkedinUrl,
+                mobile:      params.mobile,
+                phone:       params.phone,
+                postalCode:  params.postalCode,
+                source:      params.source,
+                state:       params.state,
+                status:      params.status,
+                tags:        params.tags,
+                title:       params.title,
+                twitterUrl:  params.twitterUrl,
+                website:     params.website,
+            }
+
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/crm/contacts/${encodeURIComponent(params.id)}`, {method: "PUT", body: JSON.stringify(body)})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_crm_contacts_updateContact>
+        }
+
+        /**
+         * Update a context
+         */
+        public async updateContext(params: RequestType<typeof api_crm_contexts_updateContext>): Promise<ResponseType<typeof api_crm_contexts_updateContext>> {
+            // Construct the body with only the fields which we want encoded within the body (excluding query string or header fields)
+            const body: Record<string, any> = {
+                color:       params.color,
+                description: params.description,
+                isActive:    params.isActive,
+                name:        params.name,
+            }
+
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/crm/contexts/${encodeURIComponent(params.id)}`, {method: "PUT", body: JSON.stringify(body)})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_crm_contexts_updateContext>
+        }
+    }
+}
+
+/**
+ * Import the endpoint handlers to derive the types for the client.
+ */
+import {
     approveDraft as api_ideas_drafts_approveDraft,
     listDrafts as api_ideas_drafts_listDrafts
 } from "~backend/ideas/drafts";
@@ -376,9 +529,12 @@ import {
 import { ingestIdea as api_ideas_ingest_ingestIdea } from "~backend/ideas/ingest";
 import {
     approveIdea as api_ideas_manage_approveIdea,
+    cancelScheduledPost as api_ideas_manage_cancelScheduledPost,
     getIdeaPlatforms as api_ideas_manage_getIdeaPlatforms,
     listIdeas as api_ideas_manage_listIdeas,
-    rejectIdea as api_ideas_manage_rejectIdea
+    listScheduledPosts as api_ideas_manage_listScheduledPosts,
+    rejectIdea as api_ideas_manage_rejectIdea,
+    updateScheduledPost as api_ideas_manage_updateScheduledPost
 } from "~backend/ideas/manage";
 
 export namespace ideas {
@@ -390,6 +546,7 @@ export namespace ideas {
             this.baseClient = baseClient
             this.approveDraft = this.approveDraft.bind(this)
             this.approveIdea = this.approveIdea.bind(this)
+            this.cancelScheduledPost = this.cancelScheduledPost.bind(this)
             this.createFeedSource = this.createFeedSource.bind(this)
             this.deleteFeedSource = this.deleteFeedSource.bind(this)
             this.getIdeaPlatforms = this.getIdeaPlatforms.bind(this)
@@ -397,9 +554,11 @@ export namespace ideas {
             this.listDrafts = this.listDrafts.bind(this)
             this.listFeedSources = this.listFeedSources.bind(this)
             this.listIdeas = this.listIdeas.bind(this)
+            this.listScheduledPosts = this.listScheduledPosts.bind(this)
             this.rejectIdea = this.rejectIdea.bind(this)
             this.scrapeFeedSource = this.scrapeFeedSource.bind(this)
             this.updateFeedSource = this.updateFeedSource.bind(this)
+            this.updateScheduledPost = this.updateScheduledPost.bind(this)
         }
 
         /**
@@ -429,6 +588,15 @@ export namespace ideas {
             // Now make the actual call to the API
             const resp = await this.baseClient.callTypedAPI(`/ideas/${encodeURIComponent(params.id)}/approve`, {method: "POST", body: JSON.stringify(body)})
             return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_ideas_manage_approveIdea>
+        }
+
+        /**
+         * Cancel a scheduled post
+         */
+        public async cancelScheduledPost(params: { id: number }): Promise<ResponseType<typeof api_ideas_manage_cancelScheduledPost>> {
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/ideas/scheduled/${encodeURIComponent(params.id)}`, {method: "DELETE", body: undefined})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_ideas_manage_cancelScheduledPost>
         }
 
         /**
@@ -517,6 +685,15 @@ export namespace ideas {
         }
 
         /**
+         * Get all scheduled posts grouped by platform
+         */
+        public async listScheduledPosts(): Promise<ResponseType<typeof api_ideas_manage_listScheduledPosts>> {
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/ideas/scheduled`, {method: "GET", body: undefined})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_ideas_manage_listScheduledPosts>
+        }
+
+        /**
          * Rejects an idea
          */
         public async rejectIdea(params: { id: number }): Promise<ResponseType<typeof api_ideas_manage_rejectIdea>> {
@@ -548,6 +725,89 @@ export namespace ideas {
             // Now make the actual call to the API
             const resp = await this.baseClient.callTypedAPI(`/ideas/feeds/${encodeURIComponent(params.id)}`, {method: "PUT", body: JSON.stringify(body)})
             return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_ideas_feeds_updateFeedSource>
+        }
+
+        /**
+         * Update a scheduled post (reschedule or edit content)
+         */
+        public async updateScheduledPost(params: RequestType<typeof api_ideas_manage_updateScheduledPost>): Promise<ResponseType<typeof api_ideas_manage_updateScheduledPost>> {
+            // Construct the body with only the fields which we want encoded within the body (excluding query string or header fields)
+            const body: Record<string, any> = {
+                draftContent: params.draftContent,
+                scheduledAt:  params.scheduledAt,
+            }
+
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/ideas/scheduled/${encodeURIComponent(params.id)}`, {method: "PUT", body: JSON.stringify(body)})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_ideas_manage_updateScheduledPost>
+        }
+    }
+}
+
+/**
+ * Import the endpoint handlers to derive the types for the client.
+ */
+import {
+    deleteStyleGuide as api_style_guides_manage_deleteStyleGuide,
+    getStyleGuide as api_style_guides_manage_getStyleGuide,
+    listStyleGuides as api_style_guides_manage_listStyleGuides,
+    saveStyleGuide as api_style_guides_manage_saveStyleGuide
+} from "~backend/style-guides/manage";
+
+export namespace style_guides {
+
+    export class ServiceClient {
+        private baseClient: BaseClient
+
+        constructor(baseClient: BaseClient) {
+            this.baseClient = baseClient
+            this.deleteStyleGuide = this.deleteStyleGuide.bind(this)
+            this.getStyleGuide = this.getStyleGuide.bind(this)
+            this.listStyleGuides = this.listStyleGuides.bind(this)
+            this.saveStyleGuide = this.saveStyleGuide.bind(this)
+        }
+
+        /**
+         * Delete style guide
+         */
+        public async deleteStyleGuide(params: { platform: string }): Promise<ResponseType<typeof api_style_guides_manage_deleteStyleGuide>> {
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/style-guides/${encodeURIComponent(params.platform)}`, {method: "DELETE", body: undefined})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_style_guides_manage_deleteStyleGuide>
+        }
+
+        /**
+         * Get style guide by platform
+         */
+        public async getStyleGuide(params: { platform: string }): Promise<ResponseType<typeof api_style_guides_manage_getStyleGuide>> {
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/style-guides/${encodeURIComponent(params.platform)}`, {method: "GET", body: undefined})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_style_guides_manage_getStyleGuide>
+        }
+
+        /**
+         * Get all style guides
+         */
+        public async listStyleGuides(): Promise<ResponseType<typeof api_style_guides_manage_listStyleGuides>> {
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/style-guides`, {method: "GET", body: undefined})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_style_guides_manage_listStyleGuides>
+        }
+
+        /**
+         * Create or update style guide (upsert)
+         */
+        public async saveStyleGuide(params: RequestType<typeof api_style_guides_manage_saveStyleGuide>): Promise<ResponseType<typeof api_style_guides_manage_saveStyleGuide>> {
+            // Construct the body with only the fields which we want encoded within the body (excluding query string or header fields)
+            const body: Record<string, any> = {
+                aiPrompt:     params.aiPrompt,
+                exampleFiles: params.exampleFiles,
+                guidelines:   params.guidelines,
+            }
+
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/style-guides/${encodeURIComponent(params.platform)}`, {method: "POST", body: JSON.stringify(body)})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_style_guides_manage_saveStyleGuide>
         }
     }
 }
