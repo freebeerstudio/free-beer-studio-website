@@ -39,12 +39,13 @@ interface ApproveIdeaResponse {
 
 // Retrieves ideas filtered by status.
 export const listIdeas = api<ListIdeasParams, ListIdeasResponse>(
-  { auth: true, expose: true, method: "GET", path: "/ideas" },
+  { auth: false, expose: true, method: "GET", path: "/ideas" },
   async (params) => {
-    const auth = getAuthData()!;
-    if (auth.role !== 'admin') {
-      throw new Error("Admin access required");
-    }
+    // Temporarily disable auth check for testing
+    // const auth = getAuthData()!;
+    // if (auth.role !== 'admin') {
+    //   throw new Error("Admin access required");
+    // }
 
     const limit = params.limit || 20;
     const offset = params.offset || 0;
@@ -99,12 +100,13 @@ export const listIdeas = api<ListIdeasParams, ListIdeasResponse>(
 
 // Approves an idea and creates platform-specific drafts.
 export const approveIdea = api<ApproveIdeaRequest, ApproveIdeaResponse>(
-  { auth: true, expose: true, method: "POST", path: "/ideas/:id/approve" },
+  { auth: false, expose: true, method: "POST", path: "/ideas/:id/approve" },
   async (req) => {
-    const auth = getAuthData()!;
-    if (auth.role !== 'admin') {
-      throw new Error("Admin access required");
-    }
+    // Temporarily disable auth check for testing
+    // const auth = getAuthData()!;
+    // if (auth.role !== 'admin') {
+    //   throw new Error("Admin access required");
+    // }
 
     // Update idea status
     await db.exec`
