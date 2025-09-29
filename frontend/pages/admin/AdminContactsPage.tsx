@@ -5,19 +5,19 @@ export default function AdminContactsPage() {
   return (
     <AdminLayout>
       <div className="space-y-6">
-        <h1 className="text-3xl font-bold text-cloud-white font-['Architects_Daughter']">
+        <h1 className="text-3xl font-bold text-gray-900 font-['Architects_Daughter']">
           Contact Submissions
         </h1>
 
-        <Card className="bg-rocket-gray/10 border-rocket-gray/20">
+        <Card className="bg-white border-gray-200">
           <CardHeader>
-            <CardTitle className="text-cloud-white">Recent Submissions</CardTitle>
-            <CardDescription className="text-rocket-gray">
+            <CardTitle className="text-gray-900">Recent Submissions</CardTitle>
+            <CardDescription className="text-gray-600">
               Manage contact form submissions and leads
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-rocket-gray text-sm">Coming soon...</p>
+            <p className="text-gray-600 text-sm">Coming soon...</p>
           </CardContent>
         </Card>
       </div>

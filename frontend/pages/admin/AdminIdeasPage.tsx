@@ -95,7 +95,7 @@ export default function AdminIdeasPage() {
     <AdminLayout>
       <div className="space-y-6">
         <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-cloud-white font-['Architects_Daughter']">
+          <h1 className="text-3xl font-bold text-gray-900 font-['Architects_Daughter']">
             Idea Engine
           </h1>
         </div>
@@ -115,10 +115,10 @@ export default function AdminIdeasPage() {
 
           {/* Ingest Tab */}
           <TabsContent value="ingest" className="space-y-6">
-            <Card className="bg-rocket-gray/10 border-rocket-gray/20">
+            <Card className="bg-white border-gray-200">
               <CardHeader>
-                <CardTitle className="text-cloud-white">Add New Idea</CardTitle>
-                <CardDescription className="text-rocket-gray">
+                <CardTitle className="text-gray-900">Add New Idea</CardTitle>
+                <CardDescription className="text-gray-600">
                   Submit a URL or text to generate content ideas
                 </CardDescription>
               </CardHeader>
@@ -145,14 +145,14 @@ export default function AdminIdeasPage() {
                     placeholder="https://example.com/article"
                     value={newIdeaInput}
                     onChange={(e) => setNewIdeaInput(e.target.value)}
-                    className="bg-jet-black border-rocket-gray text-cloud-white"
+                    className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-400"
                   />
                 ) : (
                   <Textarea
                     placeholder="Enter your idea or paste text content..."
                     value={newIdeaInput}
                     onChange={(e) => setNewIdeaInput(e.target.value)}
-                    className="bg-jet-black border-rocket-gray text-cloud-white min-h-[100px]"
+                    className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 min-h-[100px]"
                   />
                 )}
 
@@ -173,7 +173,7 @@ export default function AdminIdeasPage() {
             {ideasLoading ? (
               <div className="grid gap-4">
                 {[...Array(3)].map((_, i) => (
-                  <Card key={i} className="bg-rocket-gray/10 border-rocket-gray/20 animate-pulse">
+                  <Card key={i} className="bg-white border-gray-200 animate-pulse">
                     <CardHeader className="h-24"></CardHeader>
                     <CardContent className="h-32"></CardContent>
                   </Card>
@@ -190,9 +190,9 @@ export default function AdminIdeasPage() {
                   />
                 ))}
                 {ideasData?.ideas.length === 0 && (
-                  <Card className="bg-rocket-gray/10 border-rocket-gray/20">
+                  <Card className="bg-white border-gray-200">
                     <CardContent className="text-center py-12">
-                      <p className="text-rocket-gray">No ideas found. Start by ingesting some content!</p>
+                      <p className="text-gray-600">No ideas found. Start by ingesting some content!</p>
                     </CardContent>
                   </Card>
                 )}
@@ -205,7 +205,7 @@ export default function AdminIdeasPage() {
             {draftsLoading ? (
               <div className="grid gap-4">
                 {[...Array(3)].map((_, i) => (
-                  <Card key={i} className="bg-rocket-gray/10 border-rocket-gray/20 animate-pulse">
+                  <Card key={i} className="bg-white border-gray-200 animate-pulse">
                     <CardHeader className="h-24"></CardHeader>
                     <CardContent className="h-32"></CardContent>
                   </Card>
@@ -217,9 +217,9 @@ export default function AdminIdeasPage() {
                   <DraftCard key={draft.id} draft={draft} />
                 ))}
                 {draftsData?.drafts.length === 0 && (
-                  <Card className="bg-rocket-gray/10 border-rocket-gray/20">
+                  <Card className="bg-white border-gray-200">
                     <CardContent className="text-center py-12">
-                      <p className="text-rocket-gray">No drafts found. Approve some ideas to create drafts!</p>
+                      <p className="text-gray-600">No drafts found. Approve some ideas to create drafts!</p>
                     </CardContent>
                   </Card>
                 )}
@@ -261,22 +261,22 @@ function IdeaCard({ idea, onApprove, isApproving }: IdeaCardProps) {
     switch (status) {
       case 'new': return 'bg-vapor-purple/20 text-vapor-purple';
       case 'approved': return 'bg-smoky-lavender/20 text-smoky-lavender';
-      case 'rejected': return 'bg-rocket-gray/20 text-rocket-gray';
-      default: return 'bg-rocket-gray/20 text-rocket-gray';
+      case 'rejected': return 'bg-rocket-gray/20 text-gray-600';
+      default: return 'bg-rocket-gray/20 text-gray-600';
     }
   };
 
   return (
-    <Card className="bg-rocket-gray/10 border-rocket-gray/20">
+    <Card className="bg-white border-gray-200">
       <CardHeader>
         <div className="flex justify-between items-start">
           <div className="flex-1">
-            <CardTitle className="text-cloud-white text-lg">
+            <CardTitle className="text-gray-900 text-lg">
               {idea.title || 'Untitled Idea'}
             </CardTitle>
             <div className="flex items-center space-x-2 mt-2">
               <Badge className={getStatusColor(idea.status)}>{idea.status}</Badge>
-              <Badge variant="outline" className="text-rocket-gray border-rocket-gray">
+              <Badge variant="outline" className="text-gray-600 border-rocket-gray">
                 {idea.inputType}
               </Badge>
             </div>
@@ -293,24 +293,24 @@ function IdeaCard({ idea, onApprove, isApproving }: IdeaCardProps) {
       
       <CardContent className="space-y-4">
         {idea.summary && (
-          <p className="text-rocket-gray text-sm">{idea.summary}</p>
+          <p className="text-gray-600 text-sm">{idea.summary}</p>
         )}
         
         {idea.keyPoints && idea.keyPoints.length > 0 && (
           <div>
-            <h4 className="text-cloud-white font-medium mb-2">Key Points:</h4>
+            <h4 className="text-gray-900 font-medium mb-2">Key Points:</h4>
             <ul className="list-disc list-inside space-y-1">
               {idea.keyPoints.map((point: string, index: number) => (
-                <li key={index} className="text-rocket-gray text-sm">{point}</li>
+                <li key={index} className="text-gray-600 text-sm">{point}</li>
               ))}
             </ul>
           </div>
         )}
 
         {idea.status === 'new' && (
-          <div className="space-y-4 border-t border-rocket-gray/20 pt-4">
+          <div className="space-y-4 border-t border-gray-200 pt-4">
             <div>
-              <h4 className="text-cloud-white font-medium mb-2">Select Platforms:</h4>
+              <h4 className="text-gray-900 font-medium mb-2">Select Platforms:</h4>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                 {platforms.map((platform) => (
                   <div key={platform.id} className="flex items-center space-x-2">
@@ -321,7 +321,7 @@ function IdeaCard({ idea, onApprove, isApproving }: IdeaCardProps) {
                     />
                     <label
                       htmlFor={`${idea.id}-${platform.id}`}
-                      className="text-sm text-cloud-white cursor-pointer"
+                      className="text-sm text-gray-900 cursor-pointer"
                     >
                       {platform.label}
                     </label>
@@ -339,7 +339,7 @@ function IdeaCard({ idea, onApprove, isApproving }: IdeaCardProps) {
                 <Check className="mr-2 w-4 h-4" />
                 Approve
               </Button>
-              <Button variant="outline" className="border-rocket-gray text-rocket-gray">
+              <Button variant="outline" className="border-rocket-gray text-gray-600">
                 <X className="mr-2 w-4 h-4" />
                 Reject
               </Button>
@@ -362,22 +362,22 @@ function DraftCard({ draft }: DraftCardProps) {
       case 'approved': return 'bg-smoky-lavender/20 text-smoky-lavender';
       case 'scheduled': return 'bg-vapor-purple/20 text-vapor-purple';
       case 'published': return 'bg-smoky-lavender/20 text-smoky-lavender';
-      case 'rejected': return 'bg-rocket-gray/20 text-rocket-gray';
-      default: return 'bg-rocket-gray/20 text-rocket-gray';
+      case 'rejected': return 'bg-rocket-gray/20 text-gray-600';
+      default: return 'bg-rocket-gray/20 text-gray-600';
     }
   };
 
   return (
-    <Card className="bg-rocket-gray/10 border-rocket-gray/20">
+    <Card className="bg-white border-gray-200">
       <CardHeader>
         <div className="flex justify-between items-start">
           <div className="flex-1">
-            <CardTitle className="text-cloud-white text-lg">
+            <CardTitle className="text-gray-900 text-lg">
               {draft.idea.title || 'Untitled Draft'}
             </CardTitle>
             <div className="flex items-center space-x-2 mt-2">
               <Badge className={getStatusColor(draft.status)}>{draft.status}</Badge>
-              <Badge variant="outline" className="text-rocket-gray border-rocket-gray">
+              <Badge variant="outline" className="text-gray-600 border-rocket-gray">
                 {draft.platform}
               </Badge>
             </div>
@@ -387,7 +387,7 @@ function DraftCard({ draft }: DraftCardProps) {
       
       <CardContent className="space-y-4">
         {draft.idea.summary && (
-          <p className="text-rocket-gray text-sm">{draft.idea.summary}</p>
+          <p className="text-gray-600 text-sm">{draft.idea.summary}</p>
         )}
         
         {draft.status === 'draft' && (
@@ -396,10 +396,10 @@ function DraftCard({ draft }: DraftCardProps) {
               <Check className="mr-2 w-4 h-4" />
               Approve
             </Button>
-            <Button variant="outline" className="border-rocket-gray text-rocket-gray">
+            <Button variant="outline" className="border-rocket-gray text-gray-600">
               Edit
             </Button>
-            <Button variant="outline" className="border-rocket-gray text-rocket-gray">
+            <Button variant="outline" className="border-rocket-gray text-gray-600">
               <X className="mr-2 w-4 h-4" />
               Reject
             </Button>
@@ -407,7 +407,7 @@ function DraftCard({ draft }: DraftCardProps) {
         )}
 
         {draft.scheduledAt && (
-          <p className="text-sm text-rocket-gray">
+          <p className="text-sm text-gray-600">
             Scheduled for: {new Date(draft.scheduledAt).toLocaleString()}
           </p>
         )}

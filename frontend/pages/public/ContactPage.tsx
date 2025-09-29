@@ -81,12 +81,12 @@ export default function ContactPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
             {/* Contact Form */}
             <div className="lg:col-span-2">
-              <Card className="bg-rocket-gray/10 border-rocket-gray/20">
+              <Card className="bg-white border-gray-200">
                 <CardHeader>
-                  <CardTitle className="text-2xl text-cloud-white font-['Architects_Daughter']">
+                  <CardTitle className="text-2xl text-gray-900 font-['Architects_Daughter']">
                     Send us a message
                   </CardTitle>
-                  <CardDescription className="text-rocket-gray">
+                  <CardDescription className="text-gray-600">
                     Fill out the form below and we'll get back to you within 24 hours.
                   </CardDescription>
                 </CardHeader>
@@ -94,19 +94,19 @@ export default function ContactPage() {
                   <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <label className="text-sm font-medium text-cloud-white">
+                        <label className="text-sm font-medium text-gray-900">
                           Name *
                         </label>
                         <Input
                           placeholder="Your name"
                           value={formData.name}
                           onChange={(e) => handleInputChange('name', e.target.value)}
-                          className="bg-jet-black border-rocket-gray text-cloud-white"
+                          className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-400"
                           required
                         />
                       </div>
                       <div className="space-y-2">
-                        <label className="text-sm font-medium text-cloud-white">
+                        <label className="text-sm font-medium text-gray-900">
                           Email *
                         </label>
                         <Input
@@ -114,21 +114,21 @@ export default function ContactPage() {
                           placeholder="your@email.com"
                           value={formData.email}
                           onChange={(e) => handleInputChange('email', e.target.value)}
-                          className="bg-jet-black border-rocket-gray text-cloud-white"
+                          className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-400"
                           required
                         />
                       </div>
                     </div>
 
                     <div className="space-y-2">
-                      <label className="text-sm font-medium text-cloud-white">
+                      <label className="text-sm font-medium text-gray-900">
                         Topic *
                       </label>
                       <Select value={formData.topic} onValueChange={(value) => handleInputChange('topic', value)}>
-                        <SelectTrigger className="bg-jet-black border-rocket-gray text-cloud-white">
+                        <SelectTrigger className="bg-white border-gray-300 text-gray-900">
                           <SelectValue placeholder="What can we help you with?" />
                         </SelectTrigger>
-                        <SelectContent className="bg-jet-black border-rocket-gray">
+                        <SelectContent className="bg-white border-gray-300">
                           <SelectItem value="quote">Get a Quote</SelectItem>
                           <SelectItem value="question">General Question</SelectItem>
                           <SelectItem value="support">Support</SelectItem>
@@ -137,14 +137,14 @@ export default function ContactPage() {
                     </div>
 
                     <div className="space-y-2">
-                      <label className="text-sm font-medium text-cloud-white">
+                      <label className="text-sm font-medium text-gray-900">
                         Message *
                       </label>
                       <Textarea
                         placeholder="Tell us about your project or question..."
                         value={formData.message}
                         onChange={(e) => handleInputChange('message', e.target.value)}
-                        className="bg-jet-black border-rocket-gray text-cloud-white min-h-[120px]"
+                        className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 min-h-[120px]"
                         required
                       />
                     </div>
