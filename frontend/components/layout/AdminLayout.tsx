@@ -8,7 +8,8 @@ import {
   Settings, 
   Rocket,
   LogOut,
-  DollarSign
+  DollarSign,
+  Folder
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '../../contexts/AuthContext';
@@ -38,6 +39,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     { name: 'Idea Engine', href: '/admin/ideas', icon: Lightbulb },
     { name: 'Content', href: '/admin/content', icon: FileText },
     { name: 'Pricing', href: '/admin/pricing', icon: DollarSign },
+    { name: 'Projects', href: '/admin/projects', icon: Folder },
     { name: 'Contacts', href: '/admin/contacts', icon: MessageSquare },
     { name: 'Settings', href: '/admin/settings', icon: Settings },
   ];
