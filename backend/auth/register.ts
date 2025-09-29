@@ -32,16 +32,20 @@ export const register = api<RegisterRequest, RegisterResponse>(
     // Create new user ID
     const userId = `user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
+    // Determine user role - admin for hello@freebeer.ai, user for others
+    const role = req.email === 'hello@freebeer.ai' ? 'admin' : 'user';
+    const planTier = role === 'admin' ? 'admin' : 'free';
+
     // Insert user
     await db.exec`
       INSERT INTO users (id, email, role, auth_provider)
-      VALUES (${userId}, ${req.email}, 'user', 'email')
+      VALUES (${userId}, ${req.email}, ${role}, 'email')
     `;
 
     // Create profile
     await db.exec`
       INSERT INTO profiles (user_id, plan_tier)
-      VALUES (${userId}, 'free')
+      VALUES (${userId}, ${planTier})
     `;
 
     // Create simple token
@@ -52,7 +56,7 @@ export const register = api<RegisterRequest, RegisterResponse>(
       user: {
         id: userId,
         email: req.email,
-        role: 'user',
+        role: role,
       },
     };
   }
