@@ -53,6 +53,8 @@ interface CreateBlogPostRequest {
   excerpt?: string;
   status?: "draft" | "scheduled" | "published";
   scheduledAt?: Date;
+  source?: "manual" | "ai" | "idea_engine";
+  ideaId?: number;
 }
 
 interface UpdateBlogPostRequest {
@@ -66,6 +68,8 @@ interface UpdateBlogPostRequest {
   excerpt?: string;
   status?: "draft" | "scheduled" | "published";
   scheduledAt?: Date;
+  source?: "manual" | "ai" | "idea_engine";
+  ideaId?: number;
 }
 
 interface PricingItem {
@@ -100,6 +104,32 @@ interface Project {
 
 interface ListProjectsResponse {
   projects: Project[];
+}
+
+interface BlogPost {
+  id: number;
+  title: string;
+  subtitle: string | null;
+  slug: string;
+  coverImageUrl: string | null;
+  gallery: string[];
+  body: string | null;
+  excerpt: string | null;
+  status: "draft" | "scheduled" | "published";
+  scheduledAt: Date | null;
+  publishedAt: Date | null;
+  source: "manual" | "ai" | "idea_engine";
+  ideaId: number | null;
+  author: {
+    id: string;
+    email: string;
+  } | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+interface ListBlogPostsResponse {
+  posts: BlogPost[];
 }
 
 // Creates a new pricing item.
@@ -336,14 +366,219 @@ export const createBlogPost = api<CreateBlogPostRequest, {id: number}>(
 
     const result = await db.queryRow<{id: number}>`
       INSERT INTO blog_posts (title, subtitle, slug, cover_image_url, gallery, body, excerpt, 
-                              status, scheduled_at, published_at, author_id)
+                              status, scheduled_at, published_at, author_id, source, idea_id)
       VALUES (${req.title}, ${req.subtitle || null}, ${req.slug}, ${req.coverImageUrl || null}, 
               ${JSON.stringify(req.gallery || [])}, ${req.body || null}, ${req.excerpt || null},
-              ${req.status || 'draft'}, ${req.scheduledAt || null}, ${publishedAt}, ${'admin-1'})
+              ${req.status || 'draft'}, ${req.scheduledAt || null}, ${publishedAt}, ${'admin-1'},
+              ${req.source || 'manual'}, ${req.ideaId || null})
       RETURNING id
     `;
 
     return { id: result!.id };
+  }
+);
+
+// List all blog posts for admin management.
+export const listBlogPosts = api<{source?: string}, ListBlogPostsResponse>(
+  { expose: true, method: "GET", path: "/admin/blog" },
+  async (req) => {
+    const rows = await db.queryAll<{
+      id: number;
+      title: string;
+      subtitle: string | null;
+      slug: string;
+      cover_image_url: string | null;
+      gallery: any;
+      body: string | null;
+      excerpt: string | null;
+      status: "draft" | "scheduled" | "published";
+      scheduled_at: Date | null;
+      published_at: Date | null;
+      source: "manual" | "ai" | "idea_engine";
+      idea_id: number | null;
+      author_id: string | null;
+      author_email: string | null;
+      created_at: Date;
+      updated_at: Date;
+    }>`
+      SELECT 
+        bp.id, bp.title, bp.subtitle, bp.slug, bp.cover_image_url, 
+        bp.gallery, bp.body, bp.excerpt, bp.status, bp.scheduled_at, bp.published_at,
+        bp.source, bp.idea_id, bp.created_at, bp.updated_at,
+        u.id as author_id, u.email as author_email
+      FROM blog_posts bp
+      LEFT JOIN users u ON bp.author_id = u.id
+      ${req.source ? `WHERE bp.source = ${req.source}` : ''}
+      ORDER BY bp.created_at DESC
+    `;
+
+    return {
+      posts: rows.map(row => ({
+        id: row.id,
+        title: row.title,
+        subtitle: row.subtitle,
+        slug: row.slug,
+        coverImageUrl: row.cover_image_url,
+        gallery: Array.isArray(row.gallery) ? row.gallery : [],
+        body: row.body,
+        excerpt: row.excerpt,
+        status: row.status,
+        scheduledAt: row.scheduled_at,
+        publishedAt: row.published_at,
+        source: row.source,
+        ideaId: row.idea_id,
+        author: row.author_id ? {
+          id: row.author_id,
+          email: row.author_email || '',
+        } : null,
+        createdAt: row.created_at,
+        updatedAt: row.updated_at,
+      })),
+    };
+  }
+);
+
+// Get a single blog post by ID.
+export const getBlogPost = api<{id: number}, BlogPost>(
+  { expose: true, method: "GET", path: "/admin/blog/:id" },
+  async (req) => {
+    const row = await db.queryRow<{
+      id: number;
+      title: string;
+      subtitle: string | null;
+      slug: string;
+      cover_image_url: string | null;
+      gallery: any;
+      body: string | null;
+      excerpt: string | null;
+      status: "draft" | "scheduled" | "published";
+      scheduled_at: Date | null;
+      published_at: Date | null;
+      source: "manual" | "ai" | "idea_engine";
+      idea_id: number | null;
+      author_id: string | null;
+      author_email: string | null;
+      created_at: Date;
+      updated_at: Date;
+    }>`
+      SELECT 
+        bp.id, bp.title, bp.subtitle, bp.slug, bp.cover_image_url, 
+        bp.gallery, bp.body, bp.excerpt, bp.status, bp.scheduled_at, bp.published_at,
+        bp.source, bp.idea_id, bp.created_at, bp.updated_at,
+        u.id as author_id, u.email as author_email
+      FROM blog_posts bp
+      LEFT JOIN users u ON bp.author_id = u.id
+      WHERE bp.id = ${req.id}
+    `;
+
+    if (!row) {
+      throw new Error("Blog post not found");
+    }
+
+    return {
+      id: row.id,
+      title: row.title,
+      subtitle: row.subtitle,
+      slug: row.slug,
+      coverImageUrl: row.cover_image_url,
+      gallery: Array.isArray(row.gallery) ? row.gallery : [],
+      body: row.body,
+      excerpt: row.excerpt,
+      status: row.status,
+      scheduledAt: row.scheduled_at,
+      publishedAt: row.published_at,
+      source: row.source,
+      ideaId: row.idea_id,
+      author: row.author_id ? {
+        id: row.author_id,
+        email: row.author_email || '',
+      } : null,
+      createdAt: row.created_at,
+      updatedAt: row.updated_at,
+    };
+  }
+);
+
+// Updates an existing blog post.
+export const updateBlogPost = api<UpdateBlogPostRequest, {success: boolean}>(
+  { expose: true, method: "PUT", path: "/admin/blog/:id" },
+  async (req) => {
+    const updates: string[] = [];
+    const values: any[] = [];
+    let paramCount = 1;
+
+    if (req.title !== undefined) {
+      updates.push(`title = $${paramCount++}`);
+      values.push(req.title);
+    }
+    if (req.subtitle !== undefined) {
+      updates.push(`subtitle = $${paramCount++}`);
+      values.push(req.subtitle);
+    }
+    if (req.slug !== undefined) {
+      updates.push(`slug = $${paramCount++}`);
+      values.push(req.slug);
+    }
+    if (req.coverImageUrl !== undefined) {
+      updates.push(`cover_image_url = $${paramCount++}`);
+      values.push(req.coverImageUrl);
+    }
+    if (req.gallery !== undefined) {
+      updates.push(`gallery = $${paramCount++}`);
+      values.push(JSON.stringify(req.gallery));
+    }
+    if (req.body !== undefined) {
+      updates.push(`body = $${paramCount++}`);
+      values.push(req.body);
+    }
+    if (req.excerpt !== undefined) {
+      updates.push(`excerpt = $${paramCount++}`);
+      values.push(req.excerpt);
+    }
+    if (req.status !== undefined) {
+      updates.push(`status = $${paramCount++}`);
+      values.push(req.status);
+      
+      // Update published_at if status is being set to published
+      if (req.status === 'published') {
+        updates.push(`published_at = $${paramCount++}`);
+        values.push(new Date());
+      }
+    }
+    if (req.scheduledAt !== undefined) {
+      updates.push(`scheduled_at = $${paramCount++}`);
+      values.push(req.scheduledAt);
+    }
+    if (req.source !== undefined) {
+      updates.push(`source = $${paramCount++}`);
+      values.push(req.source);
+    }
+    if (req.ideaId !== undefined) {
+      updates.push(`idea_id = $${paramCount++}`);
+      values.push(req.ideaId);
+    }
+
+    if (updates.length === 0) {
+      return { success: true };
+    }
+
+    updates.push(`updated_at = $${paramCount++}`);
+    values.push(new Date());
+
+    values.push(req.id);
+    const query = `UPDATE blog_posts SET ${updates.join(', ')} WHERE id = $${paramCount}`;
+
+    await db.rawExec(query, ...values);
+    return { success: true };
+  }
+);
+
+// Deletes a blog post.
+export const deleteBlogPost = api<{id: number}, {success: boolean}>(
+  { expose: true, method: "DELETE", path: "/admin/blog/:id" },
+  async (req) => {
+    await db.rawExec(`DELETE FROM blog_posts WHERE id = $1`, req.id);
+    return { success: true };
   }
 );
 
