@@ -50,7 +50,7 @@ export default function AdminDashboard() {
     <AdminLayout>
       <div className="space-y-6">
         <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-cloud-white font-['Architects_Daughter']">
+          <h1 className="text-3xl font-bold text-gray-900 font-['Architects_Daughter']">
             Dashboard
           </h1>
           <Button asChild>
@@ -65,14 +65,14 @@ export default function AdminDashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <Card className="bg-rocket-gray/10 border-rocket-gray/20">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-cloud-white">
+              <CardTitle className="text-sm font-medium text-gray-900">
                 Website Traffic
               </CardTitle>
               <TrendingUp className="h-4 w-4 text-vapor-purple" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-cloud-white">{kpis.traffic || 0}</div>
-              <p className="text-xs text-rocket-gray">
+              <div className="text-2xl font-bold text-gray-900">{kpis.traffic || 0}</div>
+              <p className="text-xs text-gray-600">
                 +20.1% from last month
               </p>
             </CardContent>
@@ -80,14 +80,14 @@ export default function AdminDashboard() {
 
           <Card className="bg-rocket-gray/10 border-rocket-gray/20">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-cloud-white">
+              <CardTitle className="text-sm font-medium text-gray-900">
                 Newsletter Signups
               </CardTitle>
               <Users className="h-4 w-4 text-smoky-lavender" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-cloud-white">{kpis.newsletterSignups || 0}</div>
-              <p className="text-xs text-rocket-gray">
+              <div className="text-2xl font-bold text-gray-900">{kpis.newsletterSignups || 0}</div>
+              <p className="text-xs text-gray-600">
                 +12% from last week
               </p>
             </CardContent>
@@ -95,14 +95,14 @@ export default function AdminDashboard() {
 
           <Card className="bg-rocket-gray/10 border-rocket-gray/20">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-cloud-white">
+              <CardTitle className="text-sm font-medium text-gray-900">
                 New Leads
               </CardTitle>
               <FileText className="h-4 w-4 text-launch-orange" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-cloud-white">{kpis.leads || 0}</div>
-              <p className="text-xs text-rocket-gray">
+              <div className="text-2xl font-bold text-gray-900">{kpis.leads || 0}</div>
+              <p className="text-xs text-gray-600">
                 +3 this week
               </p>
             </CardContent>
@@ -110,14 +110,14 @@ export default function AdminDashboard() {
 
           <Card className="bg-rocket-gray/10 border-rocket-gray/20">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-cloud-white">
+              <CardTitle className="text-sm font-medium text-gray-900">
                 Content Throughput
               </CardTitle>
               <Zap className="h-4 w-4 text-vapor-purple" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-cloud-white">{kpis.contentThroughput || 0}</div>
-              <p className="text-xs text-rocket-gray">
+              <div className="text-2xl font-bold text-gray-900">{kpis.contentThroughput || 0}</div>
+              <p className="text-xs text-gray-600">
                 pieces this month
               </p>
             </CardContent>
@@ -127,10 +127,10 @@ export default function AdminDashboard() {
         {/* Idea Engine Workflow */}
         <Card className="bg-rocket-gray/10 border-rocket-gray/20">
           <CardHeader>
-            <CardTitle className="text-cloud-white font-['Architects_Daughter']">
+            <CardTitle className="text-gray-900 font-['Architects_Daughter']">
               Idea Engine Workflow
             </CardTitle>
-            <CardDescription className="text-rocket-gray">
+            <CardDescription className="text-gray-600">
               Track your content pipeline from ideas to published posts
             </CardDescription>
           </CardHeader>
@@ -144,7 +144,7 @@ export default function AdminDashboard() {
                   <div className="text-2xl font-bold text-vapor-purple mb-1">
                     {ideaEngine.newIdeas || 0}
                   </div>
-                  <div className="text-sm text-cloud-white">New Ideas</div>
+                  <div className="text-sm text-gray-900">New Ideas</div>
                 </div>
               </Link>
 
@@ -158,7 +158,7 @@ export default function AdminDashboard() {
                   <div className="text-2xl font-bold text-launch-orange mb-1">
                     {ideaEngine.postsForApproval || 0}
                   </div>
-                  <div className="text-sm text-cloud-white">Posts for Approval</div>
+                  <div className="text-sm text-gray-900">Posts for Approval</div>
                 </div>
               </Link>
 
@@ -172,7 +172,7 @@ export default function AdminDashboard() {
                   <div className="text-2xl font-bold text-smoky-lavender mb-1">
                     {ideaEngine.scheduled || 0}
                   </div>
-                  <div className="text-sm text-cloud-white">Scheduled</div>
+                  <div className="text-sm text-gray-900">Scheduled</div>
                 </div>
               </Link>
             </div>
@@ -183,8 +183,8 @@ export default function AdminDashboard() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Card className="bg-rocket-gray/10 border-rocket-gray/20">
             <CardHeader>
-              <CardTitle className="text-cloud-white">Content Management</CardTitle>
-              <CardDescription className="text-rocket-gray">
+              <CardTitle className="text-gray-900">Content Management</CardTitle>
+              <CardDescription className="text-gray-600">
                 Manage your website content
               </CardDescription>
             </CardHeader>
@@ -197,8 +197,8 @@ export default function AdminDashboard() {
 
           <Card className="bg-rocket-gray/10 border-rocket-gray/20">
             <CardHeader>
-              <CardTitle className="text-cloud-white">Contact Leads</CardTitle>
-              <CardDescription className="text-rocket-gray">
+              <CardTitle className="text-gray-900">Contact Leads</CardTitle>
+              <CardDescription className="text-gray-600">
                 Review new contact submissions
               </CardDescription>
             </CardHeader>
@@ -211,8 +211,8 @@ export default function AdminDashboard() {
 
           <Card className="bg-rocket-gray/10 border-rocket-gray/20">
             <CardHeader>
-              <CardTitle className="text-cloud-white">Settings</CardTitle>
-              <CardDescription className="text-rocket-gray">
+              <CardTitle className="text-gray-900">Settings</CardTitle>
+              <CardDescription className="text-gray-600">
                 Configure system settings
               </CardDescription>
             </CardHeader>

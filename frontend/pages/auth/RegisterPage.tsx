@@ -73,40 +73,40 @@ export default function RegisterPage() {
           </p>
         </div>
 
-        <Card className="bg-rocket-gray/10 border-rocket-gray/20">
+        <Card className="bg-white border-gray-200">
           <CardHeader>
-            <CardTitle className="text-cloud-white">Create Account</CardTitle>
-            <CardDescription className="text-rocket-gray">
+            <CardTitle className="text-gray-900">Create Account</CardTitle>
+            <CardDescription className="text-gray-600">
               Enter your details to create a new account
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <label className="text-sm font-medium text-cloud-white">Email</label>
+                <label className="text-sm font-medium text-gray-900">Email</label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-3 w-4 h-4 text-rocket-gray" />
+                  <Mail className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
                   <Input
                     type="email"
                     placeholder="your@email.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="pl-10 bg-jet-black border-rocket-gray text-cloud-white placeholder:text-rocket-gray"
+                    className="pl-10 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400"
                     required
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium text-cloud-white">Password</label>
+                <label className="text-sm font-medium text-gray-900">Password</label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-3 w-4 h-4 text-rocket-gray" />
+                  <Lock className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
                   <Input
                     type="password"
                     placeholder="Create a password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="pl-10 bg-jet-black border-rocket-gray text-cloud-white placeholder:text-rocket-gray"
+                    className="pl-10 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400"
                     required
                     minLength={6}
                   />
@@ -114,15 +114,15 @@ export default function RegisterPage() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium text-cloud-white">Confirm Password</label>
+                <label className="text-sm font-medium text-gray-900">Confirm Password</label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-3 w-4 h-4 text-rocket-gray" />
+                  <Lock className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
                   <Input
                     type="password"
                     placeholder="Confirm your password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="pl-10 bg-jet-black border-rocket-gray text-cloud-white placeholder:text-rocket-gray"
+                    className="pl-10 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400"
                     required
                     minLength={6}
                   />
@@ -139,7 +139,7 @@ export default function RegisterPage() {
             </form>
 
             <div className="mt-6 text-center">
-              <p className="text-rocket-gray">
+              <p className="text-gray-600">
                 Already have an account?{' '}
                 <Link to="/login" className="text-vapor-purple hover:text-smoky-lavender">
                   Sign in

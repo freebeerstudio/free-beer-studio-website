@@ -53,40 +53,40 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <Card className="bg-rocket-gray/10 border-rocket-gray/20">
+        <Card className="bg-white border-gray-200">
           <CardHeader>
-            <CardTitle className="text-cloud-white">Sign In</CardTitle>
-            <CardDescription className="text-rocket-gray">
+            <CardTitle className="text-gray-900">Sign In</CardTitle>
+            <CardDescription className="text-gray-600">
               Enter your credentials to access your account
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <label className="text-sm font-medium text-cloud-white">Email</label>
+                <label className="text-sm font-medium text-gray-900">Email</label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-3 w-4 h-4 text-rocket-gray" />
+                  <Mail className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
                   <Input
                     type="email"
                     placeholder="hello@freebeer.ai"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="pl-10 bg-jet-black border-rocket-gray text-cloud-white"
+                    className="pl-10 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400"
                     required
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium text-cloud-white">Password</label>
+                <label className="text-sm font-medium text-gray-900">Password</label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-3 w-4 h-4 text-rocket-gray" />
+                  <Lock className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
                   <Input
                     type="password"
                     placeholder="Enter your password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="pl-10 bg-jet-black border-rocket-gray text-cloud-white"
+                    className="pl-10 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400"
                     required
                   />
                 </div>
@@ -102,7 +102,7 @@ export default function LoginPage() {
             </form>
 
             <div className="mt-6 text-center">
-              <p className="text-rocket-gray">
+              <p className="text-gray-600">
                 Don't have an account?{' '}
                 <Link to="/register" className="text-vapor-purple hover:text-smoky-lavender">
                   Sign up
