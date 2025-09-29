@@ -28,9 +28,9 @@ export default {
         'cloud-white': '#F1F1F1',
         
         // shadcn/ui colors adapted for dark theme
-        border: "hsl(214.3 31.8% 91.4%)",
-        input: "hsl(214.3 31.8% 91.4%)",
-        ring: "hsl(222.2 84% 4.9%)",
+        border: "#5A6A76",
+        input: "#1C1C1C",
+        ring: "#9D82C1",
         background: "#1C1C1C",
         foreground: "#F1F1F1",
         primary: {

@@ -91,7 +91,7 @@ export default function RegisterPage() {
                     placeholder="your@email.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="pl-10 bg-jet-black border-rocket-gray text-cloud-white"
+                    className="pl-10 bg-jet-black border-rocket-gray text-cloud-white placeholder:text-rocket-gray"
                     required
                   />
                 </div>
@@ -106,7 +106,7 @@ export default function RegisterPage() {
                     placeholder="Create a password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="pl-10 bg-jet-black border-rocket-gray text-cloud-white"
+                    className="pl-10 bg-jet-black border-rocket-gray text-cloud-white placeholder:text-rocket-gray"
                     required
                     minLength={6}
                   />
@@ -122,7 +122,7 @@ export default function RegisterPage() {
                     placeholder="Confirm your password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="pl-10 bg-jet-black border-rocket-gray text-cloud-white"
+                    className="pl-10 bg-jet-black border-rocket-gray text-cloud-white placeholder:text-rocket-gray"
                     required
                     minLength={6}
                   />
