@@ -28,10 +28,80 @@ export default function AdminIdeasPage() {
     queryFn: () => backend.ideas.listIdeas({}),
   });
 
+  // Fetch feed sources
+  const { data: feedSourcesData, isLoading: feedSourcesLoading } = useQuery({
+    queryKey: ['admin-feed-sources'],
+    queryFn: () => backend.ideas.listFeedSources({}),
+  });
+
   // Fetch drafts
   const { data: draftsData, isLoading: draftsLoading } = useQuery({
     queryKey: ['admin-drafts'],
     queryFn: () => backend.ideas.listDrafts({}),
+  });
+
+  // Create feed source mutation
+  const createFeedMutation = useMutation({
+    mutationFn: (data: { name: string; url: string }) =>
+      backend.ideas.createFeedSource(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-feed-sources'] });
+      setNewFeedName('');
+      setNewFeedUrl('');
+      toast({
+        title: 'Success',
+        description: 'Feed source created successfully',
+      });
+    },
+    onError: (error) => {
+      console.error('Create feed error:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to create feed source',
+        variant: 'destructive',
+      });
+    },
+  });
+
+  // Delete feed source mutation
+  const deleteFeedMutation = useMutation({
+    mutationFn: (id: number) => backend.ideas.deleteFeedSource({ id }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-feed-sources'] });
+      toast({
+        title: 'Success',
+        description: 'Feed source deleted successfully',
+      });
+    },
+    onError: (error) => {
+      console.error('Delete feed error:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to delete feed source',
+        variant: 'destructive',
+      });
+    },
+  });
+
+  // Scrape feed source mutation
+  const scrapeFeedMutation = useMutation({
+    mutationFn: (id: number) => backend.ideas.scrapeFeedSource({ id }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-ideas'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-feed-sources'] });
+      toast({
+        title: 'Success',
+        description: 'Feed scraped and ideas created successfully',
+      });
+    },
+    onError: (error) => {
+      console.error('Scrape feed error:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to scrape feed source',
+        variant: 'destructive',
+      });
+    },
   });
 
   // Ingest idea mutation
@@ -92,6 +162,23 @@ export default function AdminIdeasPage() {
       id: ideaId,
       platforms,
     });
+  };
+
+  const handleAddFeedSource = () => {
+    if (!newFeedName.trim() || !newFeedUrl.trim()) return;
+    
+    createFeedMutation.mutate({
+      name: newFeedName,
+      url: newFeedUrl,
+    });
+  };
+
+  const handleDeleteFeedSource = (id: number) => {
+    deleteFeedMutation.mutate(id);
+  };
+
+  const handleScrapeFeed = (id: number) => {
+    scrapeFeedMutation.mutate(id);
   };
 
   return (
@@ -211,88 +298,85 @@ export default function AdminIdeasPage() {
                       />
                     </div>
                     <Button
-                      onClick={() => {
-                        // TODO: Implement add feed functionality
-                        toast({
-                          title: 'Coming Soon',
-                          description: 'Feed source management will be implemented soon',
-                        });
-                        setNewFeedName('');
-                        setNewFeedUrl('');
-                      }}
-                      disabled={!newFeedName.trim() || !newFeedUrl.trim()}
+                      onClick={handleAddFeedSource}
+                      disabled={!newFeedName.trim() || !newFeedUrl.trim() || createFeedMutation.isPending}
                       className="bg-vapor-purple hover:bg-vapor-purple/80"
                     >
                       <Plus className="mr-2 w-4 h-4" />
-                      Add Feed Source
+                      {createFeedMutation.isPending ? 'Adding...' : 'Add Feed Source'}
                     </Button>
                   </div>
 
                   {/* Existing Feed Sources */}
                   <div className="space-y-3">
                     <h4 className="text-gray-900 font-medium">Current Feed Sources</h4>
-                    <div className="space-y-2">
-                      {/* Sample feed sources - replace with actual data */}
-                      <div className="flex items-center justify-between p-3 border border-gray-200 rounded-lg bg-white">
-                        <div className="flex items-center space-x-3">
-                          <Rss className="w-4 h-4 text-vapor-purple" />
-                          <div>
-                            <p className="text-gray-900 font-medium">Sample Tech Blog</p>
-                            <p className="text-gray-600 text-sm">https://example.com/rss</p>
+                    {feedSourcesLoading ? (
+                      <div className="space-y-2">
+                        {[...Array(2)].map((_, i) => (
+                          <div key={i} className="p-3 border border-gray-200 rounded-lg bg-white animate-pulse">
+                            <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                            <div className="h-3 bg-gray-200 rounded w-1/2"></div>
                           </div>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <Badge variant="outline" className="text-green-600 border-green-600">
-                            Active
-                          </Badge>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => {
-                              toast({
-                                title: 'Coming Soon',
-                                description: 'Feed deletion will be implemented soon',
-                              });
-                            }}
-                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </div>
+                        ))}
                       </div>
-                      
-                      <div className="flex items-center justify-between p-3 border border-gray-200 rounded-lg bg-white">
-                        <div className="flex items-center space-x-3">
-                          <Rss className="w-4 h-4 text-vapor-purple" />
-                          <div>
-                            <p className="text-gray-900 font-medium">Industry News</p>
-                            <p className="text-gray-600 text-sm">https://industry-news.com/feed</p>
+                    ) : (
+                      <div className="space-y-2">
+                        {feedSourcesData?.feedSources.map((feedSource) => (
+                          <div key={feedSource.id} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg bg-white">
+                            <div className="flex items-center space-x-3">
+                              <Rss className="w-4 h-4 text-vapor-purple" />
+                              <div>
+                                <p className="text-gray-900 font-medium">{feedSource.name}</p>
+                                <p className="text-gray-600 text-sm">{feedSource.url}</p>
+                                {feedSource.lastChecked && (
+                                  <p className="text-gray-500 text-xs">
+                                    Last checked: {new Date(feedSource.lastChecked).toLocaleDateString()}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <Badge 
+                                variant="outline" 
+                                className={feedSource.isActive 
+                                  ? "text-green-600 border-green-600" 
+                                  : "text-gray-600 border-gray-600"
+                                }
+                              >
+                                {feedSource.isActive ? 'Active' : 'Inactive'}
+                              </Badge>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleScrapeFeed(feedSource.id)}
+                                disabled={scrapeFeedMutation.isPending}
+                                className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                                title="Scrape this feed for new content"
+                              >
+                                <Rss className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleDeleteFeedSource(feedSource.id)}
+                                disabled={deleteFeedMutation.isPending}
+                                className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
                           </div>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <Badge variant="outline" className="text-gray-600 border-gray-600">
-                            Inactive
-                          </Badge>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => {
-                              toast({
-                                title: 'Coming Soon',
-                                description: 'Feed deletion will be implemented soon',
-                              });
-                            }}
-                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </div>
+                        ))}
+                        
+                        {feedSourcesData?.feedSources.length === 0 && (
+                          <div className="text-center py-8 text-gray-500">
+                            <Rss className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+                            <p>No feed sources configured yet.</p>
+                            <p className="text-sm">Add RSS feeds or blog URLs above to start collecting content ideas.</p>
+                          </div>
+                        )}
                       </div>
-                    </div>
-                    
-                    <p className="text-gray-600 text-sm italic">
-                      Feed source management and automatic scraping functionality will be implemented in the next phase.
-                    </p>
+                    )}
                   </div>
                 </CardContent>
               )}
@@ -423,10 +507,30 @@ function IdeaCard({ idea, onApprove, isApproving }: IdeaCardProps) {
       </CardHeader>
       
       <CardContent className="space-y-4">
+        {/* Source URL display */}
+        {idea.canonicalUrl && (
+          <div className="flex items-center space-x-2 p-2 bg-gray-50 rounded-lg">
+            <ExternalLink className="w-4 h-4 text-gray-400" />
+            <a 
+              href={idea.canonicalUrl} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-sm text-blue-600 hover:text-blue-800 underline truncate"
+            >
+              {idea.canonicalUrl}
+            </a>
+          </div>
+        )}
+
+        {/* Summary */}
         {idea.summary && (
-          <p className="text-gray-600 text-sm">{idea.summary}</p>
+          <div>
+            <h4 className="text-gray-900 font-medium mb-2">Summary:</h4>
+            <p className="text-gray-600 text-sm leading-relaxed">{idea.summary}</p>
+          </div>
         )}
         
+        {/* Key Points */}
         {idea.keyPoints && idea.keyPoints.length > 0 && (
           <div>
             <h4 className="text-gray-900 font-medium mb-2">Key Points:</h4>
@@ -437,6 +541,12 @@ function IdeaCard({ idea, onApprove, isApproving }: IdeaCardProps) {
             </ul>
           </div>
         )}
+
+        {/* Source metadata */}
+        <div className="flex items-center justify-between text-xs text-gray-500 pt-2 border-t border-gray-100">
+          <span>Added: {new Date(idea.createdAt).toLocaleDateString()}</span>
+          <span>Source: {idea.inputType === 'url' ? 'Web Article' : 'Manual Entry'}</span>
+        </div>
 
         {idea.status === 'new' && (
           <div className="space-y-4 border-t border-gray-200 pt-4">

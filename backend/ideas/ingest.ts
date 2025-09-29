@@ -8,6 +8,7 @@ const openAIKey = secret("OpenAIKey");
 interface IngestIdeaRequest {
   input: string;
   inputType: "url" | "text";
+  feedSourceId?: number; // Optional reference to feed source
 }
 
 interface IngestIdeaResponse {
@@ -27,25 +28,51 @@ export const ingestIdea = api<IngestIdeaRequest, IngestIdeaResponse>(
     }
 
     // TODO: Integrate with OpenAI to analyze content and generate summary
-    // For now, create a mock summary
-    const mockTitle = req.inputType === 'url' 
-      ? `Article Analysis: ${req.input.split('/').pop()}`
-      : `Text Analysis: ${req.input.substring(0, 50)}...`;
+    // For now, create a more realistic mock summary based on input type
+    let mockTitle: string;
+    let canonicalUrl: string | null = null;
+    
+    if (req.inputType === 'url') {
+      // Extract domain and path for better title generation
+      try {
+        const url = new URL(req.input);
+        const domain = url.hostname.replace('www.', '');
+        const path = url.pathname.split('/').filter(p => p).pop() || '';
+        mockTitle = `Article from ${domain}: ${path}`.replace(/[-_]/g, ' ');
+        canonicalUrl = req.input;
+      } catch {
+        mockTitle = `Web Article: ${req.input.substring(0, 50)}...`;
+        canonicalUrl = req.input;
+      }
+    } else {
+      // For text input, use first few words as title
+      const words = req.input.split(' ').slice(0, 8).join(' ');
+      mockTitle = `Idea: ${words}${req.input.length > words.length ? '...' : ''}`;
+    }
 
-    const mockSummary = `This is a generated summary of the provided ${req.inputType}. The content discusses relevant topics and provides insights that could be valuable for content creation. This summary would typically be 80-120 words long and capture the key themes and actionable insights from the source material.`;
+    const mockSummary = req.inputType === 'url' 
+      ? `This article from ${canonicalUrl} contains valuable insights that could be transformed into engaging content. The piece discusses relevant industry topics and provides actionable information that would resonate with our target audience across multiple platforms.`
+      : `This text-based idea explores: "${req.input.substring(0, 100)}${req.input.length > 100 ? '...' : ''}". The concept offers potential for developing comprehensive content that addresses current trends and provides value to readers.`;
 
-    const mockKeyPoints = [
-      "Key insight extracted from content",
-      "Important trend or development mentioned", 
-      "Actionable takeaway for audience",
-      "Relevant industry implication"
-    ];
+    const mockKeyPoints = req.inputType === 'url' 
+      ? [
+          "Key insights from the original article",
+          "Industry trends and developments discussed", 
+          "Actionable takeaways for content creation",
+          "Potential angles for different platforms"
+        ]
+      : [
+          "Core concept from the provided text",
+          "Potential expansion opportunities",
+          "Target audience considerations",
+          "Content format possibilities"
+        ];
 
     // Store in database
     const result = await db.queryRow<{id: number}>`
       INSERT INTO ideas (input_type, input_value, title, canonical_url, summary, key_points, status)
       VALUES (${req.inputType}, ${req.input}, ${mockTitle}, 
-              ${req.inputType === 'url' ? req.input : null}, ${mockSummary}, 
+              ${canonicalUrl}, ${mockSummary}, 
               ${JSON.stringify(mockKeyPoints)}, 'new')
       RETURNING id
     `;
