@@ -460,7 +460,9 @@ interface IdeaCardProps {
 
 function IdeaCard({ idea, onApprove, isApproving }: IdeaCardProps) {
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
-  const [isApproved, setIsApproved] = useState(false);
+  const [isApproved, setIsApproved] = useState(idea.status === 'approved');
+  const [isEditing, setIsEditing] = useState(false);
+  const [showPlatformSelector, setShowPlatformSelector] = useState(false);
   
   const platforms = [
     { id: 'blog', label: 'Blog' },
@@ -470,12 +472,12 @@ function IdeaCard({ idea, onApprove, isApproving }: IdeaCardProps) {
     { id: 'shorts', label: 'Shorts' },
   ];
 
-  const handlePlatformChange = (value: string) => {
+  const handlePlatformToggle = (platformId: string) => {
     setSelectedPlatforms(prev => {
-      if (prev.includes(value)) {
-        return prev.filter(p => p !== value);
+      if (prev.includes(platformId)) {
+        return prev.filter(p => p !== platformId);
       } else {
-        return [...prev, value];
+        return [...prev, platformId];
       }
     });
   };
@@ -484,7 +486,30 @@ function IdeaCard({ idea, onApprove, isApproving }: IdeaCardProps) {
     if (selectedPlatforms.length > 0) {
       onApprove(idea.id, selectedPlatforms);
       setIsApproved(true);
+      setShowPlatformSelector(false);
     }
+  };
+
+  const handleEdit = () => {
+    setIsEditing(true);
+    setShowPlatformSelector(true);
+    // Pre-populate with existing platforms if available
+    // TODO: Fetch existing platform selections from backend
+  };
+
+  const handleSaveEdit = () => {
+    if (selectedPlatforms.length > 0) {
+      // TODO: Call update endpoint instead of approve
+      onApprove(idea.id, selectedPlatforms);
+      setIsEditing(false);
+      setShowPlatformSelector(false);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+    setShowPlatformSelector(false);
+    setSelectedPlatforms([]);
   };
 
   const getStatusIcon = () => {
@@ -496,148 +521,207 @@ function IdeaCard({ idea, onApprove, isApproving }: IdeaCardProps) {
     return null;
   };
 
+  const showControls = idea.status === 'new' || isEditing;
+  const showEditButton = (idea.status === 'approved' || isApproved) && !isEditing;
+
   return (
-    <div className="flex items-center gap-4 p-4 border border-gray-200 rounded-lg bg-white hover:bg-gray-50 transition-colors">
-      {/* Left side - Content */}
-      <div className="flex-1 min-w-0">
-        <h3 className="font-medium text-gray-900 truncate mb-1">
-          {idea.title || 'Untitled Idea'}
-        </h3>
-        
-        <p className="text-sm text-gray-600 mb-2 overflow-hidden" style={{
-          display: '-webkit-box',
-          WebkitLineClamp: 2,
-          WebkitBoxOrient: 'vertical',
-        }}>
-          {idea.summary}
-        </p>
-        
-        {idea.canonicalUrl && (
-          <div className="flex items-center gap-1">
-            <ExternalLink className="w-3 h-3 text-gray-400 flex-shrink-0" />
-            <a 
-              href={idea.canonicalUrl} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-xs text-blue-600 hover:text-blue-800 underline truncate"
-            >
-              {idea.canonicalUrl}
-            </a>
-          </div>
-        )}
-      </div>
-
-      {/* Center - Status and Channel Tags */}
-      <div className="flex flex-col items-center gap-2 px-4">
-        {getStatusIcon()}
-        
-        {(idea.status === 'approved' || isApproved) && selectedPlatforms.length > 0 && (
-          <div className="flex flex-wrap gap-1 justify-center">
-            {selectedPlatforms.map(platform => (
-              <Badge 
-                key={platform} 
-                variant="secondary"
-                className="text-xs bg-smoky-lavender/20 text-smoky-lavender border-smoky-lavender"
+    <div className="border border-gray-200 rounded-lg bg-white hover:bg-gray-50 transition-colors">
+      <div className="flex items-center gap-4 p-4">
+        {/* Left side - Content */}
+        <div className="flex-1 min-w-0">
+          <h3 className="font-medium text-gray-900 truncate mb-1">
+            {idea.title || 'Untitled Idea'}
+          </h3>
+          
+          <p className="text-sm text-gray-600 mb-2 overflow-hidden" style={{
+            display: '-webkit-box',
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: 'vertical',
+          }}>
+            {idea.summary}
+          </p>
+          
+          {idea.canonicalUrl && (
+            <div className="flex items-center gap-1">
+              <ExternalLink className="w-3 h-3 text-gray-400 flex-shrink-0" />
+              <a 
+                href={idea.canonicalUrl} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-xs text-blue-600 hover:text-blue-800 underline truncate"
               >
-                {platforms.find(p => p.id === platform)?.label}
-              </Badge>
-            ))}
-          </div>
-        )}
-        
-        <div className="flex items-center gap-1 text-xs text-gray-500">
-          <Badge 
-            variant="outline" 
-            className={`text-xs ${
-              idea.status === 'new' ? 'bg-vapor-purple/20 text-vapor-purple border-vapor-purple' :
-              idea.status === 'approved' ? 'bg-green-100 text-green-700 border-green-300' :
-              'bg-red-100 text-red-700 border-red-300'
-            }`}
-          >
-            {idea.status}
-          </Badge>
+                {idea.canonicalUrl}
+              </a>
+            </div>
+          )}
         </div>
-      </div>
 
-      {/* Right side - Controls */}
-      {idea.status === 'new' && !isApproved && (
-        <div className="flex flex-col gap-2 min-w-[200px]">
-          {/* Platform Multi-select */}
-          <Select onValueChange={handlePlatformChange}>
-            <SelectTrigger className="h-8 text-sm">
-              <SelectValue placeholder="Select platforms..." />
-            </SelectTrigger>
-            <SelectContent>
-              {platforms.map((platform) => (
-                <SelectItem 
-                  key={platform.id} 
-                  value={platform.id}
-                  className="flex items-center gap-2"
-                >
-                  <div className="flex items-center gap-2">
-                    <div className={`w-4 h-4 border rounded ${
-                      selectedPlatforms.includes(platform.id) 
-                        ? 'bg-smoky-lavender border-smoky-lavender' 
-                        : 'border-gray-300'
-                    }`}>
-                      {selectedPlatforms.includes(platform.id) && (
-                        <Check className="w-3 h-3 text-white" />
-                      )}
-                    </div>
-                    {platform.label}
-                  </div>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          {/* Selected platforms display */}
-          {selectedPlatforms.length > 0 && (
-            <div className="flex flex-wrap gap-1">
+        {/* Center - Status and Channel Tags */}
+        <div className="flex flex-col items-center gap-2 px-4">
+          {getStatusIcon()}
+          
+          {(idea.status === 'approved' || isApproved) && selectedPlatforms.length > 0 && (
+            <div className="flex flex-wrap gap-1 justify-center">
               {selectedPlatforms.map(platform => (
                 <Badge 
                   key={platform} 
-                  variant="outline"
-                  className="text-xs cursor-pointer hover:bg-red-50 border-gray-300"
-                  onClick={() => setSelectedPlatforms(prev => prev.filter(p => p !== platform))}
+                  variant="secondary"
+                  className="text-xs bg-smoky-lavender/20 text-smoky-lavender border-smoky-lavender"
                 >
                   {platforms.find(p => p.id === platform)?.label}
-                  <X className="w-3 h-3 ml-1" />
                 </Badge>
               ))}
             </div>
           )}
-
-          {/* Action buttons */}
-          <div className="flex gap-2">
-            <Button
-              onClick={handleApprove}
-              disabled={selectedPlatforms.length === 0 || isApproving}
-              size="sm"
-              className="flex-1 bg-smoky-lavender hover:bg-smoky-lavender/80 h-8"
+          
+          <div className="flex items-center gap-1 text-xs text-gray-500">
+            <Badge 
+              variant="outline" 
+              className={`text-xs ${
+                idea.status === 'new' ? 'bg-vapor-purple/20 text-vapor-purple border-vapor-purple' :
+                idea.status === 'approved' ? 'bg-green-100 text-green-700 border-green-300' :
+                'bg-red-100 text-red-700 border-red-300'
+              }`}
             >
-              <Check className="w-3 h-3 mr-1" />
-              Approve
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="border-red-300 text-red-600 hover:bg-red-50 h-8"
-              onClick={() => {
-                // TODO: Implement reject functionality
-              }}
-            >
-              <X className="w-3 h-3" />
-            </Button>
+              {idea.status}
+            </Badge>
           </div>
         </div>
-      )}
 
-      {/* Show metadata for approved/rejected items */}
-      {(idea.status !== 'new' || isApproved) && (
-        <div className="text-xs text-gray-500 min-w-[120px] text-right">
-          <div>Added: {new Date(idea.createdAt).toLocaleDateString()}</div>
-          <div className="capitalize">{idea.inputType} source</div>
+        {/* Right side - Controls */}
+        <div className="min-w-[200px]">
+          {showEditButton && (
+            <div className="flex gap-2">
+              <Button
+                onClick={handleEdit}
+                size="sm"
+                variant="outline"
+                className="flex-1 h-8 border-smoky-lavender text-smoky-lavender hover:bg-smoky-lavender/10"
+              >
+                Edit Channels
+              </Button>
+              <div className="text-xs text-gray-500 text-right">
+                <div>Added: {new Date(idea.createdAt).toLocaleDateString()}</div>
+                <div className="capitalize">{idea.inputType} source</div>
+              </div>
+            </div>
+          )}
+
+          {!showControls && !showEditButton && (
+            <div className="text-xs text-gray-500 text-right">
+              <div>Added: {new Date(idea.createdAt).toLocaleDateString()}</div>
+              <div className="capitalize">{idea.inputType} source</div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Platform Selection Section */}
+      {showControls && (
+        <div className="border-t border-gray-200 p-4 bg-gray-50">
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <h4 className="text-sm font-medium text-gray-900">
+                {isEditing ? 'Edit Platforms:' : 'Select Platforms:'}
+              </h4>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowPlatformSelector(!showPlatformSelector)}
+                className="h-6 px-2 text-xs"
+              >
+                {showPlatformSelector ? 'Hide' : 'Show'} Options
+                {showPlatformSelector ? 
+                  <ChevronUp className="w-3 h-3 ml-1" /> : 
+                  <ChevronDown className="w-3 h-3 ml-1" />
+                }
+              </Button>
+            </div>
+
+            {showPlatformSelector && (
+              <div className="grid grid-cols-2 gap-2">
+                {platforms.map((platform) => (
+                  <div key={platform.id} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`${idea.id}-${platform.id}`}
+                      checked={selectedPlatforms.includes(platform.id)}
+                      onCheckedChange={() => handlePlatformToggle(platform.id)}
+                    />
+                    <label
+                      htmlFor={`${idea.id}-${platform.id}`}
+                      className="text-sm text-gray-900 cursor-pointer"
+                    >
+                      {platform.label}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Selected platforms display */}
+            {selectedPlatforms.length > 0 && (
+              <div className="flex flex-wrap gap-1">
+                {selectedPlatforms.map(platform => (
+                  <Badge 
+                    key={platform} 
+                    variant="outline"
+                    className="text-xs cursor-pointer hover:bg-red-50 border-gray-300"
+                    onClick={() => handlePlatformToggle(platform)}
+                  >
+                    {platforms.find(p => p.id === platform)?.label}
+                    <X className="w-3 h-3 ml-1" />
+                  </Badge>
+                ))}
+              </div>
+            )}
+
+            {/* Action buttons */}
+            <div className="flex gap-2">
+              {isEditing ? (
+                <>
+                  <Button
+                    onClick={handleSaveEdit}
+                    disabled={selectedPlatforms.length === 0 || isApproving}
+                    size="sm"
+                    className="flex-1 bg-smoky-lavender hover:bg-smoky-lavender/80 h-8"
+                  >
+                    <Check className="w-3 h-3 mr-1" />
+                    Save Changes
+                  </Button>
+                  <Button
+                    onClick={handleCancelEdit}
+                    variant="outline"
+                    size="sm"
+                    className="border-gray-300 text-gray-600 hover:bg-gray-50 h-8"
+                  >
+                    Cancel
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button
+                    onClick={handleApprove}
+                    disabled={selectedPlatforms.length === 0 || isApproving}
+                    size="sm"
+                    className="flex-1 bg-smoky-lavender hover:bg-smoky-lavender/80 h-8"
+                  >
+                    <Check className="w-3 h-3 mr-1" />
+                    Approve
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="border-red-300 text-red-600 hover:bg-red-50 h-8"
+                    onClick={() => {
+                      // TODO: Implement reject functionality
+                    }}
+                  >
+                    <X className="w-3 h-3" />
+                  </Button>
+                </>
+              )}
+            </div>
+          </div>
         </div>
       )}
     </div>
