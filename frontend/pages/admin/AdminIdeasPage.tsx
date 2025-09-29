@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Send, Check, X, ExternalLink, ChevronDown, ChevronUp, Rss, Trash2 } from 'lucide-react';
+import { Plus, Send, Check, X, ExternalLink, ChevronDown, ChevronUp, Rss, Trash2, CheckCircle, XCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/components/ui/use-toast';
 import AdminLayout from '../../components/layout/AdminLayout';
 import { useBackend } from '../../hooks/useBackend';
@@ -384,18 +385,22 @@ export default function AdminIdeasPage() {
           </TabsContent>
 
           {/* Ideas Tab */}
-          <TabsContent value="ideas" className="space-y-6">
+          <TabsContent value="ideas" className="space-y-4">
             {ideasLoading ? (
-              <div className="grid gap-4">
-                {[...Array(3)].map((_, i) => (
-                  <Card key={i} className="bg-white border-gray-200 animate-pulse">
-                    <CardHeader className="h-24"></CardHeader>
-                    <CardContent className="h-32"></CardContent>
-                  </Card>
+              <div className="space-y-3">
+                {[...Array(5)].map((_, i) => (
+                  <div key={i} className="flex items-center gap-4 p-4 border border-gray-200 rounded-lg bg-white animate-pulse">
+                    <div className="flex-1">
+                      <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                      <div className="h-3 bg-gray-200 rounded w-full mb-1"></div>
+                      <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                    </div>
+                    <div className="w-24 h-16 bg-gray-200 rounded"></div>
+                  </div>
                 ))}
               </div>
             ) : (
-              <div className="grid gap-4">
+              <div className="space-y-3">
                 {ideasData?.ideas.map((idea) => (
                   <IdeaCard
                     key={idea.id}
@@ -455,6 +460,7 @@ interface IdeaCardProps {
 
 function IdeaCard({ idea, onApprove, isApproving }: IdeaCardProps) {
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
+  const [isApproved, setIsApproved] = useState(false);
   
   const platforms = [
     { id: 'blog', label: 'Blog' },
@@ -464,131 +470,177 @@ function IdeaCard({ idea, onApprove, isApproving }: IdeaCardProps) {
     { id: 'shorts', label: 'Shorts' },
   ];
 
-  const handlePlatformToggle = (platformId: string) => {
-    setSelectedPlatforms(prev =>
-      prev.includes(platformId)
-        ? prev.filter(p => p !== platformId)
-        : [...prev, platformId]
-    );
+  const handlePlatformChange = (value: string) => {
+    setSelectedPlatforms(prev => {
+      if (prev.includes(value)) {
+        return prev.filter(p => p !== value);
+      } else {
+        return [...prev, value];
+      }
+    });
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'new': return 'bg-vapor-purple/20 text-vapor-purple';
-      case 'approved': return 'bg-smoky-lavender/20 text-smoky-lavender';
-      case 'rejected': return 'bg-rocket-gray/20 text-gray-600';
-      default: return 'bg-rocket-gray/20 text-gray-600';
+  const handleApprove = () => {
+    if (selectedPlatforms.length > 0) {
+      onApprove(idea.id, selectedPlatforms);
+      setIsApproved(true);
     }
   };
 
+  const getStatusIcon = () => {
+    if (idea.status === 'approved' || isApproved) {
+      return <CheckCircle className="w-6 h-6 text-green-600" />;
+    } else if (idea.status === 'rejected') {
+      return <XCircle className="w-6 h-6 text-red-600" />;
+    }
+    return null;
+  };
+
   return (
-    <Card className="bg-white border-gray-200">
-      <CardHeader>
-        <div className="flex justify-between items-start">
-          <div className="flex-1">
-            <CardTitle className="text-gray-900 text-lg">
-              {idea.title || 'Untitled Idea'}
-            </CardTitle>
-            <div className="flex items-center space-x-2 mt-2">
-              <Badge className={getStatusColor(idea.status)}>{idea.status}</Badge>
-              <Badge variant="outline" className="text-gray-600 border-rocket-gray">
-                {idea.inputType}
-              </Badge>
-            </div>
-          </div>
-          {idea.canonicalUrl && (
-            <Button variant="ghost" size="sm" asChild>
-              <a href={idea.canonicalUrl} target="_blank" rel="noopener noreferrer">
-                <ExternalLink className="w-4 h-4" />
-              </a>
-            </Button>
-          )}
-        </div>
-      </CardHeader>
-      
-      <CardContent className="space-y-4">
-        {/* Source URL display */}
+    <div className="flex items-center gap-4 p-4 border border-gray-200 rounded-lg bg-white hover:bg-gray-50 transition-colors">
+      {/* Left side - Content */}
+      <div className="flex-1 min-w-0">
+        <h3 className="font-medium text-gray-900 truncate mb-1">
+          {idea.title || 'Untitled Idea'}
+        </h3>
+        
+        <p className="text-sm text-gray-600 mb-2 overflow-hidden" style={{
+          display: '-webkit-box',
+          WebkitLineClamp: 2,
+          WebkitBoxOrient: 'vertical',
+        }}>
+          {idea.summary}
+        </p>
+        
         {idea.canonicalUrl && (
-          <div className="flex items-center space-x-2 p-2 bg-gray-50 rounded-lg">
-            <ExternalLink className="w-4 h-4 text-gray-400" />
+          <div className="flex items-center gap-1">
+            <ExternalLink className="w-3 h-3 text-gray-400 flex-shrink-0" />
             <a 
               href={idea.canonicalUrl} 
               target="_blank" 
               rel="noopener noreferrer"
-              className="text-sm text-blue-600 hover:text-blue-800 underline truncate"
+              className="text-xs text-blue-600 hover:text-blue-800 underline truncate"
             >
               {idea.canonicalUrl}
             </a>
           </div>
         )}
+      </div>
 
-        {/* Summary */}
-        {idea.summary && (
-          <div>
-            <h4 className="text-gray-900 font-medium mb-2">Summary:</h4>
-            <p className="text-gray-600 text-sm leading-relaxed">{idea.summary}</p>
+      {/* Center - Status and Channel Tags */}
+      <div className="flex flex-col items-center gap-2 px-4">
+        {getStatusIcon()}
+        
+        {(idea.status === 'approved' || isApproved) && selectedPlatforms.length > 0 && (
+          <div className="flex flex-wrap gap-1 justify-center">
+            {selectedPlatforms.map(platform => (
+              <Badge 
+                key={platform} 
+                variant="secondary"
+                className="text-xs bg-smoky-lavender/20 text-smoky-lavender border-smoky-lavender"
+              >
+                {platforms.find(p => p.id === platform)?.label}
+              </Badge>
+            ))}
           </div>
         )}
         
-        {/* Key Points */}
-        {idea.keyPoints && idea.keyPoints.length > 0 && (
-          <div>
-            <h4 className="text-gray-900 font-medium mb-2">Key Points:</h4>
-            <ul className="list-disc list-inside space-y-1">
-              {idea.keyPoints.map((point: string, index: number) => (
-                <li key={index} className="text-gray-600 text-sm">{point}</li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        {/* Source metadata */}
-        <div className="flex items-center justify-between text-xs text-gray-500 pt-2 border-t border-gray-100">
-          <span>Added: {new Date(idea.createdAt).toLocaleDateString()}</span>
-          <span>Source: {idea.inputType === 'url' ? 'Web Article' : 'Manual Entry'}</span>
+        <div className="flex items-center gap-1 text-xs text-gray-500">
+          <Badge 
+            variant="outline" 
+            className={`text-xs ${
+              idea.status === 'new' ? 'bg-vapor-purple/20 text-vapor-purple border-vapor-purple' :
+              idea.status === 'approved' ? 'bg-green-100 text-green-700 border-green-300' :
+              'bg-red-100 text-red-700 border-red-300'
+            }`}
+          >
+            {idea.status}
+          </Badge>
         </div>
+      </div>
 
-        {idea.status === 'new' && (
-          <div className="space-y-4 border-t border-gray-200 pt-4">
-            <div>
-              <h4 className="text-gray-900 font-medium mb-2">Select Platforms:</h4>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                {platforms.map((platform) => (
-                  <div key={platform.id} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`${idea.id}-${platform.id}`}
-                      checked={selectedPlatforms.includes(platform.id)}
-                      onCheckedChange={() => handlePlatformToggle(platform.id)}
-                    />
-                    <label
-                      htmlFor={`${idea.id}-${platform.id}`}
-                      className="text-sm text-gray-900 cursor-pointer"
-                    >
-                      {platform.label}
-                    </label>
+      {/* Right side - Controls */}
+      {idea.status === 'new' && !isApproved && (
+        <div className="flex flex-col gap-2 min-w-[200px]">
+          {/* Platform Multi-select */}
+          <Select onValueChange={handlePlatformChange}>
+            <SelectTrigger className="h-8 text-sm">
+              <SelectValue placeholder="Select platforms..." />
+            </SelectTrigger>
+            <SelectContent>
+              {platforms.map((platform) => (
+                <SelectItem 
+                  key={platform.id} 
+                  value={platform.id}
+                  className="flex items-center gap-2"
+                >
+                  <div className="flex items-center gap-2">
+                    <div className={`w-4 h-4 border rounded ${
+                      selectedPlatforms.includes(platform.id) 
+                        ? 'bg-smoky-lavender border-smoky-lavender' 
+                        : 'border-gray-300'
+                    }`}>
+                      {selectedPlatforms.includes(platform.id) && (
+                        <Check className="w-3 h-3 text-white" />
+                      )}
+                    </div>
+                    {platform.label}
                   </div>
-                ))}
-              </div>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          {/* Selected platforms display */}
+          {selectedPlatforms.length > 0 && (
+            <div className="flex flex-wrap gap-1">
+              {selectedPlatforms.map(platform => (
+                <Badge 
+                  key={platform} 
+                  variant="outline"
+                  className="text-xs cursor-pointer hover:bg-red-50 border-gray-300"
+                  onClick={() => setSelectedPlatforms(prev => prev.filter(p => p !== platform))}
+                >
+                  {platforms.find(p => p.id === platform)?.label}
+                  <X className="w-3 h-3 ml-1" />
+                </Badge>
+              ))}
             </div>
-            
-            <div className="flex space-x-2">
-              <Button
-                onClick={() => onApprove(idea.id, selectedPlatforms)}
-                disabled={selectedPlatforms.length === 0 || isApproving}
-                className="bg-smoky-lavender hover:bg-smoky-lavender/80"
-              >
-                <Check className="mr-2 w-4 h-4" />
-                Approve
-              </Button>
-              <Button variant="outline" className="border-rocket-gray text-gray-600">
-                <X className="mr-2 w-4 h-4" />
-                Reject
-              </Button>
-            </div>
+          )}
+
+          {/* Action buttons */}
+          <div className="flex gap-2">
+            <Button
+              onClick={handleApprove}
+              disabled={selectedPlatforms.length === 0 || isApproving}
+              size="sm"
+              className="flex-1 bg-smoky-lavender hover:bg-smoky-lavender/80 h-8"
+            >
+              <Check className="w-3 h-3 mr-1" />
+              Approve
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="border-red-300 text-red-600 hover:bg-red-50 h-8"
+              onClick={() => {
+                // TODO: Implement reject functionality
+              }}
+            >
+              <X className="w-3 h-3" />
+            </Button>
           </div>
-        )}
-      </CardContent>
-    </Card>
+        </div>
+      )}
+
+      {/* Show metadata for approved/rejected items */}
+      {(idea.status !== 'new' || isApproved) && (
+        <div className="text-xs text-gray-500 min-w-[120px] text-right">
+          <div>Added: {new Date(idea.createdAt).toLocaleDateString()}</div>
+          <div className="capitalize">{idea.inputType} source</div>
+        </div>
+      )}
+    </div>
   );
 }
 
