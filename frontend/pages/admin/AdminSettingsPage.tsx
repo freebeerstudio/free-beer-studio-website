@@ -46,17 +46,7 @@ export default function AdminSettingsPage() {
             </CardContent>
           </Card>
 
-          <Card className="bg-white border-gray-200">
-            <CardHeader>
-              <CardTitle className="text-gray-900">Feed Sources</CardTitle>
-              <CardDescription className="text-gray-600">
-                Manage RSS feeds and content sources
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-gray-600 text-sm">Coming soon...</p>
-            </CardContent>
-          </Card>
+
         </div>
       </div>
     </AdminLayout>

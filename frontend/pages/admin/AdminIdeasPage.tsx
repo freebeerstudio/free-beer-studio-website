@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Send, Check, X, ExternalLink } from 'lucide-react';
+import { Plus, Send, Check, X, ExternalLink, ChevronDown, ChevronUp, Rss, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -15,6 +15,9 @@ import { useBackend } from '../../hooks/useBackend';
 export default function AdminIdeasPage() {
   const [newIdeaInput, setNewIdeaInput] = useState('');
   const [inputType, setInputType] = useState<'url' | 'text'>('url');
+  const [feedSourcesExpanded, setFeedSourcesExpanded] = useState(false);
+  const [newFeedUrl, setNewFeedUrl] = useState('');
+  const [newFeedName, setNewFeedName] = useState('');
   const backend = useBackend();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -165,6 +168,134 @@ export default function AdminIdeasPage() {
                   {ingestMutation.isPending ? 'Processing...' : 'Ingest Idea'}
                 </Button>
               </CardContent>
+            </Card>
+
+            {/* Feed Sources Section */}
+            <Card className="bg-white border-gray-200">
+              <CardHeader className="cursor-pointer" onClick={() => setFeedSourcesExpanded(!feedSourcesExpanded)}>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-gray-900 flex items-center">
+                      <Rss className="mr-2 w-5 h-5" />
+                      Feed Sources
+                    </CardTitle>
+                    <CardDescription className="text-gray-600">
+                      Manage RSS feeds and external blog URLs for content scraping
+                    </CardDescription>
+                  </div>
+                  {feedSourcesExpanded ? (
+                    <ChevronUp className="w-5 h-5 text-gray-400" />
+                  ) : (
+                    <ChevronDown className="w-5 h-5 text-gray-400" />
+                  )}
+                </div>
+              </CardHeader>
+              
+              {feedSourcesExpanded && (
+                <CardContent className="space-y-4">
+                  {/* Add New Feed Form */}
+                  <div className="space-y-3 p-4 bg-rocket-gray/5 rounded-lg border border-rocket-gray/20">
+                    <h4 className="text-gray-900 font-medium">Add New Feed Source</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <Input
+                        placeholder="Feed name (e.g., TechCrunch)"
+                        value={newFeedName}
+                        onChange={(e) => setNewFeedName(e.target.value)}
+                        className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-400"
+                      />
+                      <Input
+                        placeholder="RSS/Blog URL"
+                        value={newFeedUrl}
+                        onChange={(e) => setNewFeedUrl(e.target.value)}
+                        className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-400"
+                      />
+                    </div>
+                    <Button
+                      onClick={() => {
+                        // TODO: Implement add feed functionality
+                        toast({
+                          title: 'Coming Soon',
+                          description: 'Feed source management will be implemented soon',
+                        });
+                        setNewFeedName('');
+                        setNewFeedUrl('');
+                      }}
+                      disabled={!newFeedName.trim() || !newFeedUrl.trim()}
+                      className="bg-vapor-purple hover:bg-vapor-purple/80"
+                    >
+                      <Plus className="mr-2 w-4 h-4" />
+                      Add Feed Source
+                    </Button>
+                  </div>
+
+                  {/* Existing Feed Sources */}
+                  <div className="space-y-3">
+                    <h4 className="text-gray-900 font-medium">Current Feed Sources</h4>
+                    <div className="space-y-2">
+                      {/* Sample feed sources - replace with actual data */}
+                      <div className="flex items-center justify-between p-3 border border-gray-200 rounded-lg bg-white">
+                        <div className="flex items-center space-x-3">
+                          <Rss className="w-4 h-4 text-vapor-purple" />
+                          <div>
+                            <p className="text-gray-900 font-medium">Sample Tech Blog</p>
+                            <p className="text-gray-600 text-sm">https://example.com/rss</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Badge variant="outline" className="text-green-600 border-green-600">
+                            Active
+                          </Badge>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              toast({
+                                title: 'Coming Soon',
+                                description: 'Feed deletion will be implemented soon',
+                              });
+                            }}
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center justify-between p-3 border border-gray-200 rounded-lg bg-white">
+                        <div className="flex items-center space-x-3">
+                          <Rss className="w-4 h-4 text-vapor-purple" />
+                          <div>
+                            <p className="text-gray-900 font-medium">Industry News</p>
+                            <p className="text-gray-600 text-sm">https://industry-news.com/feed</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Badge variant="outline" className="text-gray-600 border-gray-600">
+                            Inactive
+                          </Badge>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              toast({
+                                title: 'Coming Soon',
+                                description: 'Feed deletion will be implemented soon',
+                              });
+                            }}
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <p className="text-gray-600 text-sm italic">
+                      Feed source management and automatic scraping functionality will be implemented in the next phase.
+                    </p>
+                  </div>
+                </CardContent>
+              )}
             </Card>
           </TabsContent>
 
