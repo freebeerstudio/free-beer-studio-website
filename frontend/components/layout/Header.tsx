@@ -15,6 +15,7 @@ export default function Header() {
     { name: 'Portfolio', href: '/portfolio' },
     { name: 'Blog', href: '/blog' },
     { name: 'Contact', href: '/contact' },
+    { name: 'Admin', href: '/admin/dashboard' },
   ];
 
   const isActive = (href: string) => {
