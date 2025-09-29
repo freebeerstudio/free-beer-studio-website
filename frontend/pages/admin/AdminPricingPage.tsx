@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/use-toast';
+import FileUpload from '@/components/ui/file-upload';
 import {
   Dialog,
   DialogContent,
@@ -414,12 +415,13 @@ function PricingForm({
       </div>
 
       <div className="space-y-2">
-        <label className="text-sm font-medium">Image URL</label>
-        <input
-          type="url"
-          value={formData.imageUrl}
-          onChange={(e) => setFormData(prev => ({ ...prev, imageUrl: e.target.value }))}
-          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+        <label className="text-sm font-medium">Image</label>
+        <FileUpload
+          category="pricing"
+          currentUrl={formData.imageUrl}
+          onFileUploaded={(url) => setFormData(prev => ({ ...prev, imageUrl: url }))}
+          onFileRemoved={() => setFormData(prev => ({ ...prev, imageUrl: '' }))}
+          accept="image/*"
         />
       </div>
 

@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/use-toast';
+import FileUpload from '@/components/ui/file-upload';
 import {
   Dialog,
   DialogContent,
@@ -438,12 +439,13 @@ function ProjectForm({
       </div>
 
       <div className="space-y-2">
-        <label className="text-sm font-medium">Cover Image URL</label>
-        <input
-          type="url"
-          value={formData.coverImageUrl}
-          onChange={(e) => setFormData(prev => ({ ...prev, coverImageUrl: e.target.value }))}
-          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+        <label className="text-sm font-medium">Cover Image</label>
+        <FileUpload
+          category="project"
+          currentUrl={formData.coverImageUrl}
+          onFileUploaded={(url) => setFormData(prev => ({ ...prev, coverImageUrl: url }))}
+          onFileRemoved={() => setFormData(prev => ({ ...prev, coverImageUrl: '' }))}
+          accept="image/*"
         />
       </div>
 
@@ -466,22 +468,25 @@ function ProjectForm({
             Add Image
           </Button>
         </div>
-        <div className="space-y-2">
+        <div className="space-y-4">
           {formData.gallery.map((url, index) => (
-            <div key={index} className="flex items-center space-x-2">
-              <input
-                type="url"
-                value={url}
-                onChange={(e) => updateGalleryImage(index, e.target.value)}
-                placeholder="Enter image URL"
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-              />
+            <div key={index} className="flex items-start space-x-2">
+              <div className="flex-1">
+                <FileUpload
+                  category="project"
+                  currentUrl={url}
+                  onFileUploaded={(uploadedUrl) => updateGalleryImage(index, uploadedUrl)}
+                  onFileRemoved={() => updateGalleryImage(index, '')}
+                  accept="image/*"
+                />
+              </div>
               {formData.gallery.length > 1 && (
                 <Button
                   type="button"
                   variant="outline"
                   size="sm"
                   onClick={() => removeGalleryImage(index)}
+                  className="mt-2"
                 >
                   <Trash2 className="w-4 h-4" />
                 </Button>
