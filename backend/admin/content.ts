@@ -382,35 +382,64 @@ export const createBlogPost = api<CreateBlogPostRequest, {id: number}>(
 export const listBlogPosts = api<{source?: string}, ListBlogPostsResponse>(
   { expose: true, method: "GET", path: "/admin/blog" },
   async (req) => {
-    const rows = await db.queryAll<{
-      id: number;
-      title: string;
-      subtitle: string | null;
-      slug: string;
-      cover_image_url: string | null;
-      gallery: any;
-      body: string | null;
-      excerpt: string | null;
-      status: "draft" | "scheduled" | "published";
-      scheduled_at: Date | null;
-      published_at: Date | null;
-      source: "manual" | "ai" | "idea_engine";
-      idea_id: number | null;
-      author_id: string | null;
-      author_email: string | null;
-      created_at: Date;
-      updated_at: Date;
-    }>`
-      SELECT 
-        bp.id, bp.title, bp.subtitle, bp.slug, bp.cover_image_url, 
-        bp.gallery, bp.body, bp.excerpt, bp.status, bp.scheduled_at, bp.published_at,
-        bp.source, bp.idea_id, bp.created_at, bp.updated_at,
-        u.id as author_id, u.email as author_email
-      FROM blog_posts bp
-      LEFT JOIN users u ON bp.author_id = u.id
-      ${req.source ? `WHERE bp.source = ${req.source}` : ''}
-      ORDER BY bp.created_at DESC
-    `;
+    const rows = req.source 
+      ? await db.queryAll<{
+          id: number;
+          title: string;
+          subtitle: string | null;
+          slug: string;
+          cover_image_url: string | null;
+          gallery: any;
+          body: string | null;
+          excerpt: string | null;
+          status: "draft" | "scheduled" | "published";
+          scheduled_at: Date | null;
+          published_at: Date | null;
+          source: "manual" | "ai" | "idea_engine";
+          idea_id: number | null;
+          author_id: string | null;
+          author_email: string | null;
+          created_at: Date;
+          updated_at: Date;
+        }>`
+          SELECT 
+            bp.id, bp.title, bp.subtitle, bp.slug, bp.cover_image_url, 
+            bp.gallery, bp.body, bp.excerpt, bp.status, bp.scheduled_at, bp.published_at,
+            bp.source, bp.idea_id, bp.created_at, bp.updated_at,
+            u.id as author_id, u.email as author_email
+          FROM blog_posts bp
+          LEFT JOIN users u ON bp.author_id = u.id
+          WHERE bp.source = ${req.source}
+          ORDER BY bp.created_at DESC
+        `
+      : await db.queryAll<{
+          id: number;
+          title: string;
+          subtitle: string | null;
+          slug: string;
+          cover_image_url: string | null;
+          gallery: any;
+          body: string | null;
+          excerpt: string | null;
+          status: "draft" | "scheduled" | "published";
+          scheduled_at: Date | null;
+          published_at: Date | null;
+          source: "manual" | "ai" | "idea_engine";
+          idea_id: number | null;
+          author_id: string | null;
+          author_email: string | null;
+          created_at: Date;
+          updated_at: Date;
+        }>`
+          SELECT 
+            bp.id, bp.title, bp.subtitle, bp.slug, bp.cover_image_url, 
+            bp.gallery, bp.body, bp.excerpt, bp.status, bp.scheduled_at, bp.published_at,
+            bp.source, bp.idea_id, bp.created_at, bp.updated_at,
+            u.id as author_id, u.email as author_email
+          FROM blog_posts bp
+          LEFT JOIN users u ON bp.author_id = u.id
+          ORDER BY bp.created_at DESC
+        `;
 
     return {
       posts: rows.map(row => ({
