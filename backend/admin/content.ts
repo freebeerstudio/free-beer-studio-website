@@ -68,6 +68,23 @@ interface UpdateBlogPostRequest {
   scheduledAt?: Date;
 }
 
+interface PricingItem {
+  id: number;
+  title: string;
+  description: string | null;
+  imageUrl: string | null;
+  price: number | null;
+  features: string[];
+  isFeatured: boolean;
+  sortOrder: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+interface ListPricingItemsResponse {
+  items: PricingItem[];
+}
+
 // Creates a new pricing item.
 export const createPricingItem = api<CreatePricingItemRequest, {id: number}>(
   { expose: true, method: "POST", path: "/admin/pricing" },
@@ -175,7 +192,7 @@ export const createBlogPost = api<CreateBlogPostRequest, {id: number}>(
 );
 
 // List all pricing items for admin management.
-export const listPricingItems = api<void, {items: any[]}>(
+export const listPricingItems = api<void, ListPricingItemsResponse>(
   { expose: true, method: "GET", path: "/admin/pricing" },
   async () => {
 
@@ -214,7 +231,7 @@ export const listPricingItems = api<void, {items: any[]}>(
 );
 
 // Get a single pricing item by ID.
-export const getPricingItem = api<{id: number}, any>(
+export const getPricingItem = api<{id: number}, PricingItem>(
   { expose: true, method: "GET", path: "/admin/pricing/:id" },
   async (req) => {
 

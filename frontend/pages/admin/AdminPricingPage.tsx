@@ -62,7 +62,7 @@ export default function AdminPricingPage() {
   });
 
   const createMutation = useMutation({
-    mutationFn: (data: PricingFormData) => backend.admin.createPricingItem(data),
+    mutationFn: (data: { title: string; description: string; imageUrl: string; price?: number; features: string[]; isFeatured: boolean; sortOrder: number; }) => backend.admin.createPricingItem(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-pricing'] });
       setIsCreateDialogOpen(false);
@@ -82,7 +82,7 @@ export default function AdminPricingPage() {
   });
 
   const updateMutation = useMutation({
-    mutationFn: (data: { id: number } & Partial<PricingFormData>) => backend.admin.updatePricingItem(data),
+    mutationFn: (data: { id: number; title?: string; description?: string; imageUrl?: string; price?: number; features?: string[]; isFeatured?: boolean; sortOrder?: number; }) => backend.admin.updatePricingItem(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-pricing'] });
       setEditingItem(null);
@@ -122,12 +122,21 @@ export default function AdminPricingPage() {
   });
 
   const handleCreate = (data: PricingFormData) => {
-    createMutation.mutate(data);
+    const payload = {
+      ...data,
+      price: data.price === null ? undefined : data.price,
+    };
+    createMutation.mutate(payload);
   };
 
   const handleUpdate = (data: PricingFormData) => {
     if (editingItem) {
-      updateMutation.mutate({ id: editingItem.id, ...data });
+      const payload = {
+        id: editingItem.id,
+        ...data,
+        price: data.price === null ? undefined : data.price,
+      };
+      updateMutation.mutate(payload);
     }
   };
 
