@@ -98,6 +98,36 @@ export const listIdeas = api<ListIdeasParams, ListIdeasResponse>(
   }
 );
 
+interface GetIdeaPlatformsRequest {
+  id: number;
+}
+
+interface GetIdeaPlatformsResponse {
+  platforms: string[];
+}
+
+// Gets existing platform selections for an idea
+export const getIdeaPlatforms = api<GetIdeaPlatformsRequest, GetIdeaPlatformsResponse>(
+  { auth: false, expose: true, method: "GET", path: "/ideas/:id/platforms" },
+  async (req) => {
+    // Temporarily disable auth check for testing
+    // const auth = getAuthData()!;
+    // if (auth.role !== 'admin') {
+    //   throw new Error("Admin access required");
+    // }
+
+    const platforms = await db.queryAll<{platform: string}>`
+      SELECT DISTINCT platform FROM idea_platform_selections 
+      WHERE idea_id = ${req.id}
+      ORDER BY platform
+    `;
+
+    return {
+      platforms: platforms.map(p => p.platform),
+    };
+  }
+);
+
 // Approves an idea and creates platform-specific drafts.
 export const approveIdea = api<ApproveIdeaRequest, ApproveIdeaResponse>(
   { auth: false, expose: true, method: "POST", path: "/ideas/:id/approve" },
@@ -115,18 +145,58 @@ export const approveIdea = api<ApproveIdeaRequest, ApproveIdeaResponse>(
     `;
 
     // Create platform selections for each requested platform
+    // Only create drafts that don't already exist
     let draftsCreated = 0;
     for (const platform of req.platforms) {
-      await db.exec`
-        INSERT INTO idea_platform_selections (idea_id, platform, image_mode, status)
-        VALUES (${req.id}, ${platform}, ${req.imageMode || 'template'}, 'draft')
+      // Check if draft already exists for this idea-platform combination
+      const existingDraft = await db.queryRow<{id: number}>`
+        SELECT id FROM idea_platform_selections 
+        WHERE idea_id = ${req.id} AND platform = ${platform}
       `;
-      draftsCreated++;
+
+      if (!existingDraft) {
+        // Only create if doesn't exist
+        await db.exec`
+          INSERT INTO idea_platform_selections (idea_id, platform, image_mode, status)
+          VALUES (${req.id}, ${platform}, ${req.imageMode || 'template'}, 'draft')
+        `;
+        draftsCreated++;
+      }
     }
 
     return {
       success: true,
       draftsCreated,
+    };
+  }
+);
+
+interface RejectIdeaRequest {
+  id: number;
+}
+
+interface RejectIdeaResponse {
+  success: boolean;
+}
+
+// Rejects an idea
+export const rejectIdea = api<RejectIdeaRequest, RejectIdeaResponse>(
+  { auth: false, expose: true, method: "POST", path: "/ideas/:id/reject" },
+  async (req) => {
+    // Temporarily disable auth check for testing
+    // const auth = getAuthData()!;
+    // if (auth.role !== 'admin') {
+    //   throw new Error("Admin access required");
+    // }
+
+    // Update idea status to rejected
+    await db.exec`
+      UPDATE ideas SET status = 'rejected', updated_at = NOW()
+      WHERE id = ${req.id}
+    `;
+
+    return {
+      success: true,
     };
   }
 );

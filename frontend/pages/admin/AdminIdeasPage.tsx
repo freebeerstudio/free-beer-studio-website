@@ -149,6 +149,26 @@ export default function AdminIdeasPage() {
     },
   });
 
+  // Reject idea mutation
+  const rejectMutation = useMutation({
+    mutationFn: (id: number) => backend.ideas.rejectIdea({ id }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-ideas'] });
+      toast({
+        title: 'Success',
+        description: 'Idea rejected',
+      });
+    },
+    onError: (error) => {
+      console.error('Reject error:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to reject idea',
+        variant: 'destructive',
+      });
+    },
+  });
+
   const handleIngestIdea = () => {
     if (!newIdeaInput.trim()) return;
     
@@ -163,6 +183,10 @@ export default function AdminIdeasPage() {
       id: ideaId,
       platforms,
     });
+  };
+
+  const handleRejectIdea = (ideaId: number) => {
+    rejectMutation.mutate(ideaId);
   };
 
   const handleAddFeedSource = () => {
@@ -385,38 +409,56 @@ export default function AdminIdeasPage() {
           </TabsContent>
 
           {/* Ideas Tab */}
-          <TabsContent value="ideas" className="space-y-4">
+          <TabsContent value="ideas" className="space-y-6">
             {ideasLoading ? (
-              <div className="space-y-3">
-                {[...Array(5)].map((_, i) => (
-                  <div key={i} className="flex items-center gap-4 p-4 border border-gray-200 rounded-lg bg-white animate-pulse">
-                    <div className="flex-1">
-                      <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-                      <div className="h-3 bg-gray-200 rounded w-full mb-1"></div>
-                      <div className="h-3 bg-gray-200 rounded w-1/2"></div>
-                    </div>
-                    <div className="w-24 h-16 bg-gray-200 rounded"></div>
-                  </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[...Array(6)].map((_, i) => (
+                  <Card key={i} className="h-80 bg-white border-gray-200 animate-pulse">
+                    <CardHeader>
+                      <div className="h-6 bg-gray-200 rounded w-3/4 mb-2"></div>
+                      <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-3">
+                        <div className="h-4 bg-gray-200 rounded w-full"></div>
+                        <div className="h-4 bg-gray-200 rounded w-full"></div>
+                        <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+                      </div>
+                    </CardContent>
+                  </Card>
                 ))}
               </div>
             ) : (
-              <div className="space-y-3">
-                {ideasData?.ideas.map((idea) => (
-                  <IdeaCard
-                    key={idea.id}
-                    idea={idea}
-                    onApprove={handleApproveIdea}
-                    isApproving={approveMutation.isPending}
-                  />
-                ))}
-                {ideasData?.ideas.length === 0 && (
+              <>
+                {ideasData?.ideas.length === 0 ? (
                   <Card className="bg-white border-gray-200">
                     <CardContent className="text-center py-12">
-                      <p className="text-gray-600">No ideas found. Start by ingesting some content!</p>
+                      <div className="space-y-4">
+                        <div className="w-16 h-16 mx-auto bg-gray-100 rounded-full flex items-center justify-center">
+                          <Plus className="w-8 h-8 text-gray-400" />
+                        </div>
+                        <div>
+                          <h3 className="text-lg font-medium text-gray-900 mb-2">No ideas yet</h3>
+                          <p className="text-gray-600">Start by adding content or scraping RSS feeds to generate ideas!</p>
+                        </div>
+                      </div>
                     </CardContent>
                   </Card>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {ideasData?.ideas.map((idea) => (
+                      <IdeaCard
+                        key={idea.id}
+                        idea={idea}
+                        onApprove={handleApproveIdea}
+                        onReject={handleRejectIdea}
+                        isApproving={approveMutation.isPending}
+                        isRejecting={rejectMutation.isPending}
+                      />
+                    ))}
+                  </div>
                 )}
-              </div>
+              </>
             )}
           </TabsContent>
 
@@ -455,21 +497,21 @@ export default function AdminIdeasPage() {
 interface IdeaCardProps {
   idea: any;
   onApprove: (ideaId: number, platforms: string[]) => void;
+  onReject: (ideaId: number) => void;
   isApproving: boolean;
+  isRejecting: boolean;
 }
 
-function IdeaCard({ idea, onApprove, isApproving }: IdeaCardProps) {
+function IdeaCard({ idea, onApprove, onReject, isApproving, isRejecting }: IdeaCardProps) {
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
-  const [isApproved, setIsApproved] = useState(idea.status === 'approved');
   const [isEditing, setIsEditing] = useState(false);
-  const [showPlatformSelector, setShowPlatformSelector] = useState(false);
   
   const platforms = [
-    { id: 'blog', label: 'Blog' },
-    { id: 'substack', label: 'Substack' },
-    { id: 'linkedin', label: 'LinkedIn' },
-    { id: 'x', label: 'X (Twitter)' },
-    { id: 'shorts', label: 'Shorts' },
+    { id: 'blog', label: 'Blog', color: 'bg-blue-100 text-blue-800 border-blue-200' },
+    { id: 'substack', label: 'Substack', color: 'bg-orange-100 text-orange-800 border-orange-200' },
+    { id: 'linkedin', label: 'LinkedIn', color: 'bg-indigo-100 text-indigo-800 border-indigo-200' },
+    { id: 'x', label: 'X', color: 'bg-gray-100 text-gray-800 border-gray-200' },
+    { id: 'shorts', label: 'Shorts', color: 'bg-red-100 text-red-800 border-red-200' },
   ];
 
   const handlePlatformToggle = (platformId: string) => {
@@ -485,193 +527,158 @@ function IdeaCard({ idea, onApprove, isApproving }: IdeaCardProps) {
   const handleApprove = () => {
     if (selectedPlatforms.length > 0) {
       onApprove(idea.id, selectedPlatforms);
-      setIsApproved(true);
-      setShowPlatformSelector(false);
+      setIsEditing(false);
     }
+  };
+
+  const handleReject = () => {
+    onReject(idea.id);
   };
 
   const handleEdit = () => {
     setIsEditing(true);
-    setShowPlatformSelector(true);
-    // Pre-populate with existing platforms if available
     // TODO: Fetch existing platform selections from backend
-  };
-
-  const handleSaveEdit = () => {
-    if (selectedPlatforms.length > 0) {
-      // TODO: Call update endpoint instead of approve
-      onApprove(idea.id, selectedPlatforms);
-      setIsEditing(false);
-      setShowPlatformSelector(false);
-    }
+    setSelectedPlatforms([]);
   };
 
   const handleCancelEdit = () => {
     setIsEditing(false);
-    setShowPlatformSelector(false);
     setSelectedPlatforms([]);
   };
 
-  const getStatusIcon = () => {
-    if (idea.status === 'approved' || isApproved) {
-      return <CheckCircle className="w-6 h-6 text-green-600" />;
-    } else if (idea.status === 'rejected') {
-      return <XCircle className="w-6 h-6 text-red-600" />;
+  const getStatusBadge = () => {
+    switch (idea.status) {
+      case 'new':
+        return <Badge className="bg-vapor-purple/20 text-vapor-purple border-vapor-purple">New</Badge>;
+      case 'approved':
+        return <Badge className="bg-green-100 text-green-700 border-green-300">Approved</Badge>;
+      case 'rejected':
+        return <Badge className="bg-red-100 text-red-700 border-red-300">Rejected</Badge>;
+      default:
+        return <Badge variant="outline">Unknown</Badge>;
     }
-    return null;
   };
 
   const showControls = idea.status === 'new' || isEditing;
-  const showEditButton = (idea.status === 'approved' || isApproved) && !isEditing;
+  const showEditButton = idea.status === 'approved' && !isEditing;
 
   return (
-    <div className="border border-gray-200 rounded-lg bg-white hover:bg-gray-50 transition-colors">
-      <div className="flex items-center gap-4 p-4">
-        {/* Left side - Content */}
-        <div className="flex-1 min-w-0">
-          <h3 className="font-medium text-gray-900 truncate mb-1">
-            {idea.title || 'Untitled Idea'}
-          </h3>
-          
-          <p className="text-sm text-gray-600 mb-2 overflow-hidden" style={{
-            display: '-webkit-box',
-            WebkitLineClamp: 2,
-            WebkitBoxOrient: 'vertical',
-          }}>
-            {idea.summary}
-          </p>
+    <Card className="h-full flex flex-col bg-white border-gray-200 hover:shadow-md transition-shadow">
+      {/* Header */}
+      <CardHeader className="pb-3">
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex-1 min-w-0">
+            <CardTitle className="text-lg font-semibold text-gray-900 line-clamp-2 mb-2">
+              {idea.title || 'Untitled Idea'}
+            </CardTitle>
+            <div className="flex items-center gap-2">
+              {getStatusBadge()}
+              <Badge variant="outline" className="text-xs">
+                {idea.inputType === 'url' ? 'Web' : 'Text'}
+              </Badge>
+            </div>
+          </div>
           
           {idea.canonicalUrl && (
-            <div className="flex items-center gap-1">
-              <ExternalLink className="w-3 h-3 text-gray-400 flex-shrink-0" />
+            <Button variant="ghost" size="sm" asChild className="flex-shrink-0">
+              <a href={idea.canonicalUrl} target="_blank" rel="noopener noreferrer">
+                <ExternalLink className="w-4 h-4" />
+              </a>
+            </Button>
+          )}
+        </div>
+      </CardHeader>
+
+      {/* Content */}
+      <CardContent className="flex-1 pb-3">
+        <div className="space-y-3">
+          {/* Summary */}
+          <p className="text-sm text-gray-600 leading-relaxed line-clamp-3">
+            {idea.summary}
+          </p>
+
+          {/* URL */}
+          {idea.canonicalUrl && (
+            <div className="p-2 bg-gray-50 rounded text-xs">
+              <span className="text-gray-500">Source: </span>
               <a 
                 href={idea.canonicalUrl} 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="text-xs text-blue-600 hover:text-blue-800 underline truncate"
+                className="text-blue-600 hover:text-blue-800 underline break-all"
               >
                 {idea.canonicalUrl}
               </a>
             </div>
           )}
-        </div>
 
-        {/* Center - Status and Channel Tags */}
-        <div className="flex flex-col items-center gap-2 px-4">
-          {getStatusIcon()}
-          
-          {(idea.status === 'approved' || isApproved) && selectedPlatforms.length > 0 && (
-            <div className="flex flex-wrap gap-1 justify-center">
-              {selectedPlatforms.map(platform => (
-                <Badge 
-                  key={platform} 
-                  variant="secondary"
-                  className="text-xs bg-smoky-lavender/20 text-smoky-lavender border-smoky-lavender"
-                >
-                  {platforms.find(p => p.id === platform)?.label}
-                </Badge>
-              ))}
-            </div>
-          )}
-          
-          <div className="flex items-center gap-1 text-xs text-gray-500">
-            <Badge 
-              variant="outline" 
-              className={`text-xs ${
-                idea.status === 'new' ? 'bg-vapor-purple/20 text-vapor-purple border-vapor-purple' :
-                idea.status === 'approved' ? 'bg-green-100 text-green-700 border-green-300' :
-                'bg-red-100 text-red-700 border-red-300'
-              }`}
-            >
-              {idea.status}
-            </Badge>
-          </div>
-        </div>
-
-        {/* Right side - Controls */}
-        <div className="min-w-[200px]">
-          {showEditButton && (
-            <div className="flex gap-2">
-              <Button
-                onClick={handleEdit}
-                size="sm"
-                variant="outline"
-                className="flex-1 h-8 border-smoky-lavender text-smoky-lavender hover:bg-smoky-lavender/10"
-              >
-                Edit Channels
-              </Button>
-              <div className="text-xs text-gray-500 text-right">
-                <div>Added: {new Date(idea.createdAt).toLocaleDateString()}</div>
-                <div className="capitalize">{idea.inputType} source</div>
+          {/* Existing Platform Tags for Approved Items */}
+          {idea.status === 'approved' && selectedPlatforms.length > 0 && !isEditing && (
+            <div className="space-y-2">
+              <span className="text-xs font-medium text-gray-700">Published to:</span>
+              <div className="flex flex-wrap gap-1">
+                {selectedPlatforms.map(platformId => {
+                  const platform = platforms.find(p => p.id === platformId);
+                  return (
+                    <Badge 
+                      key={platformId}
+                      className={platform?.color || 'bg-gray-100 text-gray-800 border-gray-200'}
+                      variant="outline"
+                    >
+                      {platform?.label}
+                    </Badge>
+                  );
+                })}
               </div>
             </div>
           )}
-
-          {!showControls && !showEditButton && (
-            <div className="text-xs text-gray-500 text-right">
-              <div>Added: {new Date(idea.createdAt).toLocaleDateString()}</div>
-              <div className="capitalize">{idea.inputType} source</div>
-            </div>
-          )}
         </div>
-      </div>
+      </CardContent>
 
-      {/* Platform Selection Section */}
-      {showControls && (
-        <div className="border-t border-gray-200 p-4 bg-gray-50">
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <h4 className="text-sm font-medium text-gray-900">
+      {/* Controls */}
+      <CardContent className="pt-0">
+        {showControls && (
+          <div className="space-y-3 border-t border-gray-100 pt-3">
+            <div>
+              <span className="text-sm font-medium text-gray-700 mb-2 block">
                 {isEditing ? 'Edit Platforms:' : 'Select Platforms:'}
-              </h4>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowPlatformSelector(!showPlatformSelector)}
-                className="h-6 px-2 text-xs"
-              >
-                {showPlatformSelector ? 'Hide' : 'Show'} Options
-                {showPlatformSelector ? 
-                  <ChevronUp className="w-3 h-3 ml-1" /> : 
-                  <ChevronDown className="w-3 h-3 ml-1" />
-                }
-              </Button>
-            </div>
-
-            {showPlatformSelector && (
+              </span>
               <div className="grid grid-cols-2 gap-2">
                 {platforms.map((platform) => (
-                  <div key={platform.id} className="flex items-center space-x-2">
+                  <label 
+                    key={platform.id} 
+                    className="flex items-center space-x-2 cursor-pointer p-2 rounded border border-gray-200 hover:bg-gray-50 transition-colors"
+                  >
                     <Checkbox
-                      id={`${idea.id}-${platform.id}`}
                       checked={selectedPlatforms.includes(platform.id)}
                       onCheckedChange={() => handlePlatformToggle(platform.id)}
                     />
-                    <label
-                      htmlFor={`${idea.id}-${platform.id}`}
-                      className="text-sm text-gray-900 cursor-pointer"
-                    >
+                    <span className="text-sm text-gray-900 flex-1">
                       {platform.label}
-                    </label>
-                  </div>
+                    </span>
+                  </label>
                 ))}
               </div>
-            )}
+            </div>
 
-            {/* Selected platforms display */}
+            {/* Selected platforms preview */}
             {selectedPlatforms.length > 0 && (
-              <div className="flex flex-wrap gap-1">
-                {selectedPlatforms.map(platform => (
-                  <Badge 
-                    key={platform} 
-                    variant="outline"
-                    className="text-xs cursor-pointer hover:bg-red-50 border-gray-300"
-                    onClick={() => handlePlatformToggle(platform)}
-                  >
-                    {platforms.find(p => p.id === platform)?.label}
-                    <X className="w-3 h-3 ml-1" />
-                  </Badge>
-                ))}
+              <div className="space-y-2">
+                <span className="text-xs text-gray-600">Selected:</span>
+                <div className="flex flex-wrap gap-1">
+                  {selectedPlatforms.map(platformId => {
+                    const platform = platforms.find(p => p.id === platformId);
+                    return (
+                      <Badge 
+                        key={platformId}
+                        className={platform?.color || 'bg-gray-100 text-gray-800 border-gray-200'}
+                        variant="outline"
+                      >
+                        {platform?.label}
+                      </Badge>
+                    );
+                  })}
+                </div>
               </div>
             )}
 
@@ -680,19 +687,19 @@ function IdeaCard({ idea, onApprove, isApproving }: IdeaCardProps) {
               {isEditing ? (
                 <>
                   <Button
-                    onClick={handleSaveEdit}
+                    onClick={handleApprove}
                     disabled={selectedPlatforms.length === 0 || isApproving}
                     size="sm"
-                    className="flex-1 bg-smoky-lavender hover:bg-smoky-lavender/80 h-8"
+                    className="flex-1 bg-smoky-lavender hover:bg-smoky-lavender/80"
                   >
-                    <Check className="w-3 h-3 mr-1" />
+                    <Check className="w-4 h-4 mr-1" />
                     Save Changes
                   </Button>
                   <Button
                     onClick={handleCancelEdit}
                     variant="outline"
                     size="sm"
-                    className="border-gray-300 text-gray-600 hover:bg-gray-50 h-8"
+                    className="border-gray-300"
                   >
                     Cancel
                   </Button>
@@ -703,28 +710,48 @@ function IdeaCard({ idea, onApprove, isApproving }: IdeaCardProps) {
                     onClick={handleApprove}
                     disabled={selectedPlatforms.length === 0 || isApproving}
                     size="sm"
-                    className="flex-1 bg-smoky-lavender hover:bg-smoky-lavender/80 h-8"
+                    className="flex-1 bg-green-600 hover:bg-green-700 text-white"
                   >
-                    <Check className="w-3 h-3 mr-1" />
+                    <Check className="w-4 h-4 mr-1" />
                     Approve
                   </Button>
                   <Button
+                    onClick={handleReject}
+                    disabled={isRejecting}
                     variant="outline"
                     size="sm"
-                    className="border-red-300 text-red-600 hover:bg-red-50 h-8"
-                    onClick={() => {
-                      // TODO: Implement reject functionality
-                    }}
+                    className="border-red-300 text-red-600 hover:bg-red-50"
                   >
-                    <X className="w-3 h-3" />
+                    <X className="w-4 h-4" />
                   </Button>
                 </>
               )}
             </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+
+        {showEditButton && (
+          <div className="border-t border-gray-100 pt-3">
+            <Button
+              onClick={handleEdit}
+              variant="outline"
+              size="sm"
+              className="w-full border-smoky-lavender text-smoky-lavender hover:bg-smoky-lavender/10"
+            >
+              Edit Platforms
+            </Button>
+          </div>
+        )}
+
+        {/* Metadata for non-editable items */}
+        {!showControls && !showEditButton && (
+          <div className="border-t border-gray-100 pt-3 text-xs text-gray-500 space-y-1">
+            <div>Added: {new Date(idea.createdAt).toLocaleDateString()}</div>
+            <div>Source: {idea.inputType === 'url' ? 'Web Article' : 'Manual Entry'}</div>
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 }
 
