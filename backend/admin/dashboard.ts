@@ -22,14 +22,13 @@ interface DashboardResponse {
 
 // Retrieves dashboard overview data for admin users.
 export const getDashboard = api<void, DashboardResponse>(
-  { auth: false, expose: true, method: "GET", path: "/admin/dashboard" },
+  { auth: true, expose: true, method: "GET", path: "/admin/dashboard" },
   async () => {
-    // Temporarily disable auth check for testing
-    // const auth = getAuthData()!;
-    // 
-    // if (auth.role !== 'admin') {
-    //   throw new Error("Admin access required");
-    // }
+    const auth = getAuthData()!;
+    
+    if (auth.role !== 'admin') {
+      throw new Error("Admin access required");
+    }
 
     // Get KPIs
     const [

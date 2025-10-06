@@ -37,7 +37,7 @@ interface ListStyleGuidesResponse {
 
 // Get all style guides
 export const listStyleGuides = api<void, ListStyleGuidesResponse>(
-  { auth: false, expose: true, method: "GET", path: "/style-guides" },
+  { auth: true, expose: true, method: "GET", path: "/style-guides" },
   async () => {
     // Temporarily disable auth check for testing
     // const auth = getAuthData()!;

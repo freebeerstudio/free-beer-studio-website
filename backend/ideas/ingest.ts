@@ -20,7 +20,7 @@ interface IngestIdeaResponse {
 
 // Ingests a new idea from URL or text and generates a summary.
 export const ingestIdea = api<IngestIdeaRequest, IngestIdeaResponse>(
-  { auth: false, expose: true, method: "POST", path: "/ideas/ingest" },
+  { auth: true, expose: true, method: "POST", path: "/ideas/ingest" },
   async (req) => {
     // Temporarily disable auth check for testing
     // const auth = getAuthData()!;

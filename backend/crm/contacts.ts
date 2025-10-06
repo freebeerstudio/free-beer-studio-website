@@ -98,7 +98,7 @@ interface ContactResponse {
 
 // List contacts with filtering
 export const listContacts = api<ListContactsParams, ListContactsResponse>(
-  { auth: false, expose: true, method: "GET", path: "/crm/contacts" },
+  { auth: true, expose: true, method: "GET", path: "/crm/contacts" },
   async (params) => {
     const limit = params.limit || 50;
     const offset = params.offset || 0;

@@ -35,7 +35,7 @@ interface ContextResponse {
 
 // List all contexts
 export const listContexts = api<void, ListContextsResponse>(
-  { auth: false, expose: true, method: "GET", path: "/crm/contexts" },
+  { auth: true, expose: true, method: "GET", path: "/crm/contexts" },
   async () => {
     const contexts = await db.queryAll<{
       id: number;

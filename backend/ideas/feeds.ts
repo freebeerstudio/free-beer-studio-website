@@ -48,7 +48,7 @@ interface DeleteFeedSourceRequest {
 
 // Creates a new feed source
 export const createFeedSource = api<CreateFeedSourceRequest, CreateFeedSourceResponse>(
-  { auth: false, expose: true, method: "POST", path: "/ideas/feeds" },
+  { auth: true, expose: true, method: "POST", path: "/ideas/feeds" },
   async (req) => {
     // Temporarily disable auth check for testing
     // const auth = getAuthData()!;

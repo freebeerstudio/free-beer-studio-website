@@ -32,30 +32,45 @@ interface AuthProviderProps {
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
-  // For testing purposes, bypass authentication
-  const [user] = useState<User>({
-    id: 'admin-1',
-    email: 'admin@test.com',
-    role: 'admin'
-  });
-  const [token] = useState<string>('test-token');
-  const [isLoading] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const storedToken = localStorage.getItem('auth_token');
+    const storedUser = localStorage.getItem('auth_user');
+    
+    if (storedToken && storedUser) {
+      setToken(storedToken);
+      setUser(JSON.parse(storedUser));
+    }
+    setIsLoading(false);
+  }, []);
 
   const login = async (email: string, password: string) => {
-    // Mock login - always succeeds
-    console.log('Mock login for:', email);
+    const response = await backend.auth.login({ email, password });
+    setToken(response.token);
+    setUser(response.user);
+    localStorage.setItem('auth_token', response.token);
+    localStorage.setItem('auth_user', JSON.stringify(response.user));
   };
 
   const register = async (email: string, password: string) => {
-    // Mock register - always succeeds  
-    console.log('Mock register for:', email);
+    const response = await backend.auth.register({ email, password });
+    setToken(response.token);
+    setUser(response.user);
+    localStorage.setItem('auth_token', response.token);
+    localStorage.setItem('auth_user', JSON.stringify(response.user));
   };
 
   const logout = () => {
-    console.log('Mock logout');
+    setUser(null);
+    setToken(null);
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('auth_user');
   };
 
-  const isAdmin = true; // Always admin for testing
+  const isAdmin = user?.role === 'admin'
 
   const value: AuthContextType = {
     user,
