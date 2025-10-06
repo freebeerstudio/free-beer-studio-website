@@ -18,7 +18,7 @@ export default function BlogPostPage() {
 
   const renderBlogContent = (markdown: string) => {
     const lines = markdown.split('\n');
-    const elements: JSX.Element[] = [];
+    const elements: React.ReactElement[] = [];
     let currentList: string[] = [];
     let key = 0;
 
