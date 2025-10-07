@@ -37,6 +37,7 @@ export class Client {
     public readonly auth: auth.ServiceClient
     public readonly crm: crm.ServiceClient
     public readonly ideas: ideas.ServiceClient
+    public readonly lms: lms.ServiceClient
     public readonly style_guides: style_guides.ServiceClient
     public readonly uploads: uploads.ServiceClient
     public readonly website: website.ServiceClient
@@ -58,6 +59,7 @@ export class Client {
         this.auth = new auth.ServiceClient(base)
         this.crm = new crm.ServiceClient(base)
         this.ideas = new ideas.ServiceClient(base)
+        this.lms = new lms.ServiceClient(base)
         this.style_guides = new style_guides.ServiceClient(base)
         this.uploads = new uploads.ServiceClient(base)
         this.website = new website.ServiceClient(base)
@@ -748,6 +750,215 @@ export namespace ideas {
  * Import the endpoint handlers to derive the types for the client.
  */
 import {
+    addLessonToCourse as api_lms_courses_addLessonToCourse,
+    createCourse as api_lms_courses_createCourse,
+    deleteCourse as api_lms_courses_deleteCourse,
+    getCourse as api_lms_courses_getCourse,
+    getCourseLessons as api_lms_courses_getCourseLessons,
+    listCourses as api_lms_courses_listCourses,
+    removeLessonFromCourse as api_lms_courses_removeLessonFromCourse,
+    updateCourse as api_lms_courses_updateCourse
+} from "~backend/lms/courses";
+import {
+    addCourseToPath as api_lms_learning_paths_addCourseToPath,
+    createPath as api_lms_learning_paths_createPath,
+    deletePath as api_lms_learning_paths_deletePath,
+    getPath as api_lms_learning_paths_getPath,
+    getPathCourses as api_lms_learning_paths_getPathCourses,
+    listPaths as api_lms_learning_paths_listPaths,
+    removeCourseFromPath as api_lms_learning_paths_removeCourseFromPath,
+    updatePath as api_lms_learning_paths_updatePath
+} from "~backend/lms/learning_paths";
+import {
+    createLesson as api_lms_lessons_createLesson,
+    deleteLesson as api_lms_lessons_deleteLesson,
+    getLesson as api_lms_lessons_getLesson,
+    listLessons as api_lms_lessons_listLessons,
+    updateLesson as api_lms_lessons_updateLesson
+} from "~backend/lms/lessons";
+
+export namespace lms {
+
+    export class ServiceClient {
+        private baseClient: BaseClient
+
+        constructor(baseClient: BaseClient) {
+            this.baseClient = baseClient
+            this.addCourseToPath = this.addCourseToPath.bind(this)
+            this.addLessonToCourse = this.addLessonToCourse.bind(this)
+            this.createCourse = this.createCourse.bind(this)
+            this.createLesson = this.createLesson.bind(this)
+            this.createPath = this.createPath.bind(this)
+            this.deleteCourse = this.deleteCourse.bind(this)
+            this.deleteLesson = this.deleteLesson.bind(this)
+            this.deletePath = this.deletePath.bind(this)
+            this.getCourse = this.getCourse.bind(this)
+            this.getCourseLessons = this.getCourseLessons.bind(this)
+            this.getLesson = this.getLesson.bind(this)
+            this.getPath = this.getPath.bind(this)
+            this.getPathCourses = this.getPathCourses.bind(this)
+            this.listCourses = this.listCourses.bind(this)
+            this.listLessons = this.listLessons.bind(this)
+            this.listPaths = this.listPaths.bind(this)
+            this.removeCourseFromPath = this.removeCourseFromPath.bind(this)
+            this.removeLessonFromCourse = this.removeLessonFromCourse.bind(this)
+            this.updateCourse = this.updateCourse.bind(this)
+            this.updateLesson = this.updateLesson.bind(this)
+            this.updatePath = this.updatePath.bind(this)
+        }
+
+        public async addCourseToPath(params: RequestType<typeof api_lms_learning_paths_addCourseToPath>): Promise<void> {
+            await this.baseClient.callTypedAPI(`/lms/paths/add-course`, {method: "POST", body: JSON.stringify(params)})
+        }
+
+        public async addLessonToCourse(params: RequestType<typeof api_lms_courses_addLessonToCourse>): Promise<void> {
+            await this.baseClient.callTypedAPI(`/lms/courses/add-lesson`, {method: "POST", body: JSON.stringify(params)})
+        }
+
+        public async createCourse(params: RequestType<typeof api_lms_courses_createCourse>): Promise<ResponseType<typeof api_lms_courses_createCourse>> {
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/lms/courses`, {method: "POST", body: JSON.stringify(params)})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_lms_courses_createCourse>
+        }
+
+        public async createLesson(params: RequestType<typeof api_lms_lessons_createLesson>): Promise<ResponseType<typeof api_lms_lessons_createLesson>> {
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/lms/lessons`, {method: "POST", body: JSON.stringify(params)})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_lms_lessons_createLesson>
+        }
+
+        public async createPath(params: RequestType<typeof api_lms_learning_paths_createPath>): Promise<ResponseType<typeof api_lms_learning_paths_createPath>> {
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/lms/paths`, {method: "POST", body: JSON.stringify(params)})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_lms_learning_paths_createPath>
+        }
+
+        public async deleteCourse(params: { id: number }): Promise<void> {
+            await this.baseClient.callTypedAPI(`/lms/courses/${encodeURIComponent(params.id)}`, {method: "DELETE", body: undefined})
+        }
+
+        public async deleteLesson(params: { id: number }): Promise<void> {
+            await this.baseClient.callTypedAPI(`/lms/lessons/${encodeURIComponent(params.id)}`, {method: "DELETE", body: undefined})
+        }
+
+        public async deletePath(params: { id: number }): Promise<void> {
+            await this.baseClient.callTypedAPI(`/lms/paths/${encodeURIComponent(params.id)}`, {method: "DELETE", body: undefined})
+        }
+
+        public async getCourse(params: { id: number }): Promise<ResponseType<typeof api_lms_courses_getCourse>> {
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/lms/courses/${encodeURIComponent(params.id)}`, {method: "GET", body: undefined})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_lms_courses_getCourse>
+        }
+
+        public async getCourseLessons(params: { courseId: number }): Promise<ResponseType<typeof api_lms_courses_getCourseLessons>> {
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/lms/courses/${encodeURIComponent(params.courseId)}/lessons`, {method: "GET", body: undefined})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_lms_courses_getCourseLessons>
+        }
+
+        public async getLesson(params: { id: number }): Promise<ResponseType<typeof api_lms_lessons_getLesson>> {
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/lms/lessons/${encodeURIComponent(params.id)}`, {method: "GET", body: undefined})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_lms_lessons_getLesson>
+        }
+
+        public async getPath(params: { id: number }): Promise<ResponseType<typeof api_lms_learning_paths_getPath>> {
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/lms/paths/${encodeURIComponent(params.id)}`, {method: "GET", body: undefined})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_lms_learning_paths_getPath>
+        }
+
+        public async getPathCourses(params: { pathId: number }): Promise<ResponseType<typeof api_lms_learning_paths_getPathCourses>> {
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/lms/paths/${encodeURIComponent(params.pathId)}/courses`, {method: "GET", body: undefined})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_lms_learning_paths_getPathCourses>
+        }
+
+        public async listCourses(): Promise<ResponseType<typeof api_lms_courses_listCourses>> {
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/lms/courses`, {method: "GET", body: undefined})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_lms_courses_listCourses>
+        }
+
+        public async listLessons(): Promise<ResponseType<typeof api_lms_lessons_listLessons>> {
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/lms/lessons`, {method: "GET", body: undefined})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_lms_lessons_listLessons>
+        }
+
+        public async listPaths(): Promise<ResponseType<typeof api_lms_learning_paths_listPaths>> {
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/lms/paths`, {method: "GET", body: undefined})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_lms_learning_paths_listPaths>
+        }
+
+        public async removeCourseFromPath(params: RequestType<typeof api_lms_learning_paths_removeCourseFromPath>): Promise<void> {
+            await this.baseClient.callTypedAPI(`/lms/paths/remove-course`, {method: "POST", body: JSON.stringify(params)})
+        }
+
+        public async removeLessonFromCourse(params: RequestType<typeof api_lms_courses_removeLessonFromCourse>): Promise<void> {
+            await this.baseClient.callTypedAPI(`/lms/courses/remove-lesson`, {method: "POST", body: JSON.stringify(params)})
+        }
+
+        public async updateCourse(params: RequestType<typeof api_lms_courses_updateCourse>): Promise<ResponseType<typeof api_lms_courses_updateCourse>> {
+            // Construct the body with only the fields which we want encoded within the body (excluding query string or header fields)
+            const body: Record<string, any> = {
+                coverImageUrl:   params.coverImageUrl,
+                description:     params.description,
+                difficultyLevel: params.difficultyLevel,
+                estimatedHours:  params.estimatedHours,
+                isPublished:     params.isPublished,
+                sortOrder:       params.sortOrder,
+                title:           params.title,
+            }
+
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/lms/courses/${encodeURIComponent(params.id)}`, {method: "PUT", body: JSON.stringify(body)})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_lms_courses_updateCourse>
+        }
+
+        public async updateLesson(params: RequestType<typeof api_lms_lessons_updateLesson>): Promise<ResponseType<typeof api_lms_lessons_updateLesson>> {
+            // Construct the body with only the fields which we want encoded within the body (excluding query string or header fields)
+            const body: Record<string, any> = {
+                content:         params.content,
+                description:     params.description,
+                durationMinutes: params.durationMinutes,
+                isPublished:     params.isPublished,
+                lessonType:      params.lessonType,
+                sortOrder:       params.sortOrder,
+                title:           params.title,
+                videoUrl:        params.videoUrl,
+            }
+
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/lms/lessons/${encodeURIComponent(params.id)}`, {method: "PUT", body: JSON.stringify(body)})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_lms_lessons_updateLesson>
+        }
+
+        public async updatePath(params: RequestType<typeof api_lms_learning_paths_updatePath>): Promise<ResponseType<typeof api_lms_learning_paths_updatePath>> {
+            // Construct the body with only the fields which we want encoded within the body (excluding query string or header fields)
+            const body: Record<string, any> = {
+                coverImageUrl:   params.coverImageUrl,
+                description:     params.description,
+                difficultyLevel: params.difficultyLevel,
+                estimatedHours:  params.estimatedHours,
+                isPublished:     params.isPublished,
+                sortOrder:       params.sortOrder,
+                title:           params.title,
+            }
+
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/lms/paths/${encodeURIComponent(params.id)}`, {method: "PUT", body: JSON.stringify(body)})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_lms_learning_paths_updatePath>
+        }
+    }
+}
+
+/**
+ * Import the endpoint handlers to derive the types for the client.
+ */
+import {
     deleteStyleGuide as api_style_guides_manage_deleteStyleGuide,
     getStyleGuide as api_style_guides_manage_getStyleGuide,
     listStyleGuides as api_style_guides_manage_listStyleGuides,
@@ -897,7 +1108,10 @@ import {
     listBlogPosts as api_website_blog_listBlogPosts
 } from "~backend/website/blog";
 import { submitContact as api_website_contact_submitContact } from "~backend/website/contact";
-import { listProjects as api_website_portfolio_listProjects } from "~backend/website/portfolio";
+import {
+    getProject as api_website_portfolio_getProject,
+    listProjects as api_website_portfolio_listProjects
+} from "~backend/website/portfolio";
 import { listPricing as api_website_pricing_listPricing } from "~backend/website/pricing";
 
 export namespace website {
@@ -908,6 +1122,7 @@ export namespace website {
         constructor(baseClient: BaseClient) {
             this.baseClient = baseClient
             this.getBlogPost = this.getBlogPost.bind(this)
+            this.getProject = this.getProject.bind(this)
             this.listBlogPosts = this.listBlogPosts.bind(this)
             this.listPricing = this.listPricing.bind(this)
             this.listProjects = this.listProjects.bind(this)
@@ -921,6 +1136,12 @@ export namespace website {
             // Now make the actual call to the API
             const resp = await this.baseClient.callTypedAPI(`/blog/${encodeURIComponent(params.slug)}`, {method: "GET", body: undefined})
             return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_website_blog_getBlogPost>
+        }
+
+        public async getProject(params: { id: number }): Promise<ResponseType<typeof api_website_portfolio_getProject>> {
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/portfolio/${encodeURIComponent(params.id)}`, {method: "GET", body: undefined})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_website_portfolio_getProject>
         }
 
         /**
@@ -947,9 +1168,6 @@ export namespace website {
             return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_website_pricing_listPricing>
         }
 
-        /**
-         * Retrieves all portfolio projects for the public website.
-         */
         public async listProjects(): Promise<ResponseType<typeof api_website_portfolio_listProjects>> {
             // Now make the actual call to the API
             const resp = await this.baseClient.callTypedAPI(`/portfolio`, {method: "GET", body: undefined})

@@ -1,4 +1,4 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Rocket, Menu, X } from 'lucide-react';
 import { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const { user, logout, isAdmin } = useAuth();
 
   const navigation = [
@@ -28,6 +29,7 @@ export default function Header() {
   const handleLogout = () => {
     logout();
     setIsMenuOpen(false);
+    navigate('/');
   };
 
   return (
