@@ -39,7 +39,7 @@ interface ApproveIdeaResponse {
 
 // Retrieves ideas filtered by status.
 export const listIdeas = api<ListIdeasParams, ListIdeasResponse>(
-  { auth: true, expose: true, method: "GET", path: "/ideas" },
+  { auth: false, expose: true, method: "GET", path: "/ideas" },
   async (params) => {
     // Temporarily disable auth check for testing
     // const auth = getAuthData()!;

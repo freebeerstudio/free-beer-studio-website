@@ -44,7 +44,7 @@ interface ApproveDraftResponse {
 
 // Retrieves platform drafts filtered by status and platform.
 export const listDrafts = api<ListDraftsParams, ListDraftsResponse>(
-  { auth: true, expose: true, method: "GET", path: "/ideas/drafts" },
+  { auth: false, expose: true, method: "GET", path: "/ideas/drafts" },
   async (params) => {
     // Temporarily disable auth check for testing
     // const auth = getAuthData()!;
