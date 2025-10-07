@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
-import { ExternalLink, Star } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { ExternalLink, Star, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -41,10 +42,10 @@ export default function PortfolioPage() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {portfolioData?.projects.map((project) => (
-                <Card 
-                  key={project.id} 
-                  className="bg-white border-2 border-gray-400 hover:border-vapor-purple/60 transition-all duration-300 group overflow-hidden shadow-lg"
-                >
+                <Link key={project.id} to={`/portfolio/${project.id}`}>
+                  <Card 
+                    className="bg-white border-2 border-gray-400 hover:border-vapor-purple/60 transition-all duration-300 group overflow-hidden shadow-lg cursor-pointer h-full"
+                  >
                   {/* Project Image */}
                   <div className="relative h-48 bg-gradient-to-br from-vapor-purple/20 to-smoky-lavender/20 overflow-hidden">
                     {project.coverImageUrl ? (
@@ -106,22 +107,14 @@ export default function PortfolioPage() {
                         )}
                       </div>
                       
-                      {project.externalUrl && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          asChild
-                          className="text-black hover:text-vapor-purple hover:bg-vapor-purple/10"
-                        >
-                          <a href={project.externalUrl} target="_blank" rel="noopener noreferrer">
-                            View Project
-                            <ExternalLink className="ml-2 w-4 h-4" />
-                          </a>
-                        </Button>
-                      )}
+                      <div className="flex items-center text-vapor-purple group-hover:translate-x-1 transition-transform">
+                        <span className="text-sm font-medium">View Details</span>
+                        <ArrowRight className="ml-1 w-4 h-4" />
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
+                </Link>
               ))}
             </div>
           )}

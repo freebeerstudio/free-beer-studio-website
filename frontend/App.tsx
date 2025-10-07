@@ -7,6 +7,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import HomePage from './pages/public/HomePage';
 import PricingPage from './pages/public/PricingPage';
 import PortfolioPage from './pages/public/PortfolioPage';
+import ProjectDetailPage from './pages/public/ProjectDetailPage';
 import BlogPage from './pages/public/BlogPage';
 import BlogPostPage from './pages/public/BlogPostPage';
 import ContactPage from './pages/public/ContactPage';
@@ -54,6 +55,7 @@ function AppInner() {
       <Route path="/" element={<HomePage />} />
       <Route path="/pricing" element={<PricingPage />} />
       <Route path="/portfolio" element={<PortfolioPage />} />
+      <Route path="/portfolio/:id" element={<ProjectDetailPage />} />
       <Route path="/blog" element={<BlogPage />} />
       <Route path="/blog/:slug" element={<BlogPostPage />} />
       <Route path="/contact" element={<ContactPage />} />
