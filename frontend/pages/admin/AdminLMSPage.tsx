@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Edit2, Trash2, BookOpen, GraduationCap, FileText, CheckCircle } from 'lucide-react';
+import { Plus, Edit2, Trash2, BookOpen, GraduationCap, FileText, CheckCircle, Link2, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -17,6 +17,186 @@ import type { LearningPath } from '~backend/lms/learning_paths';
 import type { Course } from '~backend/lms/courses';
 import type { Lesson } from '~backend/lms/lessons';
 
+function ManageCoursesDialog({
+  open,
+  onOpenChange,
+  path,
+  allCourses,
+  onAddCourse,
+  onRemoveCourse,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  path: LearningPath | null;
+  allCourses: Course[];
+  onAddCourse: (courseId: number) => void;
+  onRemoveCourse: (courseId: number) => void;
+}) {
+  const { data: pathCoursesData } = useQuery({
+    queryKey: ['path-courses', path?.id],
+    queryFn: () => path ? backend.lms.getPathCourses({ pathId: path.id }) : null,
+    enabled: !!path,
+  });
+
+  const currentCourseIds = new Set(pathCoursesData?.courses.map(c => c.id) || []);
+  const availableCourses = allCourses.filter(c => !currentCourseIds.has(c.id));
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Manage Courses in {path?.title}</DialogTitle>
+          <DialogDescription>
+            Add or remove courses from this learning path
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-6">
+          <div>
+            <Label>Current Courses</Label>
+            <div className="mt-2 space-y-2">
+              {pathCoursesData?.courses.length === 0 && (
+                <p className="text-sm text-muted-foreground">No courses added yet</p>
+              )}
+              {pathCoursesData?.courses.map((course) => (
+                <div key={course.id} className="flex items-center justify-between p-3 border rounded-lg">
+                  <div>
+                    <p className="font-medium">{course.title}</p>
+                    {course.description && (
+                      <p className="text-sm text-muted-foreground">{course.description}</p>
+                    )}
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onRemoveCourse(course.id)}
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <Label>Add Course</Label>
+            {availableCourses.length === 0 ? (
+              <p className="text-sm text-muted-foreground mt-2">All courses have been added</p>
+            ) : (
+              <Select onValueChange={(value) => onAddCourse(parseInt(value))}>
+                <SelectTrigger className="mt-2">
+                  <SelectValue placeholder="Select a course to add" />
+                </SelectTrigger>
+                <SelectContent>
+                  {availableCourses.map((course) => (
+                    <SelectItem key={course.id} value={course.id.toString()}>
+                      {course.title}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>
+            Close
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function ManageLessonsDialog({
+  open,
+  onOpenChange,
+  course,
+  allLessons,
+  onAddLesson,
+  onRemoveLesson,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  course: Course | null;
+  allLessons: Lesson[];
+  onAddLesson: (lessonId: number) => void;
+  onRemoveLesson: (lessonId: number) => void;
+}) {
+  const { data: courseLessonsData } = useQuery({
+    queryKey: ['course-lessons', course?.id],
+    queryFn: () => course ? backend.lms.getCourseLessons({ courseId: course.id }) : null,
+    enabled: !!course,
+  });
+
+  const currentLessonIds = new Set(courseLessonsData?.lessons.map(l => l.id) || []);
+  const availableLessons = allLessons.filter(l => !currentLessonIds.has(l.id));
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Manage Lessons in {course?.title}</DialogTitle>
+          <DialogDescription>
+            Add or remove lessons from this course
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-6">
+          <div>
+            <Label>Current Lessons</Label>
+            <div className="mt-2 space-y-2">
+              {courseLessonsData?.lessons.length === 0 && (
+                <p className="text-sm text-muted-foreground">No lessons added yet</p>
+              )}
+              {courseLessonsData?.lessons.map((lesson) => (
+                <div key={lesson.id} className="flex items-center justify-between p-3 border rounded-lg">
+                  <div>
+                    <p className="font-medium">{lesson.title}</p>
+                    {lesson.description && (
+                      <p className="text-sm text-muted-foreground">{lesson.description}</p>
+                    )}
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onRemoveLesson(lesson.id)}
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <Label>Add Lesson</Label>
+            {availableLessons.length === 0 ? (
+              <p className="text-sm text-muted-foreground mt-2">All lessons have been added</p>
+            ) : (
+              <Select onValueChange={(value) => onAddLesson(parseInt(value))}>
+                <SelectTrigger className="mt-2">
+                  <SelectValue placeholder="Select a lesson to add" />
+                </SelectTrigger>
+                <SelectContent>
+                  {availableLessons.map((lesson) => (
+                    <SelectItem key={lesson.id} value={lesson.id.toString()}>
+                      {lesson.title}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>
+            Close
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 export default function AdminLMSPage() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -25,10 +205,14 @@ export default function AdminLMSPage() {
   const [pathDialogOpen, setPathDialogOpen] = useState(false);
   const [courseDialogOpen, setCourseDialogOpen] = useState(false);
   const [lessonDialogOpen, setLessonDialogOpen] = useState(false);
+  const [manageCourseDialogOpen, setManageCourseDialogOpen] = useState(false);
+  const [manageLessonDialogOpen, setManageLessonDialogOpen] = useState(false);
 
   const [editingPath, setEditingPath] = useState<LearningPath | null>(null);
   const [editingCourse, setEditingCourse] = useState<Course | null>(null);
   const [editingLesson, setEditingLesson] = useState<Lesson | null>(null);
+  const [selectedPath, setSelectedPath] = useState<LearningPath | null>(null);
+  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
 
   const { data: pathsData } = useQuery({
     queryKey: ['lms-paths'],
@@ -162,6 +346,62 @@ export default function AdminLMSPage() {
     },
   });
 
+  const addCourseToPathMutation = useMutation({
+    mutationFn: (data: { learningPathId: number; courseId: number }) =>
+      backend.lms.addCourseToPath(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['lms-paths'] });
+      queryClient.invalidateQueries({ queryKey: ['lms-courses'] });
+      toast({ title: 'Course added to learning path' });
+    },
+    onError: (error: Error) => {
+      console.error('Failed to add course:', error);
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    },
+  });
+
+  const removeCourseFromPathMutation = useMutation({
+    mutationFn: (data: { learningPathId: number; courseId: number }) =>
+      backend.lms.removeCourseFromPath(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['lms-paths'] });
+      queryClient.invalidateQueries({ queryKey: ['lms-courses'] });
+      toast({ title: 'Course removed from learning path' });
+    },
+    onError: (error: Error) => {
+      console.error('Failed to remove course:', error);
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    },
+  });
+
+  const addLessonToCourseMutation = useMutation({
+    mutationFn: (data: { courseId: number; lessonId: number }) =>
+      backend.lms.addLessonToCourse(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['lms-courses'] });
+      queryClient.invalidateQueries({ queryKey: ['lms-lessons'] });
+      toast({ title: 'Lesson added to course' });
+    },
+    onError: (error: Error) => {
+      console.error('Failed to add lesson:', error);
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    },
+  });
+
+  const removeLessonFromCourseMutation = useMutation({
+    mutationFn: (data: { courseId: number; lessonId: number }) =>
+      backend.lms.removeLessonFromCourse(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['lms-courses'] });
+      queryClient.invalidateQueries({ queryKey: ['lms-lessons'] });
+      toast({ title: 'Lesson removed from course' });
+    },
+    onError: (error: Error) => {
+      console.error('Failed to remove lesson:', error);
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    },
+  });
+
   const handlePathSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
@@ -262,6 +502,14 @@ export default function AdminLMSPage() {
                         <Button
                           variant="ghost"
                           size="sm"
+                          onClick={() => { setSelectedPath(path); setManageCourseDialogOpen(true); }}
+                          title="Manage Courses"
+                        >
+                          <Link2 className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
                           onClick={() => { setEditingPath(path); setPathDialogOpen(true); }}
                         >
                           <Edit2 className="w-4 h-4" />
@@ -313,6 +561,14 @@ export default function AdminLMSPage() {
                         {course.isPublished && <CheckCircle className="w-4 h-4 text-green-500" />}
                       </div>
                       <div className="flex gap-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => { setSelectedCourse(course); setManageLessonDialogOpen(true); }}
+                          title="Manage Lessons"
+                        >
+                          <Link2 className="w-4 h-4" />
+                        </Button>
                         <Button
                           variant="ghost"
                           size="sm"
@@ -620,6 +876,46 @@ export default function AdminLMSPage() {
             </form>
           </DialogContent>
         </Dialog>
+
+        {/* Manage Courses in Learning Path Dialog */}
+        <ManageCoursesDialog
+          open={manageCourseDialogOpen}
+          onOpenChange={setManageCourseDialogOpen}
+          path={selectedPath}
+          allCourses={coursesData?.courses || []}
+          onAddCourse={(courseId) =>
+            selectedPath && addCourseToPathMutation.mutate({
+              learningPathId: selectedPath.id,
+              courseId,
+            })
+          }
+          onRemoveCourse={(courseId) =>
+            selectedPath && removeCourseFromPathMutation.mutate({
+              learningPathId: selectedPath.id,
+              courseId,
+            })
+          }
+        />
+
+        {/* Manage Lessons in Course Dialog */}
+        <ManageLessonsDialog
+          open={manageLessonDialogOpen}
+          onOpenChange={setManageLessonDialogOpen}
+          course={selectedCourse}
+          allLessons={lessonsData?.lessons || []}
+          onAddLesson={(lessonId) =>
+            selectedCourse && addLessonToCourseMutation.mutate({
+              courseId: selectedCourse.id,
+              lessonId,
+            })
+          }
+          onRemoveLesson={(lessonId) =>
+            selectedCourse && removeLessonFromCourseMutation.mutate({
+              courseId: selectedCourse.id,
+              lessonId,
+            })
+          }
+        />
       </div>
     </AdminLayout>
   );

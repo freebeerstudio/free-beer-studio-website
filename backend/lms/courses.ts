@@ -1,5 +1,6 @@
 import { api } from "encore.dev/api";
 import db from "../db";
+import type { Lesson } from "./lessons";
 
 export interface Course {
   id: number;
@@ -269,5 +270,50 @@ export const removeLessonFromCourse = api<RemoveLessonFromCourseRequest, void>(
       WHERE course_id = ${req.courseId}
       AND lesson_id = ${req.lessonId}
     `;
+  }
+);
+
+export interface CourseLessonsResponse {
+  lessons: Lesson[];
+}
+
+export const getCourseLessons = api<{ courseId: number }, CourseLessonsResponse>(
+  { expose: true, method: "GET", path: "/lms/courses/:courseId/lessons" },
+  async ({ courseId }) => {
+    const rows = await db.queryAll<{
+      id: number;
+      title: string;
+      description: string | null;
+      content: string | null;
+      video_url: string | null;
+      duration_minutes: number | null;
+      lesson_type: string;
+      is_published: boolean;
+      sort_order: number;
+      created_at: Date;
+      updated_at: Date;
+    }>`
+      SELECT l.*
+      FROM lessons l
+      INNER JOIN course_lessons cl ON l.id = cl.lesson_id
+      WHERE cl.course_id = ${courseId}
+      ORDER BY cl.sort_order ASC, l.created_at DESC
+    `;
+
+    return {
+      lessons: rows.map(row => ({
+        id: row.id,
+        title: row.title,
+        description: row.description,
+        content: row.content,
+        videoUrl: row.video_url,
+        durationMinutes: row.duration_minutes,
+        lessonType: row.lesson_type,
+        isPublished: row.is_published,
+        sortOrder: row.sort_order,
+        createdAt: row.created_at,
+        updatedAt: row.updated_at,
+      })),
+    };
   }
 );

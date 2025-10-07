@@ -1,5 +1,6 @@
 import { api } from "encore.dev/api";
 import db from "../db";
+import type { Course } from "./courses";
 
 export interface LearningPath {
   id: number;
@@ -264,5 +265,48 @@ export const removeCourseFromPath = api<RemoveCourseFromPathRequest, void>(
       WHERE learning_path_id = ${req.learningPathId}
       AND course_id = ${req.courseId}
     `;
+  }
+);
+
+export interface PathCoursesResponse {
+  courses: Course[];
+}
+
+export const getPathCourses = api<{ pathId: number }, PathCoursesResponse>(
+  { expose: true, method: "GET", path: "/lms/paths/:pathId/courses" },
+  async ({ pathId }) => {
+    const rows = await db.queryAll<{
+      id: number;
+      title: string;
+      description: string | null;
+      cover_image_url: string | null;
+      difficulty_level: string | null;
+      estimated_hours: number | null;
+      is_published: boolean;
+      sort_order: number;
+      created_at: Date;
+      updated_at: Date;
+    }>`
+      SELECT c.*
+      FROM courses c
+      INNER JOIN learning_path_courses lpc ON c.id = lpc.course_id
+      WHERE lpc.learning_path_id = ${pathId}
+      ORDER BY lpc.sort_order ASC, c.created_at DESC
+    `;
+
+    return {
+      courses: rows.map(row => ({
+        id: row.id,
+        title: row.title,
+        description: row.description,
+        coverImageUrl: row.cover_image_url,
+        difficultyLevel: row.difficulty_level,
+        estimatedHours: row.estimated_hours,
+        isPublished: row.is_published,
+        sortOrder: row.sort_order,
+        createdAt: row.created_at,
+        updatedAt: row.updated_at,
+      })),
+    };
   }
 );
