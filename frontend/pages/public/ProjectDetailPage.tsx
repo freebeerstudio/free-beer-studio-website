@@ -1,21 +1,30 @@
 import { useQuery } from '@tanstack/react-query';
 import { useParams, Link } from 'react-router-dom';
 import { ExternalLink, ArrowLeft, Calendar, Star } from 'lucide-react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
+import { Lightbox } from '@/components/ui/lightbox';
 import Header from '../../components/layout/Header';
 import Footer from '../../components/layout/Footer';
 import backend from '~backend/client';
 
 export default function ProjectDetailPage() {
   const { id } = useParams<{ id: string }>();
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
   
   const { data: project, isLoading, error } = useQuery({
     queryKey: ['project', id],
     queryFn: () => backend.website.getProject({ id: parseInt(id || '0', 10) }),
     enabled: !!id,
   });
+
+  const openLightbox = (index: number) => {
+    setLightboxIndex(index);
+    setLightboxOpen(true);
+  };
 
   if (error) {
     return (
@@ -96,12 +105,20 @@ export default function ProjectDetailPage() {
               </div>
 
               {project.coverImageUrl && (
-                <div className="mb-8 rounded-xl overflow-hidden border-2 border-vapor-purple/30 shadow-2xl">
+                <div 
+                  className="mb-8 rounded-xl overflow-hidden border-2 border-vapor-purple/30 shadow-2xl cursor-pointer group relative"
+                  onClick={() => openLightbox(0)}
+                >
                   <img
                     src={project.coverImageUrl}
                     alt={project.title}
-                    className="w-full h-auto max-h-[600px] object-cover"
+                    className="w-full h-auto max-h-[600px] object-cover group-hover:scale-105 transition-transform duration-300"
                   />
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                    <span className="text-white opacity-0 group-hover:opacity-100 transition-opacity bg-black/50 px-4 py-2 rounded-lg">
+                      Click to view full size
+                    </span>
+                  </div>
                 </div>
               )}
 
@@ -116,20 +133,26 @@ export default function ProjectDetailPage() {
                 </Card>
               )}
 
-              {project.gallery && project.gallery.length > 0 && (
+              {project.gallery && project.gallery.length > 1 && (
                 <div className="mb-12">
-                  <h2 className="text-2xl font-bold text-cloud-white mb-6">Project Gallery</h2>
+                  <h2 className="text-2xl font-bold text-cloud-white mb-6">Project Gallery ({project.gallery.length} images)</h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {project.gallery.map((imageUrl, index) => (
                       <div 
                         key={index} 
-                        className="rounded-lg overflow-hidden border-2 border-vapor-purple/20 hover:border-vapor-purple/60 transition-all duration-300 shadow-lg group"
+                        className="rounded-lg overflow-hidden border-2 border-vapor-purple/20 hover:border-vapor-purple/60 transition-all duration-300 shadow-lg group cursor-pointer relative"
+                        onClick={() => openLightbox(index)}
                       >
                         <img
                           src={imageUrl}
                           alt={`${project.title} - Image ${index + 1}`}
                           className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
                         />
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                          <span className="text-white opacity-0 group-hover:opacity-100 transition-opacity text-sm font-medium">
+                            Click to view
+                          </span>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -167,6 +190,14 @@ export default function ProjectDetailPage() {
       </div>
 
       <Footer />
+      
+      {lightboxOpen && project && (
+        <Lightbox
+          images={project.gallery}
+          initialIndex={lightboxIndex}
+          onClose={() => setLightboxOpen(false)}
+        />
+      )}
     </div>
   );
 }

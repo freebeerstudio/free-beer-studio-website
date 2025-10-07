@@ -84,12 +84,17 @@ export const getProject = api<GetProjectRequest, GetProjectResponse>(
       throw new Error("Project not found");
     }
 
+    const galleryImages = Array.isArray(row.gallery) ? row.gallery : [];
+    const allImages = row.cover_image_url 
+      ? [row.cover_image_url, ...galleryImages]
+      : galleryImages;
+
     return {
       id: row.id,
       title: row.title,
       description: row.description,
       coverImageUrl: row.cover_image_url,
-      gallery: Array.isArray(row.gallery) ? row.gallery : [],
+      gallery: allImages,
       externalUrl: row.external_url,
       isFeatured: row.is_featured,
       createdAt: row.created_at,
