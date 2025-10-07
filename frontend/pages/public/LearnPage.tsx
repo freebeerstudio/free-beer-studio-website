@@ -112,7 +112,7 @@ export default function LearnPage() {
         <div className="relative py-20 sm:py-32">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="text-center">
-              <Badge className="mb-6 bg-launch-orange/20 text-launch-orange border-launch-orange">
+              <Badge className="mb-6 bg-launch-orange/20 text-launch-orange border-launch-orange border-2">
                 Next Cohort Starts Soon
               </Badge>
               <h1 className="text-4xl sm:text-6xl font-bold font-['Architects_Daughter'] mb-6">
@@ -126,15 +126,14 @@ export default function LearnPage() {
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                 <Button 
                   size="lg" 
-                  className="bg-launch-orange hover:bg-launch-orange/90 text-jet-black font-bold"
+                  className="bg-white border-2 border-black text-black hover:bg-black/10 shadow-[0_4px_14px_rgb(0,0,0,0.25)]"
                   asChild
                 >
                   <Link to="/contact">Apply Now</Link>
                 </Button>
                 <Button 
-                  variant="outline" 
                   size="lg" 
-                  className="border-vapor-purple text-vapor-purple hover:bg-vapor-purple/10"
+                  className="bg-white border-2 border-black text-black hover:bg-black/10 shadow-[0_4px_14px_rgb(0,0,0,0.25)]"
                 >
                   Learn More
                 </Button>
@@ -158,13 +157,13 @@ export default function LearnPage() {
       </div>
 
       {/* What You Get Section */}
-      <div className="py-20 bg-gray-900/30">
+      <div className="py-20 bg-rocket-gray/5">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-5xl font-bold font-['Architects_Daughter'] mb-4">
+            <h2 className="text-3xl sm:text-5xl font-bold font-['Architects_Daughter'] mb-4 text-black">
               What You <span className="text-vapor-purple">Get</span>
             </h2>
-            <p className="text-xl text-rocket-gray max-w-2xl mx-auto">
+            <p className="text-xl text-black max-w-2xl mx-auto">
               Everything you need to launch and grow a successful AI automation practice
             </p>
           </div>
@@ -173,15 +172,15 @@ export default function LearnPage() {
             {features.map((feature, index) => {
               const Icon = feature.icon;
               return (
-                <Card key={index} className="bg-gray-900/50 border-vapor-purple/30 hover:border-vapor-purple/60 transition-all duration-300">
+                <Card key={index} className="bg-white border-2 border-gray-400 hover:border-vapor-purple/60 transition-all duration-300 shadow-lg">
                   <CardHeader>
                     <div className="w-12 h-12 rounded-lg bg-vapor-purple/20 flex items-center justify-center mb-4">
                       <Icon className="w-6 h-6 text-vapor-purple" />
                     </div>
-                    <CardTitle className="text-cloud-white">{feature.title}</CardTitle>
+                    <CardTitle className="text-black">{feature.title}</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <CardDescription className="text-rocket-gray">
+                    <CardDescription className="text-black">
                       {feature.description}
                     </CardDescription>
                   </CardContent>
@@ -202,53 +201,41 @@ export default function LearnPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <Card className="bg-gradient-to-br from-vapor-purple/10 to-smoky-lavender/10 border-vapor-purple/30 text-center">
-              <CardHeader>
-                <div className="text-5xl font-bold text-launch-orange mb-2">$260B</div>
-                <CardTitle className="text-cloud-white">Market Size by 2033</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-rocket-gray">
-                  The AI automation market is experiencing explosive growth
-                </p>
-              </CardContent>
-            </Card>
+            <div className="text-center p-6 rounded-xl bg-vapor-purple/5 border-2 border-vapor-purple/40 shadow-lg">
+              <div className="text-5xl font-bold text-launch-orange mb-2">$260B</div>
+              <div className="text-xl font-bold text-black mb-2">Market Size by 2033</div>
+              <p className="text-black">
+                The AI automation market is experiencing explosive growth
+              </p>
+            </div>
 
-            <Card className="bg-gradient-to-br from-vapor-purple/10 to-smoky-lavender/10 border-vapor-purple/30 text-center">
-              <CardHeader>
-                <div className="text-5xl font-bold text-vapor-purple mb-2">$200+</div>
-                <CardTitle className="text-cloud-white">Hourly Rate</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-rocket-gray">
-                  Average rates for skilled AI automation consultants
-                </p>
-              </CardContent>
-            </Card>
+            <div className="text-center p-6 rounded-xl bg-launch-orange/5 border-2 border-launch-orange/40 shadow-lg">
+              <div className="text-5xl font-bold text-vapor-purple mb-2">$200+</div>
+              <div className="text-xl font-bold text-black mb-2">Hourly Rate</div>
+              <p className="text-black">
+                Average rates for skilled AI automation consultants
+              </p>
+            </div>
 
-            <Card className="bg-gradient-to-br from-vapor-purple/10 to-smoky-lavender/10 border-vapor-purple/30 text-center">
-              <CardHeader>
-                <div className="text-5xl font-bold text-smoky-lavender mb-2">85%</div>
-                <CardTitle className="text-cloud-white">Business Need</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-rocket-gray">
-                  Of businesses are actively seeking AI automation solutions
-                </p>
-              </CardContent>
-            </Card>
+            <div className="text-center p-6 rounded-xl bg-smoky-lavender/5 border-2 border-smoky-lavender/40 shadow-lg">
+              <div className="text-5xl font-bold text-smoky-lavender mb-2">85%</div>
+              <div className="text-xl font-bold text-black mb-2">Business Need</div>
+              <p className="text-black">
+                Of businesses are actively seeking AI automation solutions
+              </p>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Career Paths */}
-      <div className="py-20 bg-gray-900/30">
+      <div className="py-20 bg-rocket-gray/5">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-5xl font-bold font-['Architects_Daughter'] mb-4">
+            <h2 className="text-3xl sm:text-5xl font-bold font-['Architects_Daughter'] mb-4 text-black">
               Choose Your <span className="text-vapor-purple">Path</span>
             </h2>
-            <p className="text-xl text-rocket-gray max-w-2xl mx-auto">
+            <p className="text-xl text-black max-w-2xl mx-auto">
               Three proven career paths for AI automation professionals
             </p>
           </div>
@@ -257,13 +244,13 @@ export default function LearnPage() {
             {careerPaths.map((path, index) => {
               const Icon = path.icon;
               return (
-                <Card key={index} className="bg-gray-900/50 border-vapor-purple/30 hover:border-launch-orange/60 transition-all duration-300">
+                <Card key={index} className="bg-white border-2 border-gray-400 hover:border-launch-orange/60 transition-all duration-300 shadow-lg">
                   <CardHeader>
                     <div className="w-16 h-16 rounded-full bg-launch-orange/20 flex items-center justify-center mb-4 mx-auto">
                       <Icon className="w-8 h-8 text-launch-orange" />
                     </div>
-                    <CardTitle className="text-cloud-white text-center text-2xl">{path.title}</CardTitle>
-                    <CardDescription className="text-rocket-gray text-center">
+                    <CardTitle className="text-black text-center text-2xl">{path.title}</CardTitle>
+                    <CardDescription className="text-black text-center">
                       {path.description}
                     </CardDescription>
                   </CardHeader>
@@ -272,7 +259,7 @@ export default function LearnPage() {
                       {path.skills.map((skill, i) => (
                         <div key={i} className="flex items-center gap-2">
                           <CheckCircle className="w-4 h-4 text-vapor-purple flex-shrink-0" />
-                          <span className="text-sm text-rocket-gray">{skill}</span>
+                          <span className="text-sm text-black">{skill}</span>
                         </div>
                       ))}
                     </div>
@@ -298,30 +285,26 @@ export default function LearnPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {curriculum.map((item) => (
-              <Card key={item.week} className="bg-gradient-to-br from-vapor-purple/5 to-smoky-lavender/5 border-vapor-purple/30 hover:border-vapor-purple/60 transition-all duration-300">
-                <CardHeader>
-                  <Badge className="w-fit bg-launch-orange/20 text-launch-orange border-launch-orange mb-2">
-                    Week {item.week}
-                  </Badge>
-                  <CardTitle className="text-cloud-white text-lg">{item.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-rocket-gray">{item.description}</p>
-                </CardContent>
-              </Card>
+              <div key={item.week} className="text-center p-6 rounded-xl bg-vapor-purple/5 border-2 border-vapor-purple/40 shadow-lg">
+                <Badge className="mb-4 bg-launch-orange/20 text-launch-orange border-launch-orange border-2">
+                  Week {item.week}
+                </Badge>
+                <h3 className="text-lg font-bold text-black mb-2">{item.title}</h3>
+                <p className="text-sm text-black">{item.description}</p>
+              </div>
             ))}
           </div>
         </div>
       </div>
 
       {/* Tools & Technologies */}
-      <div className="py-20 bg-gray-900/30">
+      <div className="py-20 bg-rocket-gray/5">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-5xl font-bold font-['Architects_Daughter'] mb-4">
+            <h2 className="text-3xl sm:text-5xl font-bold font-['Architects_Daughter'] mb-4 text-black">
               Master the <span className="text-vapor-purple">Stack</span>
             </h2>
-            <p className="text-xl text-rocket-gray max-w-2xl mx-auto">
+            <p className="text-xl text-black max-w-2xl mx-auto">
               Learn to work with cutting-edge AI tools and platforms
             </p>
           </div>
@@ -330,7 +313,7 @@ export default function LearnPage() {
             {tools.map((tool, index) => (
               <Badge 
                 key={index} 
-                className="px-6 py-3 bg-gray-900/50 border-vapor-purple/30 text-cloud-white hover:border-vapor-purple/60 transition-all"
+                className="px-6 py-3 bg-white border-2 border-gray-400 text-black hover:border-vapor-purple/60 transition-all shadow-lg"
               >
                 {tool}
               </Badge>
@@ -353,7 +336,7 @@ export default function LearnPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {testimonials.map((testimonial, index) => (
-              <Card key={index} className="bg-gray-900/50 border-vapor-purple/30">
+              <Card key={index} className="bg-white border-2 border-gray-400 shadow-lg">
                 <CardHeader>
                   <div className="flex items-center gap-4 mb-4">
                     <img
@@ -362,14 +345,14 @@ export default function LearnPage() {
                       className="w-16 h-16 rounded-full border-2 border-vapor-purple"
                     />
                     <div>
-                      <div className="font-bold text-cloud-white">{testimonial.name}</div>
-                      <div className="text-sm text-rocket-gray">{testimonial.role}</div>
+                      <div className="font-bold text-black">{testimonial.name}</div>
+                      <div className="text-sm text-black">{testimonial.role}</div>
                       <div className="text-xs text-vapor-purple">{testimonial.company}</div>
                     </div>
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-rocket-gray italic">"{testimonial.quote}"</p>
+                  <p className="text-black italic">"{testimonial.quote}"</p>
                 </CardContent>
               </Card>
             ))}
@@ -392,15 +375,14 @@ export default function LearnPage() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button 
               size="lg" 
-              className="bg-launch-orange hover:bg-launch-orange/90 text-jet-black font-bold text-lg px-8"
+              className="bg-white border-2 border-black text-black hover:bg-black/10 shadow-[0_4px_14px_rgb(0,0,0,0.25)] font-bold text-lg px-8"
               asChild
             >
               <Link to="/contact">Apply for Next Cohort</Link>
             </Button>
             <Button 
-              variant="outline" 
               size="lg" 
-              className="border-vapor-purple text-vapor-purple hover:bg-vapor-purple/10 text-lg px-8"
+              className="bg-white border-2 border-black text-black hover:bg-black/10 shadow-[0_4px_14px_rgb(0,0,0,0.25)] text-lg px-8"
               asChild
             >
               <Link to="/pricing">View Pricing</Link>
