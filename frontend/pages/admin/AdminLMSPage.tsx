@@ -352,6 +352,7 @@ export default function AdminLMSPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['lms-paths'] });
       queryClient.invalidateQueries({ queryKey: ['lms-courses'] });
+      queryClient.invalidateQueries({ queryKey: ['path-courses'] });
       toast({ title: 'Course added to learning path' });
     },
     onError: (error: Error) => {
@@ -366,6 +367,7 @@ export default function AdminLMSPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['lms-paths'] });
       queryClient.invalidateQueries({ queryKey: ['lms-courses'] });
+      queryClient.invalidateQueries({ queryKey: ['path-courses'] });
       toast({ title: 'Course removed from learning path' });
     },
     onError: (error: Error) => {
@@ -380,6 +382,7 @@ export default function AdminLMSPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['lms-courses'] });
       queryClient.invalidateQueries({ queryKey: ['lms-lessons'] });
+      queryClient.invalidateQueries({ queryKey: ['course-lessons'] });
       toast({ title: 'Lesson added to course' });
     },
     onError: (error: Error) => {
@@ -394,6 +397,7 @@ export default function AdminLMSPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['lms-courses'] });
       queryClient.invalidateQueries({ queryKey: ['lms-lessons'] });
+      queryClient.invalidateQueries({ queryKey: ['course-lessons'] });
       toast({ title: 'Lesson removed from course' });
     },
     onError: (error: Error) => {
