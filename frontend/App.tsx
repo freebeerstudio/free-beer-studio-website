@@ -19,6 +19,7 @@ import RegisterPage from './pages/auth/RegisterPage';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminIdeasPage from './pages/admin/AdminIdeasPage';
 import AdminContentPage from './pages/admin/AdminContentPage';
+import AdminLMSPage from './pages/admin/AdminLMSPage';
 import AdminCRMPage from './pages/admin/AdminCRMPage';
 import AdminSettingsPage from './pages/admin/AdminSettingsPage';
 import AdminPricingPage from './pages/admin/AdminPricingPage';
@@ -69,6 +70,7 @@ function AppInner() {
       <Route path="/admin/dashboard" element={<AdminDashboard />} />
       <Route path="/admin/ideas" element={<AdminIdeasPage />} />
       <Route path="/admin/content" element={<AdminContentPage />} />
+      <Route path="/admin/lms" element={<AdminLMSPage />} />
       <Route path="/admin/pricing" element={<AdminPricingPage />} />
       <Route path="/admin/projects" element={<AdminProjectsPage />} />
       <Route path="/admin/blog" element={<AdminBlogPage />} />
