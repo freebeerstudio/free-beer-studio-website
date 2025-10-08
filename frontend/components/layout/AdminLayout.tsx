@@ -14,7 +14,7 @@ import {
   GraduationCap
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useAuth } from '../../contexts/AuthContext';
+import { useUser, useClerk } from '@clerk/clerk-react';
 
 interface AdminLayoutProps {
   children: ReactNode;
@@ -22,9 +22,11 @@ interface AdminLayoutProps {
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
   const location = useLocation();
-  const { user, logout, isAdmin, isLoading } = useAuth();
+  const { user, isSignedIn, isLoaded } = useUser();
+  const { signOut } = useClerk();
+  const isAdmin = user?.publicMetadata?.role === 'admin';
 
-  if (isLoading) {
+  if (!isLoaded) {
     return (
       <div className="min-h-screen bg-jet-black flex items-center justify-center">
         <div className="text-cloud-white">Loading...</div>
@@ -32,7 +34,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     );
   }
 
-  if (!user || !isAdmin) {
+  if (!isSignedIn || !isAdmin) {
     return <Navigate to="/login" replace />;
   }
 
@@ -91,14 +93,14 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               <div className="p-4 border-t border-rocket-gray/20">
                 <div className="flex items-center mb-3">
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-cloud-white">{user.email}</p>
+                    <p className="text-sm font-medium text-cloud-white">{user.emailAddresses[0]?.emailAddress}</p>
                     <p className="text-xs text-rocket-gray">Admin</p>
                   </div>
                 </div>
                 <Button 
                   variant="outline" 
                   size="sm" 
-                  onClick={logout}
+                  onClick={() => signOut()}
                   className="w-full border-rocket-gray text-rocket-gray hover:text-cloud-white"
                 >
                   <LogOut className="mr-2 h-4 w-4" />

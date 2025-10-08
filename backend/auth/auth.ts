@@ -1,9 +1,10 @@
+import { createClerkClient, verifyToken } from "@clerk/backend";
 import { authHandler } from "encore.dev/auth";
-import { Header, Cookie, APIError } from "encore.dev/api";
+import { Header, Cookie, APIError, Gateway } from "encore.dev/api";
 import { secret } from "encore.dev/config";
-import db from "../db";
 
-const jwtSecret = secret("JWTSecret");
+const clerkSecretKey = secret("ClerkSecretKey");
+const clerkClient = createClerkClient({ secretKey: clerkSecretKey() });
 
 interface AuthParams {
   authorization?: Header<"Authorization">;
@@ -12,44 +13,35 @@ interface AuthParams {
 
 export interface AuthData {
   userID: string;
-  email: string;
+  imageUrl: string;
+  email: string | null;
   role: string;
 }
 
 export const auth = authHandler<AuthParams, AuthData>(
-  async (params) => {
-    const token = params.authorization?.replace("Bearer ", "") ?? params.session?.value;
-    
+  async (data) => {
+    const token = data.authorization?.replace("Bearer ", "") ?? data.session?.value;
     if (!token) {
-      throw APIError.unauthenticated("missing authentication token");
+      throw APIError.unauthenticated("missing token");
     }
 
     try {
-      // For demo purposes, we'll use a simple token format
-      // In production, use proper JWT verification
-      const decoded = Buffer.from(token, 'base64').toString('utf-8');
-      const [userID, email] = decoded.split(':');
-      
-      if (!userID || !email) {
-        throw APIError.unauthenticated("invalid token format");
-      }
+      const verifiedToken = await verifyToken(token, {
+        secretKey: clerkSecretKey(),
+      });
 
-      // Verify user exists in database
-      const user = await db.queryRow<{id: string, email: string, role: string}>`
-        SELECT id, email, role FROM users WHERE id = ${userID} AND email = ${email}
-      `;
-
-      if (!user) {
-        throw APIError.unauthenticated("user not found");
-      }
-
+      const user = await clerkClient.users.getUser(verifiedToken.sub);
+      const role = (user.publicMetadata?.role as string) ?? 'user';
       return {
         userID: user.id,
-        email: user.email,
-        role: user.role,
+        imageUrl: user.imageUrl,
+        email: user.emailAddresses[0]?.emailAddress ?? null,
+        role,
       };
     } catch (err) {
-      throw APIError.unauthenticated("invalid authentication token", err as Error);
+      throw APIError.unauthenticated("invalid token", err as Error);
     }
   }
 );
+
+export const gw = new Gateway({ authHandler: auth });

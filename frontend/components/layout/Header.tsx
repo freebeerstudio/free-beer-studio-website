@@ -1,14 +1,16 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Rocket, Menu, X } from 'lucide-react';
 import { useState } from 'react';
-import { useAuth } from '../../contexts/AuthContext';
+import { useUser, useClerk } from '@clerk/clerk-react';
 import { Button } from '@/components/ui/button';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, logout, isAdmin } = useAuth();
+  const { user, isSignedIn } = useUser();
+  const { signOut } = useClerk();
+  const isAdmin = user?.publicMetadata?.role === 'admin';
 
   const navigation = [
     { name: 'Home', href: '/' },
@@ -27,8 +29,8 @@ export default function Header() {
     return location.pathname.startsWith(href);
   };
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await signOut();
     setIsMenuOpen(false);
     navigate('/');
   };
@@ -65,7 +67,7 @@ export default function Header() {
                 </Link>
               ))}
               
-              {user ? (
+              {isSignedIn ? (
                 <div className="flex items-center space-x-4 ml-6">
                   {isAdmin && (
                     <Link
@@ -127,7 +129,7 @@ export default function Header() {
                 </Link>
               ))}
               
-              {user ? (
+              {isSignedIn ? (
                 <div className="pt-4 border-t border-rocket-gray/20 mt-4">
                   {isAdmin && (
                     <Link

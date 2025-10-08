@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from '@/components/ui/toaster';
-import { AuthProvider } from './contexts/AuthContext';
+import { ClerkProvider } from '@clerk/clerk-react';
 
 // Public pages
 import HomePage from './pages/public/HomePage';
@@ -30,23 +30,25 @@ import AdminBlogPage from './pages/admin/AdminBlogPage';
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 5 * 60 * 1000, // 5 minutes
+      staleTime: 5 * 60 * 1000,
       retry: 1,
     },
   },
 });
 
+const CLERK_PUBLISHABLE_KEY = "pk_test_Z29sZGVuLXN0dXJnZW9uLTMzLmNsZXJrLmFjY291bnRzLmRldiQ";
+
 export default function App() {
   return (
     <div className="dark">
-      <QueryClientProvider client={queryClient}>
-        <AuthProvider>
+      <ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY}>
+        <QueryClientProvider client={queryClient}>
           <Router>
             <AppInner />
           </Router>
           <Toaster />
-        </AuthProvider>
-      </QueryClientProvider>
+        </QueryClientProvider>
+      </ClerkProvider>
     </div>
   );
 }
